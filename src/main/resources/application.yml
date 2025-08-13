@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: UpDevic_001
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/up_devic_002
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 1234
+
+  cache:
+    type: simple
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aladdinbiyabangerd@gmail.com
+    password: lgwc ajdp xxjj cyuq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+# port: ${PORT}
+
+logging:
+  file:
+    path: ./logs
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: info
+    org.hibernate.SQL: DEBUG
+    org.springframework.data.jpa.repository: DEBUG
+
+server:
+  port: ${PORT}
+  tomcat:
+    uri-encoding: utf-8
+
+cloud:
+  aws:
+    region: eu-north-1
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: updevic
+
+stripe:
+  secret:
+    key: ${STRIPE_SECRET}
+
+application:
+  security:
+    jwt:
+      expiration: 86400000
+      key: ${SECURITY_KEY}
+
+#secret.word: ${KEY}
+
+ALGORITHM: ${ALGORITHM}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+frontend:
+  url1: ${FRONTEND_URL1}
+  url2: ${FRONTEND_URL2}

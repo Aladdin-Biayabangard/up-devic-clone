@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: up_devic_002
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: lesson_21
+    ports:
+      - "5433:5432"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_up_devic_002
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+#  app:
+#    build: .
+#    container_name: my_app_container
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/up_devic_002
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: 1234
+#    depends_on:
+#      - postgres
+#
+#volumes:
+#  pgdata:

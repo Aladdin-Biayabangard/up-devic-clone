@@ -1,0 +1,81 @@
+package com.team.updevic001.controllers;
+
+import com.team.updevic001.dao.repositories.CourseRepository;
+import com.team.updevic001.dao.repositories.TeacherCourseRepository;
+import com.team.updevic001.model.dtos.request.security.*;
+import com.team.updevic001.model.dtos.response.AuthResponseDto;
+import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.services.interfaces.AuthService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AuthController {
+
+
+    AuthService authService;
+    CourseRepository courseRepository;
+    TeacherCourseRepository teacherCourseRepository;
+
+    @PutMapping(path = "create-admin")
+    @ResponseStatus(CREATED)
+    public AuthResponseDto createUserWithAdminRole(AuthRequestDto authRequest) {
+        return authService.createUserWithAdminRole(authRequest);
+    }
+
+    @GetMapping
+    public ResponseUserDto getLoggedInUser() {
+        return authService.getLoggedInUser();
+    }
+
+    @PostMapping("/sign-up")
+    @ResponseStatus(NO_CONTENT)
+    public void registerUser(@RequestBody @Valid RegisterRequest request) {
+        authService.register(request);
+    }
+
+    @PostMapping("/verify-otp")
+    public AuthResponseDto verifyOtp(@RequestBody OtpRequest request) {
+        return authService.verifyAndGetToken(request);
+    }
+
+    @PostMapping("/sign-in")
+    public AuthResponseDto login(@Valid @RequestBody AuthRequestDto authRequest) {
+        return authService.login(authRequest);
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(NO_CONTENT)
+    public void requestPasswordReset(@RequestParam @NotBlank String email) {
+        authService.requestPasswordReset(email);
+    }
+
+    @PatchMapping("/reset-password")
+    @ResponseStatus(NO_CONTENT)
+    public void resetPassword(@RequestParam @NotBlank String token, @Valid @RequestBody RecoveryPassword recoveryPassword) {
+        authService.resetPassword(token, recoveryPassword);
+    }
+
+    @PostMapping("/refresh-token")
+    public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequest request) {
+        return authService.refreshAccessToken(request);
+    }
+
+    @DeleteMapping(path = "all-course-delete")
+    @ResponseStatus(NO_CONTENT)
+    public void deleteAll() {
+        teacherCourseRepository.deleteAll();
+        courseRepository.deleteAll();
+    }
+
+}

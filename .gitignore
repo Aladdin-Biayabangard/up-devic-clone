@@ -1,0 +1,31 @@
+# Build qovluqları
+/build/
+/out/
+
+# IDE faylları (IntelliJ IDEA)
+.idea/
+/*.iml
+*.iws
+
+# OS faylları
+.DS_Store
+Thumbs.db
+
+# Log faylları
+*.log
+
+# Temporary fayllar
+*.tmp
+*.swp
+
+# Maven / Gradle faylları
+/.gradle/
+/target/
+
+# Eclipse faylları
+.settings/
+.classpath
+.project
+
+# Git LFS üçün əlavə edəcəksənsə track faylları (məsələn .jar)
+*.jar
