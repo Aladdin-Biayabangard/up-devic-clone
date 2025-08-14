@@ -1,6 +1,6 @@
 package com.team.updevic001.utility;
 
-
+import java.util.Base64;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.UserRepository;
 import io.jsonwebtoken.*;
