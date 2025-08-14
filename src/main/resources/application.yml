@@ -3,10 +3,11 @@ spring:
     name: UpDevic_001
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/up_devic_002
+    # Localda işləyərkən default olaraq localhost götürür, Railway-də isə env-dən oxuyur
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/up_devic_002}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: 1234
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:1234}
 
   cache:
     type: simple
@@ -29,15 +30,14 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: aladdinbiyabangerd@gmail.com
-    password: lgwc ajdp xxjj cyuq
+    username: ${MAIL_USERNAME:aladdinbiyabangerd@gmail.com}
+    password: ${MAIL_PASSWORD:lgwc ajdp xxjj cyuq} # Railway-də bunu mütləq env olaraq saxla
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-# port: ${PORT}
 
 logging:
   file:
@@ -50,7 +50,8 @@ logging:
     org.springframework.data.jpa.repository: DEBUG
 
 server:
-  port: ${PORT}
+  # Railway PORT dəyişənini götürür, localda isə 8080 açır
+  port: ${PORT:8080}
   tomcat:
     uri-encoding: utf-8
 
@@ -72,8 +73,6 @@ application:
     jwt:
       expiration: 86400000
       key: ${SECURITY_KEY}
-
-#secret.word: ${KEY}
 
 ALGORITHM: ${ALGORITHM}
 
