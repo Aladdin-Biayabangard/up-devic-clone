@@ -40,7 +40,6 @@ public Key initializeKey() {
 if (key != null) {
         return key;
     }
-
     try {
         // URL-safe Base64 decoder istifadə olunur
         byte[] keyBytes = java.util.Base64.getUrlDecoder().decode(secret_key);
