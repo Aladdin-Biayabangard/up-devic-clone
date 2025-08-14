@@ -36,12 +36,14 @@ public class JwtUtil {
     private long accessTokenValidity;
     private static Key key;
 
-    public Key initializeKey() {
-        byte[] keyBytes;
-        keyBytes = Decoders.BASE64.decode(secret_key);
-        key = Keys.hmacShaKeyFor(keyBytes);
-        return key;
-    }
+public Key initializeKey() {
+    byte[] keyBytes;
+    // URL-safe decoder istifadə et
+    keyBytes = java.util.Base64.getUrlDecoder().decode(secret_key);
+    key = Keys.hmacShaKeyFor(keyBytes);
+    return key;
+}
+
 
     public String createToken(User user) {
         key = initializeKey();
