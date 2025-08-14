@@ -37,11 +37,18 @@ public class JwtUtil {
     private static Key key;
 
 public Key initializeKey() {
-    byte[] keyBytes;
-    // URL-safe decoder istifadə et
-    keyBytes = java.util.Base64.getUrlDecoder().decode(secret_key);
-    key = Keys.hmacShaKeyFor(keyBytes);
-    return key;
+if (key != null) {
+        return key;
+    }
+
+    try {
+        // URL-safe Base64 decoder istifadə olunur
+        byte[] keyBytes = java.util.Base64.getUrlDecoder().decode(secret_key);
+        key = Keys.hmacShaKeyFor(keyBytes);
+        return key;
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("JWT Secret key is not valid Base64 URL-safe format", e);
+    }
 }
 
 
