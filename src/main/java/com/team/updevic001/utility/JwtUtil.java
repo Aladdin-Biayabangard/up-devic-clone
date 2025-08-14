@@ -37,29 +37,27 @@ public class JwtUtil {
     private static Key key;
 
 public Key initializeKey() {
-if (key != null) {
+    if (key != null) {
         return key;
     }
 
+    byte[] keyBytes;
     try {
-        // Base64 decode
-        byte[] keyBytes = Base64.getDecoder().decode(secret_key);
-
-        // HS512 üçün ən az 512-bit olmalıdır
-        if (keyBytes.length < 64) { // 64 bytes = 512 bits
-            throw new IllegalArgumentException(
-                "JWT Secret key is too short for HS512, must be at least 512 bits"
-            );
-        }
-
-        key = Keys.hmacShaKeyFor(keyBytes);
-        return key;
-
+        // Əgər Base64-dürsə decode et
+        keyBytes = Base64.getDecoder().decode(secret_key);
     } catch (IllegalArgumentException e) {
-        throw new RuntimeException(
-            "JWT Secret key is invalid Base64 or too short for HS512", e
+        // Yox əgər Base64 deyil, UTF-8 kimi götür
+        keyBytes = secret_key.getBytes(StandardCharsets.UTF_8);
+    }
+
+    // HS512 üçün ən az 512 bit lazımdır (64 byte)
+    if (keyBytes.length < 64) {
+        throw new IllegalArgumentException(
+            "JWT Secret key is too short for HS512, must be at least 512 bits"
         );
     }
+    key = Keys.hmacShaKeyFor(keyBytes);
+    return key;
 }
 
 
