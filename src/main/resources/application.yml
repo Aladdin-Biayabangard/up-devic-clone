@@ -66,13 +66,13 @@ cloud:
 
 stripe:
   secret:
-    key: ${STRIPE_SECRET:Xxq8JH0v9FZbD4l2yN+3gW1H6sKf5V8pR2Qb7uJ4T6oYc1Ld0eF9kM2N1P3Xq5S7}
+    key: ${STRIPE_SECRET}
 
 application:
   security:
     jwt:
       expiration: 86400000
-      key: ${SECURITY_KEY}
+      key: ${SECURITY_KEY:Xxq8JH0v9FZbD4l2yN+3gW1H6sKf5V8pR2Qb7uJ4T6oYc1Ld0eF9kM2N1P3Xq5S7}
 
 ALGORITHM: ${ALGORITHM}
 
