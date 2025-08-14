@@ -36,19 +36,29 @@ public class JwtUtil {
     private long accessTokenValidity;
     private static Key key;
 
-public Key initializeKey() {
 if (key != null) {
         return key;
     }
+
     try {
-        // URL-safe Base64 decoder istifadə olunur
-        byte[] keyBytes = java.util.Base64.getUrlDecoder().decode(secret_key);
+        // Base64 decode
+        byte[] keyBytes = Base64.getDecoder().decode(secret_key);
+
+        // HS512 üçün ən az 512-bit olmalıdır
+        if (keyBytes.length < 64) { // 64 bytes = 512 bits
+            throw new IllegalArgumentException(
+                "JWT Secret key is too short for HS512, must be at least 512 bits"
+            );
+        }
+
         key = Keys.hmacShaKeyFor(keyBytes);
         return key;
+
     } catch (IllegalArgumentException e) {
-        throw new RuntimeException("JWT Secret key is not valid Base64 URL-safe format", e);
+        throw new RuntimeException(
+            "JWT Secret key is invalid Base64 or too short for HS512", e
+        );
     }
-}
 
 
     public String createToken(User user) {
