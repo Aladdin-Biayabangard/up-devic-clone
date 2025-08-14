@@ -1,5 +1,6 @@
 package com.team.updevic001.utility;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.UserRepository;
@@ -43,14 +44,11 @@ public Key initializeKey() {
 
     byte[] keyBytes;
     try {
-        // Əgər Base64-dürsə decode et
         keyBytes = Base64.getDecoder().decode(secret_key);
     } catch (IllegalArgumentException e) {
-        // Yox əgər Base64 deyil, UTF-8 kimi götür
         keyBytes = secret_key.getBytes(StandardCharsets.UTF_8);
     }
 
-    // HS512 üçün ən az 512 bit lazımdır (64 byte)
     if (keyBytes.length < 64) {
         throw new IllegalArgumentException(
             "JWT Secret key is too short for HS512, must be at least 512 bits"
