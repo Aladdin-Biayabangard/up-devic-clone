@@ -66,7 +66,7 @@ cloud:
 
 stripe:
   secret:
-    key: ${STRIPE_SECRET}
+    key: ${STRIPE_SECRET:Xxq8JH0v9FZbD4l2yN+3gW1H6sKf5V8pR2Qb7uJ4T6oYc1Ld0eF9kM2N1P3Xq5S7}
 
 application:
   security:
