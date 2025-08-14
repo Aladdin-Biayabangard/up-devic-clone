@@ -36,6 +36,7 @@ public class JwtUtil {
     private long accessTokenValidity;
     private static Key key;
 
+public Key initializeKey() {
 if (key != null) {
         return key;
     }
@@ -59,6 +60,7 @@ if (key != null) {
             "JWT Secret key is invalid Base64 or too short for HS512", e
         );
     }
+}
 
 
     public String createToken(User user) {
