@@ -12,8 +12,8 @@ import com.team.updevic001.exceptions.PaymentStatusException;
 import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
-import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.CommentService;
+import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -34,6 +34,7 @@ public class CommentServiceImpl implements CommentService {
     private final CourseServiceImpl courseServiceImpl;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final LessonServiceImpl lessonServiceImpl;
+    private final TeacherService teacherService;
 
     @Override
     @Transactional
@@ -42,7 +43,7 @@ public class CommentServiceImpl implements CommentService {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
 
-        boolean isHeadTeacher = course.getHeadTeacher().getUser().equals(authenticatedUser);
+        boolean isHeadTeacher = course.getHeadTeacher().equals(teacherService.getAuthenticatedTeacher());
         boolean hasPaid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, authenticatedUser);
 
         if (!isHeadTeacher && !hasPaid) {
@@ -65,8 +66,7 @@ public class CommentServiceImpl implements CommentService {
     public ResponseCommentDto addCommentToLesson(Long lessonId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Lesson lesson = lessonServiceImpl.findLessonById(lessonId);
-
-        boolean isTeacher = lesson.getTeacher().getUser().equals(authenticatedUser);
+        boolean isTeacher = lesson.getTeacher().equals(teacherService.getAuthenticatedTeacher());
         boolean hasPaid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), authenticatedUser);
         if (!hasPaid && !isTeacher) {
             throw new PaymentStatusException("Access denied. You must be the course owner or a paying student to comment.");
@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
     public ResponseCommentDto updateComment(Long commentId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
-        if (!comment.getUser().getId().equals(authenticatedUser.getId())) {
+        if (!comment.getUser().equals(authenticatedUser)) {
             throw new ForbiddenException("NOT_ALLOWED_UPDATE_COMMENT");
         }
         comment.setContent(commentDto.getContent());
@@ -121,7 +121,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
-        if (comment.getUser().getId().equals(authenticatedUser.getId())) {
+        if (comment.getUser().equals(authenticatedUser)) {
             commentRepository.deleteById(commentId);
         }
         throw new ForbiddenException("NOT_ALLOWED_DELETE_COMMENT");

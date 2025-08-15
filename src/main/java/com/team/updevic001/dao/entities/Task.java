@@ -32,7 +32,7 @@ public class Task {
     @OneToMany(mappedBy = "task", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StudentTask> tasks;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;

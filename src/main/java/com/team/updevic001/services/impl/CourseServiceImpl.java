@@ -292,7 +292,6 @@ public class CourseServiceImpl implements CourseService {
     }
 
     void deleteCourseAndReferencedData(Long courseId, List<Long> lessonIds, User user) {
-
         wishListRepository.deleteWishListByCourseIdAndUser(courseId, user);
         userLessonStatusRepository.deleteUserLessonStatusByLessonsId(lessonIds);
         commentRepository.deleteCommentsByLessonsId(lessonIds);

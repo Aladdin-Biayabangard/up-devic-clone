@@ -14,7 +14,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,7 +49,6 @@ public class TaskServiceImpl implements TaskService {
         course.getTasks().add(task);
         task.setCourse(course);
         taskRepository.save(task);
-        courseRepository.save(course);
     }
 
     @Override
@@ -125,7 +126,7 @@ public class TaskServiceImpl implements TaskService {
         final char[] optionChar = {'A'};
         return options.stream()
                 .map(option -> optionChar[0]++ + ") " + option)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private double calculateScore(Course course) {
