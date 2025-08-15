@@ -1,11 +1,8 @@
 package com.team.updevic001.model.dtos.response.lesson;
 
-import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +21,6 @@ public class ResponseLessonDto {
 
     private String duration;
 
-    private List<ResponseCommentDto> comments;
+//    private List<ResponseCommentDto> comments;
 
 }

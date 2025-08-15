@@ -1,6 +1,5 @@
 package com.team.updevic001.configuration.mappers;
 
-import com.team.updevic001.dao.entities.Comment;
 import com.team.updevic001.dao.entities.Lesson;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonShortInfoDto;
@@ -13,17 +12,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LessonMapper {
 
-    private final CommentMapper commentMapper;
-
-    public ResponseLessonDto toDto(Lesson lesson, List<Comment> comments) {
+    public ResponseLessonDto toDto(Lesson lesson) {
         return new ResponseLessonDto(
                 lesson.getId(),
                 lesson.getPhotoUrl(),
                 lesson.getTitle(),
                 lesson.getDescription(),
                 lesson.getVideoUrl(),
-                lesson.getDuration(),
-                commentMapper.toDto(comments)
+                lesson.getDuration()
+//                commentMapper.toDto(comments)
         );
     }
 

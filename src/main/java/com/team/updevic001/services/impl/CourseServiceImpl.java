@@ -127,14 +127,17 @@ public class CourseServiceImpl implements CourseService {
     }
 
     public String uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException {
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
-            String photoOfWhat = "coursePhoto";
-            FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
-            courseRepository.updateCourseFileInfo(courseId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
-            return fileUploadResponse.getUrl();
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("Multipart file is empty or null!");
         }
-        throw new IllegalArgumentException("Multipart file is empty or null!");
+        if (!courseRepository.existsById(courseId)) {
+            throw new ResourceNotFoundException("COURSE_NOT_FOUND");
+        }
+        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
+        String photoOfWhat = "coursePhoto";
+        FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
+        courseRepository.updateCourseFileInfo(courseId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
+        return fileUploadResponse.getUrl();
     }
 
     @Override

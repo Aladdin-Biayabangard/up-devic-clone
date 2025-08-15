@@ -22,6 +22,4 @@ public class ResponseCourseDto {
     private String description;
 
     private CourseLevel level;
-
-
 }

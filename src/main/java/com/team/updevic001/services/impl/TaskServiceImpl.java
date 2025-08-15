@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,19 +35,17 @@ public class TaskServiceImpl implements TaskService {
     private final LessonRepository lessonRepository;
 
     @Override
+    @Transactional
     public void createTask(Long courseId, TaskDto taskDto) {
-        Course course = courseServiceImpl.findCourseById(courseId);
+        Course course = courseRepository.findCourseById(courseId).orElseThrow(()-> new ResourceNotFoundException("COURSE_NOT_FOUND"));
         Teacher teacher = teacherServiceImpl.getAuthenticatedTeacher();
         courseServiceImpl.validateAccess(courseId, teacher);
         Task task = modelMapper.map(taskDto, Task.class);
-
         List<String> options = formatedOptions(taskDto.getOptions());
-
         task.setOptions(options);
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
         course.getTasks().add(task);
         task.setCourse(course);
-
         taskRepository.save(task);
         courseRepository.save(course);
     }
@@ -63,13 +62,9 @@ public class TaskServiceImpl implements TaskService {
         if (!allVideosWatched) {
             throw new IllegalArgumentException("You need to watch the lessons to watch the tests.");
         }
-
         Task task = findTaskById(taskId);
-
         checkCompletionTask(student, task);
-
         TestResult result = checkTestResult(student, course);
-
         validateAnswerAndUpdateScore(student, result, task, answerDto, course);
     }
 
