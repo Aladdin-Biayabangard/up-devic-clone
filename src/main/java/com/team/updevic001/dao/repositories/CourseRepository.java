@@ -5,6 +5,7 @@ import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,6 +32,9 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
 
     @Query("SELECT c.photoKey FROM Course c WHERE c.id=:id ")
     Optional<String> findProfilePhotoKeyBy(Long id);
+
+    @EntityGraph(attributePaths = "tasks")
+    Optional<Course> findCourseById(Long id);
 
     @Transactional
     @Modifying
