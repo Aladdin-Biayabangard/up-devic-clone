@@ -2,21 +2,16 @@ package com.team.updevic001.controllers;
 
 import com.team.updevic001.configuration.config.syncrn.RateLimit;
 import com.team.updevic001.model.dtos.request.CourseDto;
-import com.team.updevic001.model.dtos.response.course.ResponseCategoryDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
-import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
-import com.team.updevic001.model.enums.SortDirection;
-import com.team.updevic001.model.enums.SortType;
 import com.team.updevic001.services.interfaces.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,124 +27,106 @@ public class CourseController {
 
     private final CourseService courseServiceImpl;
 
-    @Operation(summary = "Kurs yaratmaq")
+    @Operation(
+            summary = "Yeni kurs yaratmaq",
+            description = "Yeni kurs əlavə etmək üçün istifadə olunur. Parametrlər: `courseCategoryType` query parametri və `CourseDto` JSON body-də göndərilir."
+    )
     @PostMapping
-    public ResponseEntity<ResponseCourseDto> createCourse(@RequestParam CourseCategoryType courseCategoryType, @RequestBody CourseDto courseDto) {
-        ResponseCourseDto teacherCourse = courseServiceImpl.createCourse(courseCategoryType, courseDto);
-        return new ResponseEntity<>(teacherCourse, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseCourseDto createCourse(@RequestParam CourseCategoryType courseCategoryType,
+                                          @RequestBody CourseDto courseDto) {
+        return courseServiceImpl.createCourse(courseCategoryType, courseDto);
     }
 
+    @Operation(
+            summary = "Mövcud kursa müəllif əlavə etmək",
+            description = "Mövcud kursa müəllif təyin etmək üçün `courseId` path param və `userId` query param göndərilir."
+    )
     @PostMapping(path = "/{courseId}/teacher")
-    public ResponseEntity<ResponseCourseDto> addTeacherToCourse(@PathVariable Long courseId,
-                                                                @RequestParam Long userId) {
-        ResponseCourseDto responseTeacherWithCourses = courseServiceImpl.addTeacherToCourse(courseId, userId);
-        return ResponseEntity.ok(responseTeacherWithCourses);
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseCourseDto addTeacherToCourse(@PathVariable Long courseId,
+                                                @RequestParam Long userId) {
+        return courseServiceImpl.addTeacherToCourse(courseId, userId);
     }
 
-    @Operation(summary = "Kursu beyenilen kurslara elave etmek")
+    @Operation(
+            summary = "Kursu wishlist-ə əlavə etmək",
+            description = "İstifadəçinin wishlist-inə kurs əlavə etmək üçün `courseId` path param göndərilir."
+    )
     @PostMapping(path = "/{courseId}/wish")
-    public ResponseEntity<Void> addToWishList(@PathVariable Long courseId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addToWishList(@PathVariable Long courseId) {
         courseServiceImpl.addToWishList(courseId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(summary = "Kursa şəklini düzəltmək")
-    @PatchMapping(path = "photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadCoursePhoto(@RequestParam Long courseId,
-                                                    @RequestPart MultipartFile multipartFile) throws IOException {
-        String photoUrl = courseServiceImpl.uploadCoursePhoto(courseId, multipartFile);
-        return ResponseEntity.ok(photoUrl);
+    @Operation(
+            summary = "Kurs şəkli yükləmək",
+            description = "`multipart/form-data` ilə kurs şəkli yüklənir. Parametrlər: `courseId` query param və fayl `multipartFile`."
+    )
+    @PatchMapping(path = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public String uploadCoursePhoto(@RequestParam Long courseId,
+                                    @RequestPart MultipartFile multipartFile) throws IOException {
+        return courseServiceImpl.uploadCoursePhoto(courseId, multipartFile);
     }
 
-    @Operation(summary = "Kursun ratingini yenilemek")
-    @PatchMapping(path = "{courseId}/rating")
-    public ResponseEntity<String> updateRatingCourse(@PathVariable Long courseId,
-                                                     @RequestParam int rating) {
+    @Operation(
+            summary = "Kursun ratingini yeniləmək",
+            description = "Kursun `courseId` path param və `rating` query param göndərilərək kursun ratingi yenilənir."
+    )
+    @PatchMapping(path = "/{courseId}/rating")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public String updateRatingCourse(@PathVariable Long courseId,
+                                     @RequestParam int rating) {
         courseServiceImpl.updateRatingCourse(courseId, rating);
-        return new ResponseEntity<>("Rating successfully added!", HttpStatus.ACCEPTED);
+        return "Rating successfully added!";
     }
 
-    @Operation(summary = "Kursun detallarini yenilemek")
+    @Operation(
+            summary = "Kursun detallarını yeniləmək",
+            description = "Kurs məlumatlarını güncəlləmək üçün `courseId` path param və `CourseDto` body göndərilir."
+    )
     @PutMapping(path = "/{courseId}")
-    public ResponseEntity<ResponseCourseDto> updateTeacherCourse(@PathVariable Long courseId,
-                                                                 @RequestBody CourseDto courseDto) {
-        return new ResponseEntity<>(courseServiceImpl.updateCourse(courseId, courseDto), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseCourseDto updateTeacherCourse(@PathVariable Long courseId,
+                                                 @RequestBody CourseDto courseDto) {
+        return courseServiceImpl.updateCourse(courseId, courseDto);
     }
 
-    @Operation(summary = "İstifadəcinin Butun beyenilen kurslarinin qisa melumatlarini getirir")
-    @GetMapping(path = "wish")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> getWishList() {
-        List<ResponseCourseShortInfoDto> wishList = courseServiceImpl.getWishList();
-        return ResponseEntity.ok(wishList);
+    @Operation(
+            summary = "Wishlist-dəki bütün kursları gətirmək",
+            description = "İstifadəçinin wishlist-dəki bütün kursların qısa məlumatlarını əldə etmək üçün çağırılır."
+    )
+    @GetMapping(path = "/wish")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseCourseShortInfoDto> getWishList() {
+        return courseServiceImpl.getWishList();
     }
 
-
-    @Operation(summary = "Kursu her hansi soze uygun axtarmaq ")
+    @Operation(
+            summary = "Kursları sözə görə axtarmaq",
+            description = "`keyword` query param göndərilərək uyğun kurslar axtarılır. Full-text search istifadə olunur."
+    )
     @RateLimit
     @GetMapping(path = "/search")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> searchCourse(@RequestParam String keyword) {
-        List<ResponseCourseShortInfoDto> courses = courseServiceImpl.searchCourse(keyword);
-        return ResponseEntity.ok(courses);
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseCourseShortInfoDto> searchCourse(@RequestParam String keyword) {
+        return courseServiceImpl.searchCourse(keyword);
     }
 
-    @Operation(summary = "Kursu her hansi kriteryaya uygun axtarmaq")
+    @Operation(
+            summary = "Kursları kriteriyalara görə axtarmaq",
+            description = "`level`, `minPrice`, `maxPrice`, `courseCategoryType` query param-ləri ilə kurslar filtrelənir. Hamısı opsionaldır."
+    )
     @GetMapping(path = "/criteria")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> findCourseByCriteria(@RequestParam(required = false) CourseLevel level,
-                                                                                 @RequestParam(required = false) BigDecimal minPrice,
-                                                                                 @RequestParam(required = false) BigDecimal maxPrice,
-                                                                                 @RequestParam(required = false) CourseCategoryType courseCategoryType) {
-        List<ResponseCourseShortInfoDto> coursesByCriteria = courseServiceImpl.findCourseByCriteria(level, minPrice, maxPrice, courseCategoryType);
-        return ResponseEntity.ok(coursesByCriteria);
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseCourseShortInfoDto> findCourseByCriteria(
+            @RequestParam(required = false) CourseLevel level,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) CourseCategoryType courseCategoryType) {
+        return courseServiceImpl.findCourseByCriteria(level, minPrice, maxPrice, courseCategoryType);
     }
-
-    @GetMapping(path = "/sort")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> filterAndSortCourses(@RequestParam SortType sortBy,
-                                                                                 @RequestParam SortDirection direction) {
-        List<ResponseCourseShortInfoDto> courses = courseServiceImpl.filterAndSortCourses(sortBy, direction);
-        return ResponseEntity.ok(courses);
-    }
-
-    @GetMapping(path = "/{courseId}/full")
-    public ResponseEntity<ResponseFullCourseDto> getCourse(@PathVariable Long courseId) {
-        ResponseFullCourseDto course = courseServiceImpl.getCourse(courseId);
-        return ResponseEntity.ok(course);
-    }
-
-    @GetMapping(path = "/all")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> getCourses(Long id, int limit) {
-        List<ResponseCourseShortInfoDto> courses = courseServiceImpl.getCourses(id, limit);
-        return ResponseEntity.ok(courses);
-    }
-
-    @GetMapping(path = "categories")
-    public ResponseEntity<List<ResponseCategoryDto>> getCategories() {
-        List<ResponseCategoryDto> categories = courseServiceImpl.getCategories();
-        return ResponseEntity.ok(categories);
-    }
-
-    @GetMapping(path = "most-popular")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> getMost4PopularCourses() {
-        return ResponseEntity.ok(courseServiceImpl.getMost5PopularCourses());
-    }
-
-    @GetMapping(path = "/short")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> findCoursesByCategory(@RequestParam CourseCategoryType categoryType) {
-        List<ResponseCourseShortInfoDto> category = courseServiceImpl.findCoursesByCategory(categoryType);
-        return ResponseEntity.ok(category);
-    }
-
-    @DeleteMapping(path = "/{courseId}")
-    public ResponseEntity<String> deleteCourse(@PathVariable Long courseId) {
-        courseServiceImpl.deleteCourse(courseId);
-        return ResponseEntity.ok("Course successfully deleted!");
-    }
-
-    @DeleteMapping(path = "{courseId}/wish")
-    public ResponseEntity<Void> removeFromWishList(@PathVariable Long courseId) {
-        courseServiceImpl.removeFromWishList(courseId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
 
 }
 

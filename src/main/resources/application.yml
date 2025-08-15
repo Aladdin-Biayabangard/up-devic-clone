@@ -1,87 +1,17 @@
 spring:
   application:
     name: UpDevic_001
+  profiles:
+    include:
+      - cloud
+      - common
+      - db
+      - email
+      - file
 
-  datasource:
-    # Localda işləyərkən default olaraq localhost götürür, Railway-də isə env-dən oxuyur
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/up_devic_002}
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1234}
 
-  cache:
-    type: simple
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 1000MB
-      max-request-size: 1000MB
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:aladdinbiyabangerd@gmail.com}
-    password: ${MAIL_PASSWORD:lgwc ajdp xxjj cyuq} # Railway-də bunu mütləq env olaraq saxla
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
-logging:
-  file:
-    path: ./logs
-  pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  level:
-    root: info
-    org.hibernate.SQL: DEBUG
-    org.springframework.data.jpa.repository: DEBUG
 
-server:
-  # Railway PORT dəyişənini götürür, localda isə 8080 açır
-  port: ${PORT:8080}
-  tomcat:
-    uri-encoding: utf-8
-
-cloud:
-  aws:
-    region: eu-north-1
-    credentials:
-      access-key: ${ACCESS_KEY}
-      secret-key: ${SECRET_KEY}
-    s3:
-      bucket: updevic
-
-stripe:
-  secret:
-    key: ${STRIPE_SECRET}
-
-application:
-  security:
-    jwt:
-      expiration: 86400000
-      key: ${SECURITY_KEY}
-
-ALGORITHM: ${ALGORITHM}
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-
-frontend:
-  url1: ${FRONTEND_URL1}
-  url2: ${FRONTEND_URL2}
