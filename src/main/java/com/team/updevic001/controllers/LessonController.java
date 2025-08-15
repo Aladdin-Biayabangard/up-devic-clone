@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,50 +24,79 @@ public class LessonController {
 
     private final LessonService lessonServiceImpl;
 
+    @Operation(
+            summary = "Kursa dərs əlavə etmək",
+            description = "Yeni dərsi mövcud kursa əlavə etmək üçün istifadə olunur. Parametrlər: `courseId` path param, `lessonDto` form-data və dərs faylı `file` multipart-file."
+    )
     @PostMapping(path = "/{courseId}/lessons", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseLessonDto> assignLessonToCourse(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseLessonDto assignLessonToCourse(
             @PathVariable Long courseId,
             @ModelAttribute("lesson") LessonDto lessonDto,
             @RequestPart("file") final MultipartFile file) throws Exception {
-        ResponseLessonDto responseLessonDto = lessonServiceImpl.assignLessonToCourse(courseId, lessonDto, file);
-        return new ResponseEntity<>(responseLessonDto, HttpStatus.CREATED);
+        return lessonServiceImpl.assignLessonToCourse(courseId, lessonDto, file);
     }
 
+    @Operation(
+            summary = "Dərsin məlumatlarını yeniləmək",
+            description = "`lessonId` path param və `LessonDto` body göndərilərək dərs məlumatları güncəllənir."
+    )
     @PutMapping("/{lessonId}")
-    public ResponseEntity<ResponseLessonDto> updateLessonInfo(@PathVariable Long lessonId,
-                                                              @Valid @RequestBody LessonDto lessonDto) {
-        return ResponseEntity.ok(lessonServiceImpl.updateLessonInfo(lessonId, lessonDto));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseLessonDto updateLessonInfo(@PathVariable Long lessonId,
+                                              @Valid @RequestBody LessonDto lessonDto) {
+        return lessonServiceImpl.updateLessonInfo(lessonId, lessonDto);
     }
 
-    @PatchMapping(value = "photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadLessonPhoto(@RequestParam Long lessonId,
-                                                    @RequestPart MultipartFile multipartFile) throws IOException {
-        return ResponseEntity.ok(lessonServiceImpl.uploadLessonPhoto(lessonId, multipartFile));
+    @Operation(
+            summary = "Dərsin şəkilini yükləmək",
+            description = "Dərsin şəkli `lessonId` query param və `multipartFile` ilə yüklənir."
+    )
+    @PatchMapping(value = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public String uploadLessonPhoto(@RequestParam Long lessonId,
+                                    @RequestPart MultipartFile multipartFile) throws IOException {
+        return lessonServiceImpl.uploadLessonPhoto(lessonId, multipartFile);
     }
 
+    @Operation(
+            summary = "Kursdakı bütün dərslərin qısa məlumatlarını gətirmək",
+            description = "`courseId` path param göndərilərək kursa aid bütün dərslərin qısa məlumatları əldə edilir."
+    )
     @GetMapping(path = "/{courseId}/lesson-short")
-    public ResponseEntity<List<ResponseLessonShortInfoDto>> getLessonsByCourse(@PathVariable Long courseId) {
-        List<ResponseLessonShortInfoDto> teacherLessonsByCourse = lessonServiceImpl.getShortLessonsByCourse(courseId);
-        return ResponseEntity.ok(teacherLessonsByCourse);
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseLessonShortInfoDto> getLessonsByCourse(@PathVariable Long courseId) {
+        return lessonServiceImpl.getShortLessonsByCourse(courseId);
     }
 
-    @GetMapping(path = "{lessonId}/lesson")
-    public ResponseEntity<ResponseLessonDto> getFullLessonByLessonId(@PathVariable Long lessonId) {
-        ResponseLessonDto fullLessonByLessonId = lessonServiceImpl.getFullLessonByLessonId(lessonId);
-        return ResponseEntity.ok(fullLessonByLessonId);
+    @Operation(
+            summary = "Dərsin tam məlumatını əldə etmək",
+            description = "`lessonId` path param göndərilərək dərsin bütün məlumatları əldə edilir."
+    )
+    @GetMapping(path = "/{lessonId}/lesson")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseLessonDto getFullLessonByLessonId(@PathVariable Long lessonId) {
+        return lessonServiceImpl.getFullLessonByLessonId(lessonId);
     }
 
+    @Operation(
+            summary = "Dərsi silmək",
+            description = "`lessonId` path param göndərilərək dərs silinir."
+    )
     @DeleteMapping(path = "/{lessonId}")
-    public ResponseEntity<String> deleteLesson(@PathVariable Long lessonId) {
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteLesson(@PathVariable Long lessonId) {
         lessonServiceImpl.deleteLesson(lessonId);
-        return ResponseEntity.ok("Lesson deleted successfully!");
     }
 
-    @Operation(summary = "Delete the teacher's lessons")
-    @DeleteMapping(path = "lessons/delete")
-    public ResponseEntity<String> deleteTeacherLessons() {
+    @Operation(
+            summary = "Müəllifin bütün dərslərini silmək",
+            description = "Müəllifin bütün dərsləri silinir. Parametr tələb olunmur."
+    )
+    @DeleteMapping(path = "/lessons/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTeacherLessons() {
         lessonServiceImpl.deleteTeacherLessons();
-        return ResponseEntity.ok("All lessons deleted!");
     }
 }
 

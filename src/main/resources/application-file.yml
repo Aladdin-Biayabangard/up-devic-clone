@@ -1,0 +1,13 @@
+spring:
+  cache:
+    type: simple
+
+logging:
+  file:
+    path: ./logs
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: info
+    org.hibernate.SQL: DEBUG
+    org.springframework.data.jpa.repository: DEBUG

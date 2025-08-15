@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/up_devic_002}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:1234}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false

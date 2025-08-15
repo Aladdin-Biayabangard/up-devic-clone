@@ -1,0 +1,16 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
+cloud:
+  aws:
+    region: eu-north-1
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: updevic
+
