@@ -2,7 +2,6 @@ package com.team.updevic001.services.impl;
 
 import com.team.updevic001.configuration.mappers.LessonMapper;
 import com.team.updevic001.dao.entities.*;
-import com.team.updevic001.dao.repositories.CommentRepository;
 import com.team.updevic001.dao.repositories.LessonRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.dao.repositories.UserLessonStatusRepository;
@@ -12,7 +11,6 @@ import com.team.updevic001.model.dtos.request.LessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonShortInfoDto;
 import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
-import com.team.updevic001.model.dtos.response.video.LessonVideoResponse;
 import com.team.updevic001.model.enums.TeacherPermission;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.services.interfaces.LessonService;
@@ -40,63 +38,54 @@ public class LessonServiceImpl implements LessonService {
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final AuthHelper authHelper;
     private final UserLessonStatusRepository userLessonStatusRepository;
-    private final CommentRepository commentRepository;
+    private final DeleteService deleteService;
 
 
     @Override
     @Transactional
-    public ResponseLessonDto assignLessonToCourse(Long courseId, LessonDto lessonDto, MultipartFile multipartFile) throws Exception {
+    public void assignLessonToCourse(Long courseId, LessonDto lessonDto, MultipartFile multipartFile) throws Exception {
         Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-        Lesson lesson = modelMapper.map(lessonDto, Lesson.class);
-
-        Course course = courseServiceImpl.findCourseById(courseId);
-
         TeacherCourse teacherCourse = courseServiceImpl.validateAccess(courseId, authenticatedTeacher);
-
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_LESSON)) {
             throw new ForbiddenException("NOT_ALLOWED");
         }
 
+        Lesson lesson = modelMapper.map(lessonDto, Lesson.class);
+        Course course = courseServiceImpl.findCourseById(courseId);
+
         if (multipartFile != null && !multipartFile.isEmpty()) {
             lesson.setCourse(course);
-            Lesson savedLesson = lessonRepository.save(lesson);
-            lessonRepository.findLessonVideoKeyByLessonId(savedLesson.getId()).ifPresent(fileLoadService::deleteFileFromAws);
             String videoOfWhat = "lessonVideo";
             FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, lesson.getId(), videoOfWhat);
             lesson.setVideoUrl(fileUploadResponse.getUrl());
             lesson.setTeacher(authenticatedTeacher);
             lessonRepository.save(lesson);
         }
-
-        return modelMapper.map(lesson, ResponseLessonDto.class);
     }
 
     @Override
     @Transactional
-    public ResponseLessonDto updateLessonInfo(Long lessonId, LessonDto lessonDto) {
+    public void updateLessonInfo(Long lessonId, LessonDto lessonDto) {
         Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
         Lesson lesson = findLessonById(lessonId);
-        if (!lesson.getTeacher().getId().equals(authenticatedTeacher.getId())) {
+        if (!lesson.getTeacher().equals(authenticatedTeacher)) {
             throw new ForbiddenException("NOT_ALLOWED_UPDATE_LESSON");
         }
         modelMapper.map(lessonDto, lesson);
-        return modelMapper.map(lesson, ResponseLessonDto.class);
     }
 
     @Override
-    public String uploadLessonPhoto(Long lessonId, MultipartFile multipartFile) throws IOException {
+    @Transactional
+    public void uploadLessonPhoto(Long lessonId, MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new IllegalArgumentException("Multipart file is empty or null!");
         }
         if (!lessonRepository.existsById(lessonId)) {
             throw new ResourceNotFoundException("Lesson not found these Id: " + lessonId);
         }
-        lessonRepository.findLessonPhotoKeyByLessonId(lessonId).ifPresent(fileLoadService::deleteFileFromAws);
         String photoOfWhat = "lessonPhoto";
         FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, lessonId, photoOfWhat);
         lessonRepository.updateCourseFileInfo(lessonId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
-        return fileUploadResponse.getUrl();
-
     }
 
     @Override
@@ -111,29 +100,11 @@ public class LessonServiceImpl implements LessonService {
         boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), authenticatedUser);
         if (exists || lessonRepository.existsLessonByTeacherAndLesson(teacherServiceImpl.getAuthenticatedTeacher(), lesson)) {
             markLessonAsWatched(authenticatedUser, lesson);
-         //   List<Comment> comments = commentRepository.findCommentByLessonId(lessonId);
+            //   List<Comment> comments = commentRepository.findCommentByLessonId(lessonId);
             return lessonMapper.toDto(lesson);
         } else {
             throw new IllegalArgumentException("ACCESS_DENIED");
         }
-    }
-
-
-    @Override
-    public LessonVideoResponse getVideo(Long lessonId) {
-        Lesson lesson = findLessonById(lessonId);
-        return new LessonVideoResponse(
-                lesson.getTitle(),
-                lesson.getDescription(),
-                lesson.getVideoUrl(),
-                lesson.getDuration()
-        );
-    }
-
-    @Override
-    public Lesson findLessonById(Long lessonId) {
-        return lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found these Id"));
     }
 
     @Override
@@ -145,20 +116,16 @@ public class LessonServiceImpl implements LessonService {
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_LESSON) || !lesson.getTeacher().getId().equals(authenticatedTeacher.getId())) {
             throw new ForbiddenException("NOT_ALLOWED_DELETE_LESSON");
         }
-        deleteLessonAndReferencedData(lesson, lessonId);
+        deleteService.deleteLessonAndReferencedData(lesson, lessonId);
     }
 
     @Override
-    @Transactional
-    public void deleteTeacherLessons() {
-        Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-
-        List<Lesson> lessons = lessonRepository.findLessonsByTeacherId(authenticatedTeacher.getId());
-        lessons.forEach(lesson -> fileLoadService.deleteFileFromAws(lesson.getPhotoKey()));
-        lessonRepository.deleteAll(lessons);
+    public Lesson findLessonById(Long lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found these Id"));
     }
 
-    public void markLessonAsWatched(User user, Lesson lesson) {
+    private void markLessonAsWatched(User user, Lesson lesson) {
         UserLessonStatus userLessonStatus = new UserLessonStatus();
         userLessonStatus.setUser(user);
         userLessonStatus.setLesson(lesson);
@@ -166,11 +133,4 @@ public class LessonServiceImpl implements LessonService {
         userLessonStatusRepository.save(userLessonStatus);
     }
 
-    public void deleteLessonAndReferencedData(Lesson lesson, Long lessonId) {
-        fileLoadService.deleteFileFromAws(lesson.getVideoKey());
-        fileLoadService.deleteFileFromAws(lesson.getPhotoKey());
-        userLessonStatusRepository.deleteUserLessonStatusByLessonsId(List.of(lessonId));
-        commentRepository.deleteCommentsByLessonsId(List.of(lessonId));
-        lessonRepository.delete(lesson);
-    }
 }

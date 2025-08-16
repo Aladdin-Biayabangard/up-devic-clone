@@ -10,6 +10,8 @@ import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.exceptions.PaymentStatusException;
 import com.team.updevic001.exceptions.ResourceNotFoundException;
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 import com.team.updevic001.services.interfaces.CommentService;
@@ -19,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +65,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     @CacheEvict(value = "lessonComments", key = "#lessonId")
     public ResponseCommentDto addCommentToLesson(Long lessonId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
@@ -82,7 +85,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     @Caching(evict = {
             @CacheEvict(value = "courseComments", key = "#result.course?.id", condition = "#result.course != null"),
             @CacheEvict(value = "lessonComments", key = "#result.lesson?.id", condition = "#result.lesson != null")
@@ -100,16 +102,24 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Cacheable(value = "courseComments", key = "#courseId")
-    public List<ResponseCommentDto> getCourseComment(Long courseId) {
-        List<Comment> courseComments = commentRepository.findCommentByCourseId(courseId);
-        return commentMapper.toDto(courseComments);
+    public CustomPage<ResponseCommentDto> getCourseComment(Long courseId, CustomPageRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
+        Page<Comment> comments = commentRepository.findCommentByCourseId(courseId, pageable);
+        return new CustomPage<>(
+                commentMapper.toDto(comments.getContent()),
+                comments.getNumber(),
+                comments.getSize());
     }
 
     @Override
     @Cacheable(value = "lessonComments", key = "#lessonId")
-    public List<ResponseCommentDto> getLessonComment(Long lessonId) {
-        List<Comment> lessonsComment = commentRepository.findCommentByLessonId(lessonId);
-        return commentMapper.toDto(lessonsComment);
+    public CustomPage<ResponseCommentDto> getLessonComment(Long lessonId, CustomPageRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
+        Page<Comment> lessons = commentRepository.findCommentByLessonId(lessonId, pageable);
+        return new CustomPage<>(
+                commentMapper.toDto(lessons.getContent()),
+                lessons.getNumber(),
+                lessons.getSize());
     }
 
     @Override
@@ -128,7 +138,7 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    public Comment findCommentById(Long commentId) {
+    private Comment findCommentById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment with ID " + commentId + " not found"));
     }

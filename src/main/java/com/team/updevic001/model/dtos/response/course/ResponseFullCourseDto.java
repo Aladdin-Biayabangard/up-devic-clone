@@ -1,7 +1,6 @@
 package com.team.updevic001.model.dtos.response.course;
 
-import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
-import com.team.updevic001.model.dtos.response.lesson.ResponseLessonShortInfoDto;
+
 import com.team.updevic001.model.enums.CourseLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,9 +36,9 @@ public class ResponseFullCourseDto {
 
     private double rating;
 
-    private List<ResponseLessonShortInfoDto> lessons;
-
-    private List<ResponseCommentDto> comments;
+//    private List<ResponseLessonShortInfoDto> lessons;
+//
+//    private List<ResponseCommentDto> comments;
 
     private double price;
 

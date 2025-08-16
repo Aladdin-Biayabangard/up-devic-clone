@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -58,13 +57,7 @@ public class CourseServiceImpl implements CourseService {
     private final AuthHelper authHelper;
     private final WishListRepository wishListRepository;
     private final LessonRepository lessonRepository;
-    private final CommentRepository commentRepository;
-    private final TaskRepository taskRepository;
-    private final TestResultRepository testResultRepository;
-    private final UserLessonStatusRepository userLessonStatusRepository;
-    private final UserCourseFeeRepository userCourseFeeRepository;
-    private final StudentCourseRepository studentCourseRepository;
-    private final CertificateRepository certificateRepository;
+    private final DeleteService deleteService;
 
     @Override
     @Transactional
@@ -89,18 +82,18 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public ResponseCourseDto addTeacherToCourse(Long courseId, Long userId) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-        Course course = findCourseById(courseId);
-        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException(Teacher.class));
-
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_TEACHER)) {
             throw new ForbiddenException("NOT_ALLOWED");
         }
 
-        Optional<TeacherCourse> newTeacherToCourseCheck = teacherCourseRepository.findByCourseIdAndTeacher(courseId, newTeacher);
+        Course course = findCourseById(courseId);
 
-        if (newTeacherToCourseCheck.isPresent()) {
+        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException(Teacher.class));
+
+        boolean exists = teacherCourseRepository.existsByCourseIdAndTeacher(courseId, newTeacher);
+        if (exists) {
             throw new AlreadyExistsException("TEACHER_ALREADY_EXISTS_IN_THIS_COURSE");
         } else {
             teacherCourseRepository.save(TeacherCourse.builder()
@@ -131,12 +124,12 @@ public class CourseServiceImpl implements CourseService {
     @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
     public ResponseCourseDto updateCourse(Long courseId, CourseDto courseDto) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
+        TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
+
         Course findCourse = courseRepository
                 .findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found!"));
 
-        TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
         modelMapper.map(courseDto, findCourse);
-
         courseRepository.save(findCourse);
         teacherCourse.setCourse(findCourse);
         teacherCourseRepository.save(teacherCourse);
@@ -150,7 +143,7 @@ public class CourseServiceImpl implements CourseService {
         if (!courseRepository.existsById(courseId)) {
             throw new ResourceNotFoundException("COURSE_NOT_FOUND");
         }
-        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
+//        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
         String photoOfWhat = "coursePhoto";
         FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
         courseRepository.updateCourseFileInfo(courseId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
@@ -176,9 +169,9 @@ public class CourseServiceImpl implements CourseService {
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(Long courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
-        List<Comment> comments = commentRepository.findCommentByCourseId(courseId);
-        return courseMapper.toFullResponse(course, lessons, comments);
+//        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
+//        List<Comment> comments = commentRepository.findCommentByCourseId(courseId);
+        return courseMapper.toFullResponse(course);
     }
 
     @Override
@@ -257,9 +250,8 @@ public class CourseServiceImpl implements CourseService {
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_COURSE)) {
             throw new ForbiddenException("NOT_ALLOWED");
         }
-
         List<Long> allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
-        deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, authenticatedTeacher.getUser());
+        deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, authenticatedTeacher.getUser());
     }
 
     public Course findCourseById(Long courseId) {
@@ -275,24 +267,7 @@ public class CourseServiceImpl implements CourseService {
                 .orElse(0.0);
     }
 
-    private void deleteCourseAndReferencedData(Long courseId, List<Long> lessonIds, User user) {
-        wishListRepository.deleteWishListByCourseIdAndUser(courseId, user);
-        userLessonStatusRepository.deleteUserLessonStatusByLessonsId(lessonIds);
-        commentRepository.deleteCommentsByLessonsId(lessonIds);
-        commentRepository.deleteCommentsByCourseId(courseId);
-        lessonRepository.deleteAllById(lessonIds);
-        certificateRepository.deleteCertificateByCourseId(courseId);
-        courseRatingRepository.deleteRatingByCourseId(courseId);
-        studentCourseRepository.deleteStudentCourseByCourseId(courseId);
-        taskRepository.deleteTaskByCourseId(courseId);
-        teacherCourseRepository.deleteTeacherCourseByCourseId(courseId);
-        userCourseFeeRepository.deleteCourseFeeByCourseId(courseId);
-        testResultRepository.deleteAllByCourseId(courseId);
-        courseRatingRepository.deleteAllByCourseId(courseId);
-        courseRepository.deleteById(courseId);
-    }
-
-    private TeacherCourse validateAccess(Long courseId, Teacher authenticatedTeacher) {
+    protected TeacherCourse validateAccess(Long courseId, Teacher authenticatedTeacher) {
         return teacherCourseRepository.findByCourseIdAndTeacher(courseId, authenticatedTeacher).orElseThrow(() -> new ForbiddenException("NOT_ALLOWED"));
     }
 }

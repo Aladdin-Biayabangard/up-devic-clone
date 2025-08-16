@@ -1,5 +1,7 @@
 package com.team.updevic001.controllers;
 
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 import com.team.updevic001.services.interfaces.CommentService;
@@ -8,51 +10,56 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentServiceImpl;
 
     @Operation(summary = "Kursa coment yazmaq")
-    @PostMapping(path = "{courseId}/course-comment")
+    @PostMapping(path = "courses{courseId}")
+    @ResponseStatus(CREATED)
     public ResponseCommentDto addCommentToCourse(@PathVariable Long courseId,
-                                                                 @RequestBody CommentDto comment) {
+                                                 @RequestBody CommentDto comment) {
         return commentServiceImpl.addCommentToCourse(courseId, comment);
     }
 
     @Operation(summary = "Derse comment yazmaq")
-    @PostMapping(path = "{lessonId}/lesson-comment")
+    @PostMapping(path = "/lessons{lessonId}")
+    @ResponseStatus(CREATED)
     public ResponseCommentDto addCommentToLesson(@PathVariable Long lessonId,
-                                                                 @RequestBody CommentDto comment) {
+                                                 @RequestBody CommentDto comment) {
         return commentServiceImpl.addCommentToLesson(lessonId, comment);
     }
 
     @Operation(summary = "Commenti yenilemek üçün")
     @PutMapping(path = "/{commentId}")
+    @ResponseStatus(NO_CONTENT)
     public ResponseCommentDto updateComment(@PathVariable Long commentId,
-                                                            @RequestBody CommentDto commentDto) {
+                                            @RequestBody CommentDto commentDto) {
         return commentServiceImpl.updateComment(commentId, commentDto);
     }
 
     @Operation(summary = "Kursun bütün kommnentleri")
-    @GetMapping(path = "/{courseId}/course")
-    public List<ResponseCommentDto> getCourseComment(@PathVariable Long courseId) {
-        return commentServiceImpl.getCourseComment(courseId);
+    @GetMapping(path = "courses/{courseId}")
+    public CustomPage<ResponseCommentDto> getCourseComment(@PathVariable Long courseId, CustomPageRequest request) {
+        return commentServiceImpl.getCourseComment(courseId, request);
     }
 
     @Operation(summary = "Dersin butun kommentleri")
-    @GetMapping(path = "/{lessonId}/lesson")
-    public List<ResponseCommentDto> getLessonComment(@PathVariable Long lessonId) {
-        return commentServiceImpl.getLessonComment(lessonId);
+    @GetMapping(path = "lessons/{lessonId}")
+    public CustomPage<ResponseCommentDto> getLessonComment(@PathVariable Long lessonId, CustomPageRequest request) {
+        return commentServiceImpl.getLessonComment(lessonId, request);
     }
 
     @Operation(summary = "Commenti silmek")
     @DeleteMapping(path = "/{commentId}")
+    @ResponseStatus(NO_CONTENT)
     public void deleteComment(@PathVariable Long commentId) {
         commentServiceImpl.deleteComment(commentId);
     }

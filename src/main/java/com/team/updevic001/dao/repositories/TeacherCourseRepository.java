@@ -30,6 +30,8 @@ public interface TeacherCourseRepository extends JpaRepository<TeacherCourse, Lo
 
     Optional<TeacherCourse> findByCourseIdAndTeacher(Long courseId, Teacher authenticatedTeacher);
 
+    boolean existsByCourseIdAndTeacher(Long courseId, Teacher authenticatedTeacher);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM TeacherCourse tc WHERE tc.course.id = :id")

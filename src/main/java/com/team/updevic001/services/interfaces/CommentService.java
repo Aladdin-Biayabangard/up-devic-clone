@@ -1,9 +1,9 @@
 package com.team.updevic001.services.interfaces;
 
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
-
-import java.util.List;
 
 public interface CommentService {
 
@@ -13,9 +13,9 @@ public interface CommentService {
 
     ResponseCommentDto updateComment(Long commentId, CommentDto commentDto);
 
-    List<ResponseCommentDto> getCourseComment(Long courseId);
+    CustomPage<ResponseCommentDto> getCourseComment(Long courseId, CustomPageRequest request);
 
-    List<ResponseCommentDto> getLessonComment(Long lessonId);
+    CustomPage<ResponseCommentDto> getLessonComment(Long lessonId, CustomPageRequest request);
 
     void deleteComment(Long commentId);
 }

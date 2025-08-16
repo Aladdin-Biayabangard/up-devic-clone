@@ -1,6 +1,8 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,9 +12,9 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findCommentByCourseId(Long id);
+    Page<Comment> findCommentByCourseId(Long id, Pageable pageable);
 
-    List<Comment> findCommentByLessonId(Long id);
+    Page<Comment> findCommentByLessonId(Long id,Pageable pageable);
 
     @Modifying
     @Transactional
