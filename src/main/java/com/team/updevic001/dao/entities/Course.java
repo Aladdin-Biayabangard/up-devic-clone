@@ -5,6 +5,7 @@ import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldNameConstants
 @Builder
 @Getter
 @Setter
@@ -61,22 +63,6 @@ public class Course {
     @JoinColumn(name = "certificate_id", referencedColumnName = "id")
     private Certificate certificate;
 
-
-    // Bir çox TeacherCourse ilə əlaqə
-//    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<TeacherCourse> teacherCourses = new ArrayList<>();
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<UserCourseFee> userCourseFees;
-//
-//    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<TestResult> testResults = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<CourseRating> courseRatings;
-
-
 }

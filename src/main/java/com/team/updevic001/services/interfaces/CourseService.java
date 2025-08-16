@@ -1,5 +1,8 @@
 package com.team.updevic001.services.interfaces;
 
+import com.team.updevic001.criteria.CourseSearchCriteria;
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCategoryDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
@@ -21,38 +24,29 @@ public interface CourseService {
 
     ResponseCourseDto addTeacherToCourse(Long courseId, Long userId);
 
+    void addToWishList(Long courseId);
+
     ResponseCourseDto updateCourse(Long courseId, CourseDto courseDto);
 
-    String uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException;
+    void uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException;
 
     void updateRatingCourse(Long courseId, int rating);
 
-    void addToWishList(Long courseId);
-
-    List<ResponseCourseShortInfoDto> getWishList();
-
     ResponseFullCourseDto getCourse(Long courseId);
 
-    List<ResponseCourseShortInfoDto> getCourses(Long id, int limit);
+    CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
+                                                  CustomPageRequest request);
+
+    CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType, CustomPageRequest request);
 
     List<ResponseCategoryDto> getCategories();
 
+    CustomPage<ResponseCourseShortInfoDto> getWishList(CustomPageRequest request);
+
     List<ResponseCourseShortInfoDto> getMost5PopularCourses();
-
-    List<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType);
-
-    List<ResponseCourseShortInfoDto> findCourseByCriteria(CourseLevel level,
-                                                          BigDecimal minPrice,
-                                                          BigDecimal maxPrice,
-                                                          CourseCategoryType courseCategoryType);
-
-    List<ResponseCourseShortInfoDto> searchCourse(String keyword);
-
-    List<ResponseCourseShortInfoDto> filterAndSortCourses(SortType sortBy, SortDirection direction);
 
     void removeFromWishList(Long courseId);
 
     void deleteCourse(Long courseId);
-
 
 }

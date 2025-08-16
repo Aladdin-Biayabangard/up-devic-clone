@@ -12,6 +12,6 @@ public class ResponseCategoryDto {
 
     private CourseCategoryType category;
 
-    private Integer courseCount;
+    private long courseCount;
 
 }
