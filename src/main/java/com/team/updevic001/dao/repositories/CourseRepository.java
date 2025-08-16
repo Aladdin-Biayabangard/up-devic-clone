@@ -23,9 +23,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
 
     List<Course> findCourseByHeadTeacher(Teacher teacher);
 
-    @Query("SELECT c.photoKey FROM Course c WHERE c.id=:id ")
-    Optional<String> findProfilePhotoKeyBy(Long id);
-
     @EntityGraph(attributePaths = "tasks")
     Optional<Course> findCourseById(Long id);
 

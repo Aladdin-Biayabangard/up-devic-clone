@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "courseComments", key = "#courseId")
+    @CacheEvict(value = "courseComments", key = "{#courseId, 0}")
     public ResponseCommentDto addCommentToCourse(Long courseId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @CacheEvict(value = "lessonComments", key = "#lessonId")
+    @CacheEvict(value = "lessonComments", key = "{#lessonId, 0}")
     public ResponseCommentDto addCommentToLesson(Long lessonId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Lesson lesson = lessonServiceImpl.findLessonById(lessonId);
@@ -86,8 +86,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "courseComments", key = "#result.course?.id", condition = "#result.course != null"),
-            @CacheEvict(value = "lessonComments", key = "#result.lesson?.id", condition = "#result.lesson != null")
+            @CacheEvict(value = "courseComments", key = "{#result.course?.id, 0}", condition = "#result.course != null"),
+            @CacheEvict(value = "lessonComments", key = "{#result.lesson?.id, 0}", condition = "#result.lesson != null")
     })
     public ResponseCommentDto updateComment(Long commentId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
@@ -101,7 +101,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Cacheable(value = "courseComments", key = "#courseId")
+    @Cacheable(value = "courseComments", key = "{#courseId, #request.page, #request.size}")
     public CustomPage<ResponseCommentDto> getCourseComment(Long courseId, CustomPageRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
         Page<Comment> comments = commentRepository.findCommentByCourseId(courseId, pageable);
@@ -112,7 +112,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Cacheable(value = "lessonComments", key = "#lessonId")
+    @Cacheable(value = "lessonComments", key = "{#lessonId, #request.page, #request.size}")
     public CustomPage<ResponseCommentDto> getLessonComment(Long lessonId, CustomPageRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
         Page<Comment> lessons = commentRepository.findCommentByLessonId(lessonId, pageable);
@@ -125,8 +125,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "courseComments", key = "#result.course?.id", condition = "#result.course != null"),
-            @CacheEvict(value = "lessonComments", key = "#result.lesson?.id", condition = "#result.lesson != null")
+            @CacheEvict(value = "courseComments", key = "{#result.course?.id, 0}", condition = "#result.course != null"),
+            @CacheEvict(value = "lessonComments", key = "{#result.lesson?.id, 0}", condition = "#result.lesson != null")
     })
     public void deleteComment(Long commentId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
