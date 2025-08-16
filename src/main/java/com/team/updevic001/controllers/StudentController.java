@@ -1,7 +1,6 @@
 package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
-import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.services.interfaces.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -46,19 +45,3 @@ public class StudentController {
     }
 }
 
-
-
-//    @Operation(summary = "Get all lessons of a student")
-//    @GetMapping("/lessons")
-//    public ResponseEntity<List<ResponseFullCourseDto>> getStudentLessons() {
-//        List<ResponseFullCourseDto> lessons = studentService.getStudentLessons();
-//        return ResponseEntity.ok(lessons);
-//    }
-
-
-//    @Operation(summary = "Enroll a student in a course")
-//    @PostMapping("/enroll")
-//    public ResponseEntity<String> enrollInCourse(@RequestParam String courseId) {
-//        studentService.enrollInCourse(courseId);
-//        return ResponseEntity.ok("Student successfully enrolled in the course.");
-//    }
