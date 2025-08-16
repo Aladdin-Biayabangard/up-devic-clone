@@ -27,7 +27,7 @@ public class DeleteService {
     private final CertificateRepository certificateRepository;
     private final FileLoadServiceImpl fileLoadService;
 
-    public void deleteCourseAndReferencedData(Long courseId, List<Long> lessonIds, User user) {
+    public void deleteCourseAndReferencedData(String courseId, List<String> lessonIds, User user) {
         wishListRepository.deleteWishListByCourseIdAndUser(courseId, user);
         userLessonStatusRepository.deleteUserLessonStatusByLessonsId(lessonIds);
         commentRepository.deleteCommentsByLessonsId(lessonIds);
@@ -44,7 +44,7 @@ public class DeleteService {
         courseRepository.deleteById(courseId);
     }
 
-    public void deleteLessonAndReferencedData(Lesson lesson, Long lessonId) {
+    public void deleteLessonAndReferencedData(Lesson lesson, String lessonId) {
         fileLoadService.deleteFileFromAws(lesson.getVideoKey());
         fileLoadService.deleteFileFromAws(lesson.getPhotoKey());
         userLessonStatusRepository.deleteUserLessonStatusByLessonsId(List.of(lessonId));

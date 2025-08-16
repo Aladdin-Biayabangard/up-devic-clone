@@ -13,7 +13,6 @@ import com.team.updevic001.services.interfaces.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +41,7 @@ public class CourseController {
 
     @Operation(summary = "Mövcud kursa müəllif əlavə etmək")
     @PostMapping(path = "/{courseId}/teachers/{userId}")
-    public ResponseCourseDto addTeacherToCourse(@PathVariable Long courseId,
+    public ResponseCourseDto addTeacherToCourse(@PathVariable String courseId,
                                                 @PathVariable Long userId) {
         return courseService.addTeacherToCourse(courseId, userId);
     }
@@ -50,22 +49,21 @@ public class CourseController {
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")
     @PostMapping(path = "/{courseId}/wish")
     @ResponseStatus(NO_CONTENT)
-    public void addToWishList(@PathVariable Long courseId) {
+    public void addToWishList(@PathVariable String courseId) {
         courseService.addToWishList(courseId);
     }
 
     @Operation(summary = "Kursun detallarını yeniləmək")
     @PutMapping(path = "/{courseId}")
     @ResponseStatus(NO_CONTENT)
-    public ResponseCourseDto updateCourse(@PathVariable Long courseId,
+    public ResponseCourseDto updateCourse(@PathVariable String courseId,
                                           @RequestBody CourseDto courseDto) {
         return courseService.updateCourse(courseId, courseDto);
     }
 
     @Operation(summary = "Kurs şəkli yükləmək")
     @PatchMapping(path = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public void uploadCoursePhoto(@RequestParam Long courseId,
+    public void uploadCoursePhoto(@RequestParam String courseId,
                                   @RequestPart MultipartFile multipartFile) throws IOException {
         courseService.uploadCoursePhoto(courseId, multipartFile);
     }
@@ -73,14 +71,14 @@ public class CourseController {
     @Operation(summary = "Kursun ratingini yeniləmək")
     @PatchMapping(path = "/{courseId}/rating")
     @ResponseStatus(NO_CONTENT)
-    public void updateRatingCourse(@PathVariable Long courseId,
+    public void updateRatingCourse(@PathVariable String courseId,
                                    @RequestParam int rating) {
         courseService.updateRatingCourse(courseId, rating);
     }
 
     @Operation(summary = "Kursun uzerine vurduqda full data gelir")
     @GetMapping("{courseId}")
-    public ResponseFullCourseDto getCourse(@PathVariable Long courseId) {
+    public ResponseFullCourseDto getCourse(@PathVariable String courseId) {
         return courseService.getCourse(courseId);
     }
 
@@ -118,13 +116,13 @@ public class CourseController {
     }
 
     @DeleteMapping(path = "/{courseId}/wish")
-    void removeFromWishList(@PathVariable Long courseId) {
+    void removeFromWishList(@PathVariable String courseId) {
         courseService.removeFromWishList(courseId);
     }
 
     @Operation(summary = "Kursu wish listden silir")
     @DeleteMapping(path = "{courseId}")
-    public void deleteCourse(@PathVariable Long courseId) {
+    public void deleteCourse(@PathVariable String courseId) {
         courseService.deleteCourse(courseId);
     }
 }

@@ -105,6 +105,3 @@ public class CourseMapper {
         return courses.stream().map(this::courseDto).toList();
     }
 }
-//    public List<ResponseFullCourseDto> toFullResponse(List<Course> courses) {
-//        return courses.stream().map(this::toFullResponse).toList();
-//    }

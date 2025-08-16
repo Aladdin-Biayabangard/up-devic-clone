@@ -11,18 +11,18 @@ import java.util.List;
 
 public interface LessonService {
 
-    void assignLessonToCourse(Long courseId, LessonDto lessonDto, MultipartFile file) throws Exception;
+    void assignLessonToCourse(String courseId, LessonDto lessonDto, MultipartFile file) throws Exception;
 
-    void updateLessonInfo(Long lessonId, LessonDto lessonDto);
+    void updateLessonInfo(String lessonId, LessonDto lessonDto);
 
-    void uploadLessonPhoto(Long lessonId, MultipartFile multipartFile) throws IOException;
+    void uploadLessonPhoto(String lessonId, MultipartFile multipartFile) throws IOException;
 
-    ResponseLessonDto getFullLessonByLessonId(Long lessonId);
+    ResponseLessonDto getFullLessonByLessonId(String lessonId);
 
-    List<ResponseLessonShortInfoDto> getShortLessonsByCourse(Long courseId);
+    List<ResponseLessonShortInfoDto> getShortLessonsByCourse(String courseId);
 
-    void deleteLesson(Long lessonId);
+    void deleteLesson(String lessonId);
 
-    Lesson findLessonById(Long lessonId);
+    Lesson findLessonById(String lessonId);
 
 }

@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecificationExecutor<Course> {
+public interface CourseRepository extends JpaRepository<Course, String>, JpaSpecificationExecutor<Course> {
 
     Page<Course> findCourseByCourseCategoryType(CourseCategoryType courseCategoryType, Pageable pageable);
 
@@ -24,10 +24,10 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
     List<Course> findCourseByHeadTeacher(Teacher teacher);
 
     @EntityGraph(attributePaths = "tasks")
-    Optional<Course> findCourseById(Long id);
+    Optional<Course> findCourseById(String id);
 
     @Transactional
     @Modifying
     @Query("UPDATE Course c SET c.photo_url=:photo_url,c.photoKey=:photoKey WHERE c.id=:id ")
-    void updateCourseFileInfo(Long id, @Param("photoKey") String fileKey, @Param("photo_url") String fileUrl);
+    void updateCourseFileInfo(String id, @Param("photoKey") String fileKey, @Param("photo_url") String fileUrl);
 }

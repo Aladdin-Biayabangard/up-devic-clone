@@ -17,7 +17,7 @@ public interface WishListRepository extends CrudRepository<WishList, Long> {
 
     @Transactional
     @Modifying
-    void deleteWishListByCourseIdAndUser(Long courseId, User user);
+    void deleteWishListByCourseIdAndUser(String courseId, User user);
 
     boolean existsWishListByCourseAndUser(Course course, User authenticatedUser);
 }

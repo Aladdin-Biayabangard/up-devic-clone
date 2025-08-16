@@ -17,7 +17,7 @@ public interface TeacherCourseRepository extends JpaRepository<TeacherCourse, Lo
 
 
     @Query("SELECT tc.course.id FROM TeacherCourse tc WHERE tc.teacher = :teacher")
-    List<Long> findAllCourseIdsByTeacher(@Param("teacher") Teacher teacher);
+    List<String> findAllCourseIdsByTeacher(@Param("teacher") Teacher teacher);
 
 
     @Query("SELECT COUNT(tc.teacher) FROM TeacherCourse tc WHERE tc.course=:course")
@@ -28,12 +28,12 @@ public interface TeacherCourseRepository extends JpaRepository<TeacherCourse, Lo
     List<TeacherNameDto> findTeacherNamesByCourse(@Param("course") Course course);
 
 
-    Optional<TeacherCourse> findByCourseIdAndTeacher(Long courseId, Teacher authenticatedTeacher);
+    Optional<TeacherCourse> findByCourseIdAndTeacher(String courseId, Teacher authenticatedTeacher);
 
-    boolean existsByCourseIdAndTeacher(Long courseId, Teacher authenticatedTeacher);
+    boolean existsByCourseIdAndTeacher(String courseId, Teacher authenticatedTeacher);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM TeacherCourse tc WHERE tc.course.id = :id")
-    void deleteTeacherCourseByCourseId(Long id);
+    void deleteTeacherCourseByCourseId(String id);
 }

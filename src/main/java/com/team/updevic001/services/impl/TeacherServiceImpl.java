@@ -48,7 +48,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherMainInfo getInfo() {
         Teacher teacher = getAuthenticatedTeacher();
-        List<Long> allCourseIdsByTeacher = teacherCourseRepository.findAllCourseIdsByTeacher(teacher);
+        List<String> allCourseIdsByTeacher = teacherCourseRepository.findAllCourseIdsByTeacher(teacher);
         int courseCount = allCourseIdsByTeacher.size();
         int studentCount = studentCourseRepository.countAllStudentsByCourseIds(allCourseIdsByTeacher);
         return new TeacherMainInfo(courseCount, studentCount, teacher.getBalance());

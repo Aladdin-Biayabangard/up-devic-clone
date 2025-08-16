@@ -24,7 +24,7 @@ public class CommentController {
     @Operation(summary = "Kursa coment yazmaq")
     @PostMapping(path = "courses{courseId}")
     @ResponseStatus(CREATED)
-    public ResponseCommentDto addCommentToCourse(@PathVariable Long courseId,
+    public ResponseCommentDto addCommentToCourse(@PathVariable String courseId,
                                                  @RequestBody CommentDto comment) {
         return commentServiceImpl.addCommentToCourse(courseId, comment);
     }
@@ -32,7 +32,7 @@ public class CommentController {
     @Operation(summary = "Derse comment yazmaq")
     @PostMapping(path = "/lessons{lessonId}")
     @ResponseStatus(CREATED)
-    public ResponseCommentDto addCommentToLesson(@PathVariable Long lessonId,
+    public ResponseCommentDto addCommentToLesson(@PathVariable String lessonId,
                                                  @RequestBody CommentDto comment) {
         return commentServiceImpl.addCommentToLesson(lessonId, comment);
     }
@@ -47,13 +47,13 @@ public class CommentController {
 
     @Operation(summary = "Kursun bütün kommnentleri")
     @GetMapping(path = "courses/{courseId}")
-    public CustomPage<ResponseCommentDto> getCourseComment(@PathVariable Long courseId, CustomPageRequest request) {
+    public CustomPage<ResponseCommentDto> getCourseComment(@PathVariable String courseId, CustomPageRequest request) {
         return commentServiceImpl.getCourseComment(courseId, request);
     }
 
     @Operation(summary = "Dersin butun kommentleri")
     @GetMapping(path = "lessons/{lessonId}")
-    public CustomPage<ResponseCommentDto> getLessonComment(@PathVariable Long lessonId, CustomPageRequest request) {
+    public CustomPage<ResponseCommentDto> getLessonComment(@PathVariable String lessonId, CustomPageRequest request) {
         return commentServiceImpl.getLessonComment(lessonId, request);
     }
 

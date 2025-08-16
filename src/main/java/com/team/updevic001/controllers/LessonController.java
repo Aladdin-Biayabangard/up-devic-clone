@@ -30,7 +30,7 @@ public class LessonController {
     @PostMapping(path = "courses/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(CREATED)
     public void assignLessonToCourse(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             @ModelAttribute("lesson") LessonDto lessonDto,
             @RequestPart("file") final MultipartFile file) throws Exception {
         lessonServiceImpl.assignLessonToCourse(courseId, lessonDto, file);
@@ -39,7 +39,7 @@ public class LessonController {
     @Operation(summary = "Dərsin məlumatlarını yeniləmək")
     @PutMapping("/{lessonId}")
     @ResponseStatus(NO_CONTENT)
-    public void updateLessonInfo(@PathVariable Long lessonId,
+    public void updateLessonInfo(@PathVariable String lessonId,
                                  @Valid @RequestBody LessonDto lessonDto) {
         lessonServiceImpl.updateLessonInfo(lessonId, lessonDto);
     }
@@ -47,45 +47,28 @@ public class LessonController {
     @Operation(summary = "Dərsin şəkilini yükləmək")
     @PatchMapping(value = "{lessonId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(NO_CONTENT)
-    public void uploadLessonPhoto(@PathVariable Long lessonId,
+    public void uploadLessonPhoto(@PathVariable String lessonId,
                                   @RequestPart MultipartFile multipartFile) throws IOException {
         lessonServiceImpl.uploadLessonPhoto(lessonId, multipartFile);
     }
 
     @Operation(summary = "Kursdakı bütün dərslərin qısa məlumatlarını gətirmək")
     @GetMapping(path = "courses/{courseId}")
-    public List<ResponseLessonShortInfoDto> getLessonsByCourse(@PathVariable Long courseId) {
+    public List<ResponseLessonShortInfoDto> getLessonsByCourse(@PathVariable String courseId) {
         return lessonServiceImpl.getShortLessonsByCourse(courseId);
     }
 
     @Operation(summary = "Dərsin tam məlumatını əldə etmək")
     @GetMapping(path = "/{lessonId}")
-    public ResponseLessonDto getFullLessonByLessonId(@PathVariable Long lessonId) {
+    public ResponseLessonDto getFullLessonByLessonId(@PathVariable String lessonId) {
         return lessonServiceImpl.getFullLessonByLessonId(lessonId);
     }
 
     @Operation(summary = "Dərsi silmək")
     @DeleteMapping(path = "/{lessonId}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteLesson(@PathVariable Long lessonId) {
+    public void deleteLesson(@PathVariable String lessonId) {
         lessonServiceImpl.deleteLesson(lessonId);
     }
 
 }
-
-
-//    @Operation(summary = "See all of the teacher's lessons")
-//    @GetMapping(path = "teacher-lessons")
-//    public ResponseEntity<List<ResponseLessonDto>> getTeacherLessons() {
-//        List<ResponseLessonDto> teacherLessons = lessonServiceImpl.getTeacherLessons();
-//        return ResponseEntity.ok(teacherLessons);
-//    }
-
-
-//    @GetMapping("/{lessonId}/video")
-//    public ResponseEntity<LessonVideoResponse> getLessonWithVideo(
-//            @PathVariable String lessonId) {
-//
-//        LessonVideoResponse response = lessonServiceImpl.getVideo(lessonId);
-//        return ResponseEntity.ok(response);
-//    }

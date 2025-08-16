@@ -43,7 +43,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @CacheEvict(value = "courseComments", key = "{#courseId, 0}")
-    public ResponseCommentDto addCommentToCourse(Long courseId, CommentDto commentDto) {
+    public ResponseCommentDto addCommentToCourse(String courseId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
 
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @CacheEvict(value = "lessonComments", key = "{#lessonId, 0}")
-    public ResponseCommentDto addCommentToLesson(Long lessonId, CommentDto commentDto) {
+    public ResponseCommentDto addCommentToLesson(String lessonId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Lesson lesson = lessonServiceImpl.findLessonById(lessonId);
         boolean isTeacher = lesson.getTeacher().equals(teacherService.getAuthenticatedTeacher());
@@ -102,7 +102,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Cacheable(value = "courseComments", key = "{#courseId, #request.page, #request.size}")
-    public CustomPage<ResponseCommentDto> getCourseComment(Long courseId, CustomPageRequest request) {
+    public CustomPage<ResponseCommentDto> getCourseComment(String courseId, CustomPageRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
         Page<Comment> comments = commentRepository.findCommentByCourseId(courseId, pageable);
         return new CustomPage<>(
@@ -113,7 +113,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Cacheable(value = "lessonComments", key = "{#lessonId, #request.page, #request.size}")
-    public CustomPage<ResponseCommentDto> getLessonComment(Long lessonId, CustomPageRequest request) {
+    public CustomPage<ResponseCommentDto> getLessonComment(String lessonId, CustomPageRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "id"));
         Page<Comment> lessons = commentRepository.findCommentByLessonId(lessonId, pageable);
         return new CustomPage<>(

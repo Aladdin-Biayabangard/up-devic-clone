@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 public interface UserCourseFeeRepository extends JpaRepository<UserCourseFee, Long> {
 
@@ -17,5 +16,5 @@ public interface UserCourseFeeRepository extends JpaRepository<UserCourseFee, Lo
     @Modifying
     @Transactional
     @Query("DELETE FROM UserCourseFee fe WHERE fe.course.id = :id")
-    void deleteCourseFeeByCourseId(Long id);
+    void deleteCourseFeeByCourseId(String id);
 }

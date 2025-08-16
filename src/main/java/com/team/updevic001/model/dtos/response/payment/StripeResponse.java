@@ -13,7 +13,7 @@ public class StripeResponse {
 
     private String status;
     private String message;
-    private Long courseId;
+    private String courseId;
     private String sessionId;
     private String sessionUrl;
 }

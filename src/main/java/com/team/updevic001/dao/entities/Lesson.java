@@ -3,13 +3,10 @@ package com.team.updevic001.dao.entities;
  
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
@@ -22,8 +19,7 @@ import java.util.List;
 public class Lesson {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -53,20 +49,10 @@ public class Lesson {
     @JoinColumn(name = "course_id", nullable = false)
     @JsonBackReference
     private Course course;
-//
-//    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonManagedReference
-//    private List<Comment> comments = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "lesson", orphanRemoval = true, cascade = CascadeType.ALL)
-//    private List<UserLessonStatus> userLessonStatuses = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     @JsonIgnore
     private Teacher teacher;
-
-
-    
 
 }

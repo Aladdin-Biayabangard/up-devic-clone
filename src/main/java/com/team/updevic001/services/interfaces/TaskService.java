@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface TaskService {
 
-    void createTask(Long courseId, TaskDto taskDto);
+    void createTask(String courseId, TaskDto taskDto);
 
-    void checkAnswer(Long courseId, Long taskId, AnswerDto answerDto);
+    void checkAnswer(String courseId, Long taskId, AnswerDto answerDto);
 
-    List<ResponseTaskDto> getTasks(Long courseId);
+    List<ResponseTaskDto> getTasks(String courseId);
 }
 
 

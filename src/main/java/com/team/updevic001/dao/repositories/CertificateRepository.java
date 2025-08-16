@@ -11,5 +11,5 @@ public interface CertificateRepository extends CrudRepository<Certificate,Long> 
     @Modifying
     @Transactional
     @Query("DELETE FROM Certificate c WHERE c.course.id = :id")
-    void deleteCertificateByCourseId(Long id);
+    void deleteCertificateByCourseId(String id);
 }

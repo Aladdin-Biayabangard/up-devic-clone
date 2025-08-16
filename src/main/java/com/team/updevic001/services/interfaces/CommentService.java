@@ -7,15 +7,15 @@ import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 
 public interface CommentService {
 
-    ResponseCommentDto addCommentToCourse(Long courseId, CommentDto commentDto);
+    ResponseCommentDto addCommentToCourse(String courseId, CommentDto commentDto);
 
-    ResponseCommentDto addCommentToLesson(Long lessonId, CommentDto commentDto);
+    ResponseCommentDto addCommentToLesson(String lessonId, CommentDto commentDto);
 
     ResponseCommentDto updateComment(Long commentId, CommentDto commentDto);
 
-    CustomPage<ResponseCommentDto> getCourseComment(Long courseId, CustomPageRequest request);
+    CustomPage<ResponseCommentDto> getCourseComment(String courseId, CustomPageRequest request);
 
-    CustomPage<ResponseCommentDto> getLessonComment(Long lessonId, CustomPageRequest request);
+    CustomPage<ResponseCommentDto> getLessonComment(String lessonId, CustomPageRequest request);
 
     void deleteComment(Long commentId);
 }

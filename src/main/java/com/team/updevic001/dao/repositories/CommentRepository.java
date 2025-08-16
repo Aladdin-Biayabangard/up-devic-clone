@@ -12,17 +12,17 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findCommentByCourseId(Long id, Pageable pageable);
+    Page<Comment> findCommentByCourseId(String id, Pageable pageable);
 
-    Page<Comment> findCommentByLessonId(Long id,Pageable pageable);
+    Page<Comment> findCommentByLessonId(String id, Pageable pageable);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Comment c WHERE c.lesson.id IN :ids")
-    void deleteCommentsByLessonsId(List<Long> ids);
+    void deleteCommentsByLessonsId(List<String> ids);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Comment c WHERE c.course.id=:id")
-    void deleteCommentsByCourseId(Long id);
+    void deleteCommentsByCourseId(String id);
 }

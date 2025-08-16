@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.team.updevic001.utility.IDGenerator.normalizeString;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -66,6 +68,7 @@ public class CourseServiceImpl implements CourseService {
                                           CourseDto courseDto) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         Course course = modelMapper.map(courseDto, Course.class);
+        course.setId(normalizeString(course.getTitle()));
         course.setCourseCategoryType(courseCategoryType);
         course.setHeadTeacher(authenticatedTeacher);
         courseRepository.save(course);
@@ -80,7 +83,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public ResponseCourseDto addTeacherToCourse(Long courseId, Long userId) {
+    public ResponseCourseDto addTeacherToCourse(String courseId, Long userId) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
@@ -106,7 +109,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void addToWishList(Long courseId) {
+    public void addToWishList(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = findCourseById(courseId);
         if (wishListRepository.existsWishListByCourseAndUser(course, authenticatedUser)) {
@@ -122,7 +125,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
-    public ResponseCourseDto updateCourse(Long courseId, CourseDto courseDto) {
+    public ResponseCourseDto updateCourse(String courseId, CourseDto courseDto) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
@@ -136,7 +139,7 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.courseDto(findCourse);
     }
 
-    public void uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException {
+    public void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new IllegalArgumentException("Multipart file is empty or null!");
         }
@@ -150,7 +153,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void updateRatingCourse(Long courseId, int rating) {
+    public void updateRatingCourse(String courseId, int rating) {
         User user = authHelper.getAuthenticatedUser();
         Course course = findCourseById(courseId);
         CourseRating courseRating = courseRatingRepository.findCourseRatingByCourseAndUser(course, user)
@@ -167,7 +170,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
-    public ResponseFullCourseDto getCourse(Long courseId) {
+    public ResponseFullCourseDto getCourse(String courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 //        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
 //        List<Comment> comments = commentRepository.findCommentByCourseId(courseId);
@@ -236,7 +239,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void removeFromWishList(Long courseId) {
+    public void removeFromWishList(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         wishListRepository.deleteWishListByCourseIdAndUser(courseId, authenticatedUser);
     }
@@ -244,17 +247,17 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
     @Transactional
-    public void deleteCourse(Long courseId) {
+    public void deleteCourse(String courseId) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_COURSE)) {
             throw new ForbiddenException("NOT_ALLOWED");
         }
-        List<Long> allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
+        List<String> allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
         deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, authenticatedTeacher.getUser());
     }
 
-    public Course findCourseById(Long courseId) {
+    public Course findCourseById(String courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("COURSE_NOT_FOUND"));
     }
@@ -267,7 +270,7 @@ public class CourseServiceImpl implements CourseService {
                 .orElse(0.0);
     }
 
-    protected TeacherCourse validateAccess(Long courseId, Teacher authenticatedTeacher) {
+    protected TeacherCourse validateAccess(String courseId, Teacher authenticatedTeacher) {
         return teacherCourseRepository.findByCourseIdAndTeacher(courseId, authenticatedTeacher).orElseThrow(() -> new ForbiddenException("NOT_ALLOWED"));
     }
 }

@@ -18,17 +18,17 @@ public interface CourseService {
 
     ResponseCourseDto createCourse(CourseCategoryType courseCategoryType, CourseDto courseDto);
 
-    ResponseCourseDto addTeacherToCourse(Long courseId, Long userId);
+    ResponseCourseDto addTeacherToCourse(String courseId, Long userId);
 
-    void addToWishList(Long courseId);
+    void addToWishList(String courseId);
 
-    ResponseCourseDto updateCourse(Long courseId, CourseDto courseDto);
+    ResponseCourseDto updateCourse(String courseId, CourseDto courseDto);
 
-    void uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException;
+    void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException;
 
-    void updateRatingCourse(Long courseId, int rating);
+    void updateRatingCourse(String courseId, int rating);
 
-    ResponseFullCourseDto getCourse(Long courseId);
+    ResponseFullCourseDto getCourse(String courseId);
 
     CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
                                                   CustomPageRequest request);
@@ -41,8 +41,8 @@ public interface CourseService {
 
     List<ResponseCourseShortInfoDto> getMost5PopularCourses();
 
-    void removeFromWishList(Long courseId);
+    void removeFromWishList(String courseId);
 
-    void deleteCourse(Long courseId);
+    void deleteCourse(String courseId);
 
 }

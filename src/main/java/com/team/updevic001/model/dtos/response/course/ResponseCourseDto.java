@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseCourseDto {
 
-    private Long courseId;
+    private String courseId;
 
     private CourseCategoryType category;
 

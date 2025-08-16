@@ -20,14 +20,14 @@ public class StudentController {
 
     @Operation(summary = "Unenroll a student from a course")
     @DeleteMapping("/unenroll")
-    public ResponseEntity<String> unenrollFromCourse(@RequestParam Long courseId) {
+    public ResponseEntity<String> unenrollFromCourse(@RequestParam String courseId) {
         studentService.unenrollUserFromCourse(courseId);
         return ResponseEntity.ok("Student successfully unenrolled from the course.");
     }
 
     @Operation(summary = "Get a student's course information")
     @GetMapping
-    public ResponseEntity<ResponseCourseShortInfoDto> getStudentCourse(@RequestParam Long courseId) {
+    public ResponseEntity<ResponseCourseShortInfoDto> getStudentCourse(@RequestParam String courseId) {
         ResponseCourseShortInfoDto studentCourse = studentService.getStudentCourse(courseId);
         return ResponseEntity.ok(studentCourse);
     }
