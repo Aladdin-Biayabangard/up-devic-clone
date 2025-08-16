@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseLessonShortInfoDto {
 
-    private Long lessonId;
+    private String lessonId;
 
     private String photoUrl;
 
