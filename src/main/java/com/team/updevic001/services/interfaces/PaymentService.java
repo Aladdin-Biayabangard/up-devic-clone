@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public interface PaymentService {
     StripeResponse checkoutProducts(PaymentRequest request);
 
-    void paymentStatus(Long courseId);
+    void paymentStatus(String courseId);
 
     BigDecimal teacherBalance();
 

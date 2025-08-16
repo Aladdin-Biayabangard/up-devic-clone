@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserPassword(ChangePasswordDto passwordDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         if (!passwordEncoder.matches(passwordDto.getCurrentPassword(), authenticatedUser.getPassword()) ||
-            !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
+                !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
             throw new IllegalArgumentException("Password incorrect!");
         }
         authenticatedUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
         List<String> skills = skillRepository.findSkillByUserProfile(userProfile);
         List<String> socialLinks = socialLinkRepository.findSocialLinkNameByUserProfile(userProfile);
 
-        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile,skills,socialLinks);
+        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile, skills, socialLinks);
     }
 
     @Override
@@ -94,9 +94,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String uploadUserPhoto(MultipartFile multipartFile) throws IOException {
         User authenticatedUser = authHelper.getAuthenticatedUser();
-        String photoOfWhat="profilePhoto";
+        String photoOfWhat = "profilePhoto";
         userProfileRepository.findProfilePhotoKeyBy(authenticatedUser).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
-        FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, authenticatedUser.getId(),photoOfWhat);
+        FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, authenticatedUser.getId().toString(), photoOfWhat);
         userProfileRepository.updateCourseFileInfo(
                 authenticatedUser.getId(),
                 fileUploadResponse.getKey(),

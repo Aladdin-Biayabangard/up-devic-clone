@@ -11,6 +11,6 @@ public interface TestResultRepository extends JpaRepository<TestResult, Long> {
 
     Optional<TestResult> findTestResultByStudentAndCourse(User student, Course course);
 
-    void deleteAllByCourseId(Long courseId);
+    void deleteAllByCourseId(String courseId);
 
 }

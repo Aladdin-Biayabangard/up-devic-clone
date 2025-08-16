@@ -11,33 +11,33 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface LessonRepository extends JpaRepository<Lesson, Long> {
+public interface LessonRepository extends JpaRepository<Lesson, String> {
 
-    List<Lesson> findLessonByCourseId(Long courseId);
+    List<Lesson> findLessonByCourseId(String courseId);
 
     @Query("SELECT l.id FROM Lesson l WHERE l.course.id=:courseId")
-    List<Long> findLessonIdsByCourseId(Long courseId);
+    List<String> findLessonIdsByCourseId(String courseId);
 
     List<Lesson> findLessonsByTeacherId(Long id);
 
     @Query("SELECT l.photoKey FROM Lesson l WHERE l.id=:id")
-    Optional<String> findLessonPhotoKeyByLessonId(Long id);
+    Optional<String> findLessonPhotoKeyByLessonId(String id);
 
     @Query("SELECT l.videoKey FROM Lesson l WHERE l.id=:id")
-    Optional<String> findLessonVideoKeyByLessonId(Long id);
+    Optional<String> findLessonVideoKeyByLessonId(String id);
 
     @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END " +
-           "FROM Lesson l WHERE l.teacher = :teacher AND l = :lesson")
+            "FROM Lesson l WHERE l.teacher = :teacher AND l = :lesson")
     boolean existsLessonByTeacherAndLesson(@Param("teacher") Teacher teacher,
                                            @Param("lesson") Lesson lesson);
 
     @Transactional
     @Modifying
     @Query("UPDATE Lesson l SET l.photoUrl=:fileUrl,l.photoKey=:fileKey WHERE l.id=:id ")
-    void updateCourseFileInfo(Long id, String fileKey, String fileUrl);
+    void updateCourseFileInfo(String id, String fileKey, String fileUrl);
 
     @Query("SELECt l.id FROM Lesson l WHERE l.course.id=:id")
-    List<Long> findAllLessonIdsByCourseId(Long id);
+    List<String> findAllLessonIdsByCourseId(String id);
 
 
 }

@@ -38,7 +38,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void createTask(Long courseId, TaskDto taskDto) {
+    public void createTask(String courseId, TaskDto taskDto) {
         Course course = courseRepository.findCourseById(courseId).orElseThrow(()-> new ResourceNotFoundException("COURSE_NOT_FOUND"));
         Teacher teacher = teacherServiceImpl.getAuthenticatedTeacher();
         courseServiceImpl.validateAccess(courseId, teacher);
@@ -52,7 +52,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void checkAnswer(Long courseId, Long taskId, AnswerDto answerDto) {
+    public void checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
         User student = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
         boolean enrolled = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, student);
@@ -70,14 +70,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<ResponseTaskDto> getTasks(Long courseId) {
+    public List<ResponseTaskDto> getTasks(String courseId) {
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
         return tasks.stream().map(task -> modelMapper.map(task, ResponseTaskDto.class)).toList();
     }
 
     private boolean areAllLessonsWatched(User user, Course course) {
-        List<Long> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
-        for (Long lessonId : lessonIds) {
+        List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
+        for (String lessonId : lessonIds) {
             if (!userLessonStatusRepository.findByUserAndLesson(user, lessonId)) {
                 return false;
             }

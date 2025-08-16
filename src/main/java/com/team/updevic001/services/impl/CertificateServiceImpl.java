@@ -32,7 +32,7 @@ public class CertificateServiceImpl implements CertificateService {
 
 
     @Override
-    public ResponseEntity<Resource> generateCertificate(Long courseId) throws IOException {
+    public ResponseEntity<Resource> generateCertificate(String courseId) throws IOException {
         User user = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
         double score = checkEligibilityForCertification(user.getId(), courseId);
@@ -63,7 +63,7 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public double checkEligibilityForCertification(Long userId, Long courseId) {
+    public double checkEligibilityForCertification(Long userId, String courseId) {
         User user = userServiceImpl.fetchUserById(userId);
         Course course = courseServiceImpl.findCourseById(courseId);
         long taskCount = course.getTasks().size();

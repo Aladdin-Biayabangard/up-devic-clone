@@ -16,11 +16,11 @@ public interface CourseRatingRepository extends JpaRepository<CourseRating, Long
 
     Optional<CourseRating> findCourseRatingByCourseAndUser(Course course, User user);
 
-    void deleteAllByCourseId(Long courseId);
+    void deleteAllByCourseId(String courseId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM CourseRating cr WHERE cr.course.id =:id")
-    void deleteRatingByCourseId(Long id);
+    void deleteRatingByCourseId(String id);
 
 }

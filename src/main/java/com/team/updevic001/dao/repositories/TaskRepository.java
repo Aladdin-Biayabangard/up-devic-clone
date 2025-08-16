@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findTaskByCourseId(Long courseId);
+    List<Task> findTaskByCourseId(String courseId);
 
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Task t WHERE t.course.id = :id")
-    void deleteTaskByCourseId(Long id);
+    void deleteTaskByCourseId(String id);
 }

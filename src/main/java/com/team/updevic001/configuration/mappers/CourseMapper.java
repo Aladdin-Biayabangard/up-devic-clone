@@ -7,7 +7,6 @@ import com.team.updevic001.dao.repositories.TeacherCourseRepository;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
-import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseMapper {
 
-    private final LessonMapper lessonMapper;
-    private final CommentMapper commentMapper;
+//    private final LessonMapper lessonMapper;
+//    private final CommentMapper commentMapper;
     private final TeacherCourseRepository teacherCourseRepository;
     private final LessonRepository lessonRepository;
     private final StudentCourseRepository studentCourseRepository;
 
 
-    public ResponseFullCourseDto toFullResponse(Course course, List<Lesson> lessons, List<Comment> comments) {
+    public ResponseFullCourseDto toFullResponse(Course course) {
         return new ResponseFullCourseDto(
                 course.getPhoto_url(),
                 userFullName(course),
@@ -37,8 +36,8 @@ public class CourseMapper {
                 studentCount(course),
                 teacherCount(course),
                 course.getRating(),
-                lessonMapper.toShortLesson(lessons),
-                commentMapper.toDto(comments),
+//                lessonMapper.toShortLesson(lessons),
+//                commentMapper.toDto(comments),
                 course.getPrice()
         );
     }
@@ -106,6 +105,3 @@ public class CourseMapper {
         return courses.stream().map(this::courseDto).toList();
     }
 }
-//    public List<ResponseFullCourseDto> toFullResponse(List<Course> courses) {
-//        return courses.stream().map(this::toFullResponse).toList();
-//    }

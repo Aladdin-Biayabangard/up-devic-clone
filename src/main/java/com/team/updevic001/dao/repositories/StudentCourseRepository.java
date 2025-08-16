@@ -14,7 +14,7 @@ import java.util.List;
 public interface StudentCourseRepository extends JpaRepository<StudentCourse, Long> {
 
     @Query("SELECT uc.student FROM StudentCourse uc WHERE uc.course.id = :courseId")
-    List<User> findUsersByCourse(@Param("courseId") Long courseId);
+    List<User> findUsersByCourse(@Param("courseId") String courseId);
 
     @Query("SELECT c FROM Course c JOIN StudentCourse sc ON sc.course = c WHERE sc.student = :student")
     List<Course> findCourseByStudent(@Param("student") User student);
@@ -22,7 +22,7 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
     boolean existsByStudentAndCourse(User student, Course course);
 
     @Query("SELECT COUNT(DISTINCT uc.student.id) FROM StudentCourse uc WHERE uc.course.id IN :courseIds")
-    int countAllStudentsByCourseIds(@Param("courseIds") List<Long> courseIds);
+    int countAllStudentsByCourseIds(@Param("courseIds") List<String> courseIds);
 
     boolean existsByCourseAndStudent(Course course, User student);
 
@@ -34,6 +34,6 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
     @Modifying
     @Transactional
     @Query("DELETE FROM StudentCourse sc WHERE sc.course.id = :id")
-    void deleteStudentCourseByCourseId(Long id);
+    void deleteStudentCourseByCourseId(String id);
 }
 

@@ -21,6 +21,4 @@ public class ResponseLessonDto {
 
     private String duration;
 
-//    private List<ResponseCommentDto> comments;
-
 }

@@ -13,11 +13,11 @@ import java.util.List;
 public interface UserLessonStatusRepository extends JpaRepository<UserLessonStatus, Long> {
 
     @Query("SELECT uls.isWatched FROM UserLessonStatus uls WHERE uls.user=:user and uls.lesson.id=:lessonId")
-    boolean findByUserAndLesson(User user, Long lessonId);
+    boolean findByUserAndLesson(User user, String lessonId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM UserLessonStatus ul WHERE ul.lesson.id IN :ids")
-    void deleteUserLessonStatusByLessonsId(List<Long> ids);
+    void deleteUserLessonStatusByLessonsId(List<String> ids);
 
 }

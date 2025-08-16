@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         SessionCreateParams.LineItem.PriceData.ProductData productData = SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                .setName(request.getCourseId().toString()).build();
+                .setName(request.getCourseId()).build();
 
         SessionCreateParams.LineItem.PriceData priceData = SessionCreateParams.LineItem.PriceData.builder()
                 .setCurrency("USD")
@@ -103,7 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void paymentStatus(Long courseId) {
+    public void paymentStatus(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
 
         Course course = courseServiceImpl.findCourseById(courseId);

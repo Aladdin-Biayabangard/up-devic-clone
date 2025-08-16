@@ -18,14 +18,14 @@ public class TaskController {
     private final TaskService taskServiceImpl;
 
     @PostMapping(path = "student/{courseId}/lesson/create-task")
-    public ResponseEntity<String> createTask(@PathVariable Long courseId,
+    public ResponseEntity<String> createTask(@PathVariable String courseId,
                                              @RequestBody TaskDto taskDto) {
         taskServiceImpl.createTask(courseId, taskDto);
         return ResponseEntity.ok("Task successfully created!");
     }
 
     @PostMapping(path = "student/{courseId}/lesson/{taskId}/check")
-    public ResponseEntity<String> checkAnswer(@PathVariable Long courseId,
+    public ResponseEntity<String> checkAnswer(@PathVariable String courseId,
                                               @PathVariable Long taskId,
                                               @RequestBody AnswerDto answerDto) {
         taskServiceImpl.checkAnswer(courseId, taskId, answerDto);
@@ -33,7 +33,7 @@ public class TaskController {
     }
 
     @GetMapping(path = "course/{courseId}")
-    public ResponseEntity<List<ResponseTaskDto>> getTasks(@PathVariable Long courseId) {
+    public ResponseEntity<List<ResponseTaskDto>> getTasks(@PathVariable String courseId) {
         List<ResponseTaskDto> tasks = taskServiceImpl.getTasks(courseId);
         return ResponseEntity.ok(tasks);
     }

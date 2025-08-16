@@ -1,58 +1,48 @@
 package com.team.updevic001.services.interfaces;
 
+import com.team.updevic001.criteria.CourseSearchCriteria;
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCategoryDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.model.enums.CourseCategoryType;
-import com.team.updevic001.model.enums.CourseLevel;
-import com.team.updevic001.model.enums.SortDirection;
-import com.team.updevic001.model.enums.SortType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface CourseService {
 
     ResponseCourseDto createCourse(CourseCategoryType courseCategoryType, CourseDto courseDto);
 
-    ResponseCourseDto addTeacherToCourse(Long courseId, Long userId);
+    ResponseCourseDto addTeacherToCourse(String courseId, Long userId);
 
-    ResponseCourseDto updateCourse(Long courseId, CourseDto courseDto);
+    void addToWishList(String courseId);
 
-    String uploadCoursePhoto(Long courseId, MultipartFile multipartFile) throws IOException;
+    ResponseCourseDto updateCourse(String courseId, CourseDto courseDto);
 
-    void updateRatingCourse(Long courseId, int rating);
+    void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException;
 
-    void addToWishList(Long courseId);
+    void updateRatingCourse(String courseId, int rating);
 
-    List<ResponseCourseShortInfoDto> getWishList();
+    ResponseFullCourseDto getCourse(String courseId);
 
-    ResponseFullCourseDto getCourse(Long courseId);
+    CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
+                                                  CustomPageRequest request);
 
-    List<ResponseCourseShortInfoDto> getCourses(Long id, int limit);
+    CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType, CustomPageRequest request);
 
     List<ResponseCategoryDto> getCategories();
 
+    CustomPage<ResponseCourseShortInfoDto> getWishList(CustomPageRequest request);
+
     List<ResponseCourseShortInfoDto> getMost5PopularCourses();
 
-    List<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType);
+    void removeFromWishList(String courseId);
 
-    List<ResponseCourseShortInfoDto> findCourseByCriteria(CourseLevel level,
-                                                          BigDecimal minPrice,
-                                                          BigDecimal maxPrice,
-                                                          CourseCategoryType courseCategoryType);
-
-    List<ResponseCourseShortInfoDto> searchCourse(String keyword);
-
-    List<ResponseCourseShortInfoDto> filterAndSortCourses(SortType sortBy, SortDirection direction);
-
-    void removeFromWishList(Long courseId);
-
-    void deleteCourse(Long courseId);
-
+    void deleteCourse(String courseId);
 
 }

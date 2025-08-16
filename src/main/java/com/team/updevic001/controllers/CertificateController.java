@@ -19,7 +19,7 @@ public class CertificateController {
     private final CertificateService certificateServiceImpl;
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadCertificate(@RequestParam Long courseId) throws IOException {
+    public ResponseEntity<Resource> downloadCertificate(@RequestParam String courseId) throws IOException {
         return certificateServiceImpl.generateCertificate(courseId);
     }
 }

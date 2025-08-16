@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public interface FileLoadService {
 
-    FileUploadResponse uploadFile(MultipartFile multipartFile, Long id,String photoOfWhat) throws IOException;
+    FileUploadResponse uploadFile(MultipartFile multipartFile, String id,String photoOfWhat) throws IOException;
 
     String getFileUrl(String key);
 
