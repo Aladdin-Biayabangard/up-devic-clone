@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
