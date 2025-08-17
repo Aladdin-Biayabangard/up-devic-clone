@@ -83,7 +83,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Kursları kriteriyalara görə axtarmaq ve kriteriya olmasa butun kurslari getirmek")
-    @PostMapping("/search")
+    @GetMapping("/search")
     public CustomPage<ResponseCourseShortInfoDto> searchCourses(
             CourseSearchCriteria criteria,
             CustomPageRequest request) {

@@ -8,7 +8,8 @@ public enum AuthMapping {
 
     // Teacher və Admin yalnız delete əməliyyatları icra edə biləcək
     TEACHER_ADMIN_DELETE(new String[]{Role.TEACHER.name(), Role.ADMIN.name()}, new String[]{
-            "/api/v1/course/{courseId}",         // kurs delete
+            "/api/v1/course/{courseId}",
+            "api/v1/course/**",
             "/api/v1/lessons/{lessonId}",        // lesson delete
             "/api/v1/teacher/{userId}"           // teacher delete
     }),
