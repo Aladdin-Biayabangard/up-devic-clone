@@ -19,6 +19,7 @@ springdoc:
 frontend:
   url1: ${FRONTEND_URL1}
   url2: ${FRONTEND_URL2}
+  url3: ${FRONTEND_URL3}
 
 server:
   port: ${PORT:8080}

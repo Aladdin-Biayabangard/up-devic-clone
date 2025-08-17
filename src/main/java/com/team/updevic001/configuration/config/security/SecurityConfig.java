@@ -36,13 +36,15 @@ public class SecurityConfig {
 
     @Value("${frontend.url2}")
     String FRONTEND_URL2;
+    @Value("${frontend.url3}")
+    String FRONTEND_URL3;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(FRONTEND_URL1, FRONTEND_URL2));
+                    config.setAllowedOrigins(List.of(FRONTEND_URL1, FRONTEND_URL2,FRONTEND_URL3));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","ACCEPT"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
