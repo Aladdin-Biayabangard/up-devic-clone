@@ -33,7 +33,7 @@ public interface CourseService {
     CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
                                                   CustomPageRequest request);
 
-    CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType, CustomPageRequest request);
+//    CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType, CustomPageRequest request);
 
     List<ResponseCategoryDto> getCategories();
 
