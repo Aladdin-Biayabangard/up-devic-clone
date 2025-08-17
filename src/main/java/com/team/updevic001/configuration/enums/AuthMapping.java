@@ -6,38 +6,60 @@ import lombok.Getter;
 @Getter
 public enum AuthMapping {
 
+    // Teacher və Admin yalnız delete əməliyyatları icra edə biləcək
     TEACHER_ADMIN_DELETE(new String[]{Role.TEACHER.name(), Role.ADMIN.name()}, new String[]{
-            "/api/course/{courseId}",//delete elemek ucun
-            "/api/lessons/{lessonId}",//delete
-            "/api/lessons/lessons/delete",//delete
-            "/api/teacher/{userId}"//delete
+            "/api/v1/course/{courseId}",         // kurs delete
+            "/api/v1/lessons/{lessonId}",        // lesson delete
+            "/api/v1/teacher/{userId}"           // teacher delete
     }),
 
+    // Admin xüsusi əməliyyatlar
     ADMIN(new String[]{Role.ADMIN.name()}, new String[]{
-            "/api/admin/**",
-            "/api/teacher/delete/all"
+            "/api/v1/admin/**",
+            "/api/v1/teacher/delete/all"
     }),
 
+    STUDENT(new String[]{Role.STUDENT.name()}, new String[]{
+            "/api/v1/students/**",
+            "/api/v1/task"
+    }),
+
+    // HEAD_TEACHER privileges
+    HEAD_TEACHER(null, new String[]{
+            "/api/v1/course/{courseId}",          // delete
+            "/api/v1/course/{courseId}/teachers/{userId}", // add teacher
+            "/api/v1/lessons/courses/{courseId}", // add lesson
+            "/api/v1/lessons/{lessonId}",         // delete lesson
+            "/api/v1/course/photo"                // upload course photo
+    }),
+
+    // ASSISTANT_TEACHER privileges
+    ASSISTANT_TEACHER(null, new String[]{
+            "/api/v1/lessons/courses/{courseId}", // add lesson only
+    }),
+
+    // GET əməliyyatları hər kəsə açıq
     PERMIT_ALL_GET(null, new String[]{
-            "/api/course/search",
-            "/api/payment/test",
-            "/api/course/criteria/**",
-            "/api/course/sort/**",
-            "/api/course/{courseId}",
-            "/api/course/all",
-            "api/course/categories",
-            "api/course/short?categoryType=",
-            "api/course/{courseId}/full",
-            "/api/course/category",
-            "/api/lesson/{courseId}/lessons",
-            "api/lesson/{courseId}/lesson-short",
-            "/api/lessons/teacher-lessons",
-            "/api/teacher/{teacherId}/courses",
-            "/api/comment/{courseId}/course",
-            "/api/comment/{lessonId}/lesson",
-            "/api/users/search"
+            "/api/v1/course/search",
+            "/api/v1/payment/test",
+            "/api/v1/course/criteria/**",
+            "/api/v1/course/sort/**",
+            "/api/v1/course/{courseId}",
+            "/api/v1/course/all",
+            "/api/v1/course/categories",
+            "/api/v1/course/short?categoryType=",
+            "/api/v1/course/{courseId}/full",
+            "/api/v1/course/category",
+            "/api/v1/lesson/{courseId}/lessons",
+            "/api/v1/lesson/{courseId}/lesson-short",
+            "/api/v1/lessons/teacher-lessons",
+            "/api/v1/teacher/{teacherId}/courses",
+            "/api/v1/comment/{courseId}/course",
+            "/api/v1/comment/{lessonId}/lesson",
+            "/api/v1/users/search"
     }),
 
+    // Auth, Swagger və error
     PERMIT_ALL(null, new String[]{
             "/api/v1/auth/**",
             "/v2/api-docs",
