@@ -20,6 +20,7 @@ frontend:
   url1: ${FRONTEND_URL1}
   url2: ${FRONTEND_URL2}
   url3: ${FRONTEND_URL3}
+  url4: ${FRONTEND_URL4}
 
 server:
   port: ${PORT:8080}

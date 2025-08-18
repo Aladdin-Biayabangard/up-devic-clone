@@ -192,27 +192,12 @@ public class CourseServiceImpl implements CourseService {
 
         Page<Course> coursePage = courseRepository.findAll(specification, pageable);
 
-        if (coursePage.isEmpty()) {
-            coursePage = courseRepository.findAll(pageable);
-        }
-
         return new CustomPage<>(
                 courseMapper.toCourseResponse(coursePage.getContent()),
                 coursePage.getNumber(),
                 coursePage.getSize()
         );
     }
-
-//    @Override
-//    public CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(CourseCategoryType categoryType, CustomPageRequest request) {
-//        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-//        Page<Course> coursesByCategory = courseRepository.findCourseByCourseCategoryType(categoryType, pageable);
-//        return new CustomPage<>(
-//                courseMapper.toCourseResponse(coursesByCategory.getContent()),
-//                coursesByCategory.getNumber(),
-//                coursesByCategory.getSize()
-//        );
-//    }
 
     @Override
     public List<ResponseCategoryDto> getCategories() {

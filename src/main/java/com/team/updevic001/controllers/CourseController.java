@@ -90,13 +90,6 @@ public class CourseController {
         return courseService.search(criteria, request);
     }
 
-//    @Operation(summary = "Categoryanin uzerine vurduqda uygun kurslari tapmaq!")
-//    @GetMapping(path = "/category")
-//    public CustomPage<ResponseCourseShortInfoDto> findCoursesByCategory(@RequestParam CourseCategoryType categoryType,
-//                                                                        CustomPageRequest request) {
-//        return courseService.findCoursesByCategory(categoryType, request);
-//    }
-
     @Operation(summary = "Butun categoryleri getirir.")
     @GetMapping("categories")
     public List<ResponseCategoryDto> getCategories() {

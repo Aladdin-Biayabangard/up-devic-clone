@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class CourseSearchCriteria {
     private String name;
-    private String email;
     private CourseLevel level;
     private Double minPrice;
     private Double maxPrice;
