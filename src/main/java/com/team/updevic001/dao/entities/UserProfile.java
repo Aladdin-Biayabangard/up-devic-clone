@@ -34,11 +34,11 @@ public class UserProfile {
     @Column(name = "bio", length = 500)
     private String bio;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "social_link")
     private Set<String> socialLinks = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "skill")
     private Set<String> skills = new HashSet<>();
 
