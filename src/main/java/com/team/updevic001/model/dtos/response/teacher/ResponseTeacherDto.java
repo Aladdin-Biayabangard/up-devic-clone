@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class ResponseTeacherDto {
 
     private Integer experienceYears;
 
-    private List<String> socialLink;
+    private Set<String> socialLink;
 
     private LocalDateTime hireDate;
 

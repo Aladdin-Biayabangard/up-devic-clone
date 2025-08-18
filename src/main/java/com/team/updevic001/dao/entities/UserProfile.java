@@ -1,12 +1,10 @@
 package com.team.updevic001.dao.entities;
 
- 
+
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(of = "id")
@@ -36,13 +34,12 @@ public class UserProfile {
     @Column(name = "bio", length = 500)
     private String bio;
 
-    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SocialLink> socialLinks = new HashSet<>();
+    @ElementCollection
+    @Column(name = "social_link")
+    private Set<String> socialLinks = new HashSet<>();
 
-    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Skill> skills = new HashSet<>();
+    @ElementCollection
+    @Column(name = "skill")
+    private Set<String> skills = new HashSet<>();
 
-
-
-    
 }

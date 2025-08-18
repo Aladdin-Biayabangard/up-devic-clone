@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class ResponseUserProfileDto {
 
     private String bio;
 
-    private List<String> socialLinks;
+    private Set<String> socialLinks;
 
-    private List<String> skills;
+    private Set<String> skills;
 }
