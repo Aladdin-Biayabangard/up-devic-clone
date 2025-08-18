@@ -2,7 +2,10 @@ package com.team.updevic001.services.impl;
 
 import com.team.updevic001.configuration.mappers.CourseMapper;
 import com.team.updevic001.configuration.mappers.TeacherMapper;
-import com.team.updevic001.dao.entities.*;
+import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.Teacher;
+import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.exceptions.ResourceNotFoundException;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +39,6 @@ public class TeacherServiceImpl implements TeacherService {
     private final StudentCourseRepository studentCourseRepository;
     private final CourseRepository courseRepository;
     private final UserProfileRepository userProfileRepository;
-    private final SocialLinkRepository socialLinkRepository;
 
 
     @Override
@@ -82,6 +85,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     public List<ResponseTeacherDto> searchTeacher(String keyword) {
+        // 1. Teacher-ları axtar
         List<Teacher> teachers = teacherRepository.searchTeacher(keyword);
 
         if (teachers.isEmpty()) {
@@ -97,19 +101,11 @@ public class TeacherServiceImpl implements TeacherService {
         Map<Long, UserProfile> userIdToProfile = userProfiles.stream()
                 .collect(Collectors.toMap(p -> p.getUser().getId(), Function.identity()));
 
-        List<SocialLink> socialLinks = socialLinkRepository.findByUserProfiles(userProfiles);
-
-        Map<Long, List<String>> profileIdToLinks = socialLinks.stream()
-                .collect(Collectors.groupingBy(
-                        s -> s.getUserProfile().getId(),
-                        Collectors.mapping(SocialLink::getLink, Collectors.toList())
-                ));
-
         return teachers.stream()
                 .map(teacher -> {
                     User user = teacher.getUser();
                     UserProfile profile = userIdToProfile.get(user.getId());
-                    List<String> links = profileIdToLinks.getOrDefault(profile.getId(), List.of());
+                    Set<String> links = profile != null ? profile.getSocialLinks() : Set.of();
                     return teacherMapper.toTeacherDto(teacher, links);
                 })
                 .toList();

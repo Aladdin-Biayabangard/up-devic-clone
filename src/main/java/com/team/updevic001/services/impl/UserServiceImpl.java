@@ -4,8 +4,6 @@ import com.team.updevic001.configuration.mappers.UserMapper;
 import com.team.updevic001.configuration.mappers.UserProfileMapper;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
-import com.team.updevic001.dao.repositories.SkillRepository;
-import com.team.updevic001.dao.repositories.SocialLinkRepository;
 import com.team.updevic001.dao.repositories.UserProfileRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.ResourceNotFoundException;
@@ -39,8 +37,7 @@ public class UserServiceImpl implements UserService {
     private final AuthHelper authHelper;
     private final PasswordEncoder passwordEncoder;
     private final FileLoadService fileLoadServiceImpl;
-    private final SkillRepository skillRepository;
-    private final SocialLinkRepository socialLinkRepository;
+
     private final UserProfileMapper userProfileMapper;
 
     @Override
@@ -69,10 +66,7 @@ public class UserServiceImpl implements UserService {
     public ResponseUserProfileDto getUserProfile() {
         User user = authHelper.getAuthenticatedUser();
         UserProfile userProfile = userProfileRepository.findByUser(user);
-        List<String> skills = skillRepository.findSkillByUserProfile(userProfile);
-        List<String> socialLinks = socialLinkRepository.findSocialLinkNameByUserProfile(userProfile);
-
-        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile, skills, socialLinks);
+        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile);
     }
 
     @Override

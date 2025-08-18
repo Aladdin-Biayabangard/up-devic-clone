@@ -1,7 +1,5 @@
 package com.team.updevic001.configuration.mappers;
 
-import com.team.updevic001.dao.entities.Skill;
-import com.team.updevic001.dao.entities.SocialLink;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
@@ -21,15 +19,14 @@ public class UserMapper {
 
     private final ModelMapper modelMapper;
 
-    public ResponseUserProfileDto toUserProfileDto(String firstName, String lastName, UserProfile userProfile, List<String> skills,
-                                                   List<String> socialLinks) {
+    public ResponseUserProfileDto toUserProfileDto(String firstName, String lastName, UserProfile userProfile) {
         return new ResponseUserProfileDto(
                 firstName,
                 lastName,
                 userProfile.getProfilePhoto_url(),
                 userProfile.getBio(),
-                socialLinks,
-                skills
+                userProfile.getSocialLinks(),
+                userProfile.getSkills()
         );
     }
 
