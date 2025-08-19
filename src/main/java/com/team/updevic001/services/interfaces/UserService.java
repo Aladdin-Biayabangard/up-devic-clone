@@ -20,7 +20,7 @@ public interface UserService {
 
     void updateUserProfileInfo(UserProfileDto userProfileDto);
 
-    String uploadUserPhoto(MultipartFile multipartFile) throws IOException;
+    void uploadUserPhoto(MultipartFile multipartFile) throws IOException;
 
     void updateUserPassword(ChangePasswordDto passwordDto);
 

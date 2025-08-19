@@ -59,7 +59,7 @@ public class LessonServiceImpl implements LessonService {
         if (multipartFile != null && !multipartFile.isEmpty()) {
             lesson.setCourse(course);
             String videoOfWhat = "lessonVideo";
-            FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, lesson.getId(), videoOfWhat);
+            FileUploadResponse fileUploadResponse = fileLoadService.uploadFileWithEncode(multipartFile, lesson.getId(), videoOfWhat);
             lesson.setVideoUrl(fileUploadResponse.getUrl());
             lesson.setTeacher(authenticatedTeacher);
             lessonRepository.save(lesson);
@@ -100,6 +100,7 @@ public class LessonServiceImpl implements LessonService {
     public ResponseLessonDto getFullLessonByLessonId(String lessonId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Lesson lesson = findLessonById(lessonId);
+        lesson.setVideoUrl(fileLoadService.getFileUrlWithEncode(lesson.getVideoKey()));
         boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), authenticatedUser);
         if (exists || lessonRepository.existsLessonByTeacherAndLesson(teacherServiceImpl.getAuthenticatedTeacher(), lesson)) {
             markLessonAsWatched(authenticatedUser, lesson);

@@ -40,9 +40,9 @@ public class CommentController {
     @Operation(summary = "Commenti yenilemek üçün")
     @PutMapping(path = "/{commentId}")
     @ResponseStatus(NO_CONTENT)
-    public ResponseCommentDto updateComment(@PathVariable Long commentId,
+    public void updateComment(@PathVariable Long commentId,
                                             @RequestBody CommentDto commentDto) {
-        return commentServiceImpl.updateComment(commentId, commentDto);
+         commentServiceImpl.updateComment(commentId, commentDto);
     }
 
     @Operation(summary = "Kursun bütün kommnentleri")

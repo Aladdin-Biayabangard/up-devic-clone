@@ -7,12 +7,15 @@ import java.io.IOException;
 
 public interface FileLoadService {
 
-    FileUploadResponse uploadFile(MultipartFile multipartFile, String id,String photoOfWhat) throws IOException;
+    FileUploadResponse uploadFileWithEncode(MultipartFile multipartFile, String id, String keyOfWhat) throws IOException;
 
-    String getFileUrl(String key);
+    FileUploadResponse uploadFile(MultipartFile multipartFile, String id, String photoOfWhat) throws IOException;
+
+    String getFileUrlWithEncode(String key);
+
+    String getPublicFileUrl(String key);
 
     void deleteFileFromAws(String key);
-
 
 
 }

@@ -29,27 +29,38 @@ public class FileLoadServiceImpl implements FileLoadService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String BUCKET_NAME;
+    @Value("${cloud.aws.region}")
+    private String region;
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+
+    public FileUploadResponse uploadFileWithEncode(MultipartFile multipartFile, String id,String keyOfWhat) throws IOException {
+        String key = createKey(id,keyOfWhat, multipartFile);
+        createAwsObject(multipartFile, key);
+        return new FileUploadResponse(key, getFileUrlWithEncode(key));
+    }
 
     public FileUploadResponse uploadFile(MultipartFile multipartFile, String id,String keyOfWhat) throws IOException {
         String key = createKey(id,keyOfWhat, multipartFile);
         createAwsObject(multipartFile, key);
-        return new FileUploadResponse(key, getFileUrl(key));
+        return new FileUploadResponse(key, getPublicFileUrl(key));
     }
 
-    public String getFileUrl(String key) {
+    public String getFileUrlWithEncode(String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(BUCKET_NAME)
                 .key(key)
                 .build();
-
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
+                .signatureDuration(Duration.ofMinutes(30))
                 .getObjectRequest(getObjectRequest)
                 .build();
         PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(presignRequest);
         return presignedGetObjectRequest.url().toString();
+    }
+
+    public String getPublicFileUrl(String key) {
+        return "https://" + BUCKET_NAME + ".s3." + region + ".amazonaws.com/" + key;
     }
 
     public void deleteFileFromAws(String key) {

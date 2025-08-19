@@ -11,7 +11,7 @@ public interface CommentService {
 
     ResponseCommentDto addCommentToLesson(String lessonId, CommentDto commentDto);
 
-    ResponseCommentDto updateComment(Long commentId, CommentDto commentDto);
+    void updateComment(Long commentId, CommentDto commentDto);
 
     CustomPage<ResponseCommentDto> getCourseComment(String courseId, CustomPageRequest request);
 

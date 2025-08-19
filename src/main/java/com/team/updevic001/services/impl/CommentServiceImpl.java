@@ -84,12 +84,8 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(comment);
     }
 
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "courseComments", key = "{#result.course?.id, 0}", condition = "#result.course != null"),
-            @CacheEvict(value = "lessonComments", key = "{#result.lesson?.id, 0}", condition = "#result.lesson != null")
-    })
-    public ResponseCommentDto updateComment(Long commentId, CommentDto commentDto) {
+
+    public void updateComment(Long commentId, CommentDto commentDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
         if (!comment.getUser().equals(authenticatedUser)) {
@@ -97,7 +93,6 @@ public class CommentServiceImpl implements CommentService {
         }
         comment.setContent(commentDto.getContent());
         commentRepository.save(comment);
-        return commentMapper.toDto(comment);
     }
 
     @Override

@@ -40,9 +40,8 @@ public class UserController {
     }
 
     @PatchMapping(path = "-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadUserPhoto(@RequestPart MultipartFile multipartFile) throws IOException {
-        String photo = userService.uploadUserPhoto(multipartFile);
-        return ResponseEntity.ok(photo);
+    public void uploadUserPhoto(@RequestPart MultipartFile multipartFile) throws IOException {
+        userService.uploadUserPhoto(multipartFile);
     }
 
     @GetMapping(path = "-profile")

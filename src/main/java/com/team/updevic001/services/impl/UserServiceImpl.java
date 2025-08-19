@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String uploadUserPhoto(MultipartFile multipartFile) throws IOException {
+    public void uploadUserPhoto(MultipartFile multipartFile) throws IOException {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         String photoOfWhat = "profilePhoto";
         userProfileRepository.findProfilePhotoKeyBy(authenticatedUser).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
@@ -95,7 +95,6 @@ public class UserServiceImpl implements UserService {
                 authenticatedUser.getId(),
                 fileUploadResponse.getKey(),
                 fileUploadResponse.getUrl());
-        return fileUploadResponse.getUrl();
     }
 
     @Override
