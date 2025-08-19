@@ -28,23 +28,21 @@ public class UserController {
     private final UserService userService;
 
     @PutMapping("/profile")
-    public ResponseEntity<String> updateUserProfileInfo(@RequestBody UserProfileDto userProfileDto) {
+    public void updateUserProfileInfo(@RequestBody UserProfileDto userProfileDto) {
         userService.updateUserProfileInfo(userProfileDto);
-        return ResponseEntity.ok("User profile updated!");
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<String> updateUserPassword(@Valid @RequestBody ChangePasswordDto passwordDto) {
+    public void updateUserPassword(@Valid @RequestBody ChangePasswordDto passwordDto) {
         userService.updateUserPassword(passwordDto);
-        return ResponseEntity.ok("User password updated");
     }
 
-    @PatchMapping(path = "-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(path = "profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadUserPhoto(@RequestPart MultipartFile multipartFile) throws IOException {
         userService.uploadUserPhoto(multipartFile);
     }
 
-    @GetMapping(path = "-profile")
+    @GetMapping(path = "profile")
     @Operation(summary = "Profili göstərmək üçün")
     public ResponseEntity<ResponseUserProfileDto> getUserProfile() {
         return ResponseEntity.ok(userService.getUserProfile());
