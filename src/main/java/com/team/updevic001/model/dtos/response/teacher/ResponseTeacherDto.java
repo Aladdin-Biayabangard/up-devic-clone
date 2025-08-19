@@ -23,6 +23,8 @@ public class ResponseTeacherDto {
 
     private Integer experienceYears;
 
+    private String bio;
+
     private Set<String> socialLink;
 
     private Set<String> skills;

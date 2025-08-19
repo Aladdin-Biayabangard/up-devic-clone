@@ -17,6 +17,7 @@ public class TeacherMapper {
                 teacher.getUser().getEmail(),
                 teacher.getSpeciality(),
                 teacher.getExperienceYears(),
+                userProfile.getBio(),
                 userProfile.getSocialLinks(),
                 userProfile.getSkills(),
                 teacher.getHireDate()

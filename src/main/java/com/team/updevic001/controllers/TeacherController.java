@@ -33,8 +33,8 @@ public class TeacherController {
     }
 
     @Operation(summary = "Muellimin profiline baxmaq")
-    @GetMapping(path = "profile")
-    public ResponseTeacherDto getInfo(Long teacherId) {
+    @GetMapping(path = "/{teacherId}/profile")
+    public ResponseTeacherDto getInfo(@PathVariable Long teacherId) {
         return teacherServiceImpl.getTeacherProfile(teacherId);
     }
 
