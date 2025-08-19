@@ -16,7 +16,7 @@ public class UserProfileMapper {
             userProfile.setSocialLinks(userProfileDto.getSocialLink());
         }
         if (!userProfileDto.getSkill().isEmpty()) {
-            userProfile.setSkills(userProfile.getSkills());
+            userProfile.setSkills(userProfileDto.getSkill());
         }
         if (!userProfileDto.getBio().isEmpty()) {
             userProfile.setBio(userProfileDto.getBio());

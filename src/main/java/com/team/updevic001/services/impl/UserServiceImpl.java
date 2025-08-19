@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
     public void uploadUserPhoto(MultipartFile multipartFile) throws IOException {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         String photoOfWhat = "profilePhoto";
-        userProfileRepository.findProfilePhotoKeyBy(authenticatedUser).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
         FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, authenticatedUser.getId().toString(), photoOfWhat);
         userProfileRepository.updateCourseFileInfo(
                 authenticatedUser.getId(),
