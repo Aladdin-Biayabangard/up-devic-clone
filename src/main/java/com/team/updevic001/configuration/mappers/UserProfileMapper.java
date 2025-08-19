@@ -12,9 +12,15 @@ public class UserProfileMapper {
 
 
     public UserProfile toEntity(UserProfile userProfile, UserProfileDto userProfileDto) {
-        userProfile.setSocialLinks(userProfileDto.getSocialLink());
-        userProfile.setSkills(userProfile.getSocialLinks());
-        userProfile.setBio(userProfileDto.getBio());
+        if (!userProfileDto.getSocialLink().isEmpty()) {
+            userProfile.setSocialLinks(userProfileDto.getSocialLink());
+        }
+        if (!userProfileDto.getSkill().isEmpty()) {
+            userProfile.setSkills(userProfile.getSkills());
+        }
+        if (!userProfileDto.getBio().isEmpty()) {
+            userProfile.setBio(userProfileDto.getBio());
+        }
         return userProfile;
     }
 
