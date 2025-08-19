@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,6 +54,12 @@ public class TeacherServiceImpl implements TeacherService {
         int courseCount = allCourseIdsByTeacher.size();
         int studentCount = studentCourseRepository.countAllStudentsByCourseIds(allCourseIdsByTeacher);
         return new TeacherMainInfo(courseCount, studentCount, teacher.getBalance());
+    }
+
+    public ResponseTeacherDto getTeacherProfile(Long teacherId) {
+        Teacher teacher = findTeacherById(teacherId);
+        UserProfile teacherProfile = userProfileRepository.findByUser(teacher.getUser());
+        return teacherMapper.toTeacherDto(teacher, teacherProfile);
     }
 
     @Override
@@ -105,8 +110,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .map(teacher -> {
                     User user = teacher.getUser();
                     UserProfile profile = userIdToProfile.get(user.getId());
-                    Set<String> links = profile != null ? profile.getSocialLinks() : Set.of();
-                    return teacherMapper.toTeacherDto(teacher, links);
+                    return teacherMapper.toTeacherDto(teacher, profile);
                 })
                 .toList();
     }

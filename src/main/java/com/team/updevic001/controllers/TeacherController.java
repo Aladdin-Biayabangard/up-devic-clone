@@ -32,6 +32,12 @@ public class TeacherController {
         return ResponseEntity.ok(info);
     }
 
+    @Operation(summary = "Muellimin profiline baxmaq")
+    @GetMapping(path = "profile")
+    public ResponseTeacherDto getInfo(Long teacherId) {
+        return teacherServiceImpl.getTeacherProfile(teacherId);
+    }
+
     @Operation(summary = "Delete the teacher")
     @DeleteMapping(path = "/{userId}")
     public ResponseEntity<String> deleteTeacher(@PathVariable Long userId) {

@@ -17,6 +17,8 @@ public interface TeacherService {
 
     Teacher getAuthenticatedTeacher();
 
+    ResponseTeacherDto getTeacherProfile(Long teacherId);
+
     void deleteTeacher(Long teacherId);
 
     void deleteAllTeachers();

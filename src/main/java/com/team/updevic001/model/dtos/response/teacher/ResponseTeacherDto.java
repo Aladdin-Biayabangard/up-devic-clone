@@ -25,6 +25,8 @@ public class ResponseTeacherDto {
 
     private Set<String> socialLink;
 
+    private Set<String> skills;
+
     private LocalDateTime hireDate;
 
 }
