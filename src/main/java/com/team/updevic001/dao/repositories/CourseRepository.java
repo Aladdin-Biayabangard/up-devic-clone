@@ -23,8 +23,10 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
 
     List<Course> findCourseByHeadTeacher(Teacher teacher);
 
-    @EntityGraph(attributePaths = "tasks")
+    @EntityGraph(attributePaths = {"tasks","headTeacher"})
     Optional<Course> findCourseById(String id);
+
+
 
     @Transactional
     @Modifying

@@ -12,6 +12,7 @@ import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.utility.AuthHelper;
@@ -60,6 +61,11 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = findTeacherById(teacherId);
         UserProfile teacherProfile = userProfileRepository.findByUser(teacher.getUser());
         return teacherMapper.toTeacherDto(teacher, teacherProfile);
+    }
+
+
+    public TeacherNameDto getTeacherShortInfo(Long teacherId) {
+        return teacherRepository.findTeacherNamesByCourse(teacherId);
     }
 
     @Override

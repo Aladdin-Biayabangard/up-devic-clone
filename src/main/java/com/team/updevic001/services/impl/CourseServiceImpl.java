@@ -171,9 +171,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-//        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
-//        List<Comment> comments = commentRepository.findCommentByCourseId(courseId);
+        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         return courseMapper.toFullResponse(course);
     }
 

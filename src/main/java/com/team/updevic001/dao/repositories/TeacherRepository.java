@@ -1,6 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.Teacher;
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,10 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     Optional<Teacher> findByUserId(Long userId);
 
     boolean existsTeacherByUserId(Long id);
+
+    @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
+            "(t.id, t.user.firstName,t.user.lastName) FROM Teacher t WHERE t.id=:id")
+    TeacherNameDto findTeacherNamesByCourse(Long id);
 
     @Modifying
     @Transactional
