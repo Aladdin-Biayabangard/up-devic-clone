@@ -1,12 +1,15 @@
 package com.team.updevic001.controllers;
 
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AdminService;
+import com.team.updevic001.specification.UserCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,16 +53,11 @@ public class AdminController {
     }
 
     @Operation(summary = "Shows all users")
-    @GetMapping("users")
-    public List<ResponseUserDto> getAllUsers(Long afterId, int limit) {
-        return adminServiceImpl.getAllUsers(afterId, limit);
+    @GetMapping("search")
+    public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
+        return adminServiceImpl.getAllUsers(userCriteria,pageRequest);
     }
 
-    @Operation(summary = "Shows users matching the role")
-    @GetMapping(path = "/role")
-    public List<ResponseUserDto> getUserByRole(@RequestParam Role role) {
-        return adminServiceImpl.getUsersByRole(role);
-    }
 
     @Operation(summary = "Shows the number of users")
     @GetMapping(path = "users/count")

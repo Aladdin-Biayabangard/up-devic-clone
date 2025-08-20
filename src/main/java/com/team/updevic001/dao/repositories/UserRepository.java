@@ -6,15 +6,13 @@ import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.model.projection.UserView;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.*;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     boolean existsByEmail(String email);
 
@@ -34,6 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     List<UserView> findByIdGreaterThanOrderByIdAsc(Long afterId, Pageable pageable);
+
 
     @Modifying
     @Transactional

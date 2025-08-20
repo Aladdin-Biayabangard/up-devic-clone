@@ -5,6 +5,7 @@ import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserProfileDto;
+import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.projection.UserView;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -50,6 +51,23 @@ public class UserMapper {
         return dtoList.stream()
                 .map(dto -> toEntity(dto, entityClass))
                 .toList();
+    }
+
+    public UserResponseForAdmin toResponseForAdmin(User user) {
+        List<String> roleNames = user.getRoles().stream()
+                .map(role -> role.getName().name()) // Enum -> String
+                .toList();
+        return new UserResponseForAdmin(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                roleNames,
+                user.getStatus()
+        );
+    }
+
+    public List<UserResponseForAdmin> toResponseForAdmin(List<User> users) {
+        return users.stream().map(this::toResponseForAdmin).toList();
     }
 
     public ResponseUserDto toResponseFromView(UserView user) {
