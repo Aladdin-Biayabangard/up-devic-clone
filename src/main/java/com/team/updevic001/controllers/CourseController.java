@@ -41,9 +41,9 @@ public class CourseController {
 
     @Operation(summary = "Mövcud kursa müəllif əlavə etmək")
     @PostMapping(path = "/{courseId}/teachers/{userId}")
-    public ResponseCourseDto addTeacherToCourse(@PathVariable String courseId,
-                                                @PathVariable Long userId) {
-        return courseService.addTeacherToCourse(courseId, userId);
+    public void addTeacherToCourse(@PathVariable String courseId,
+                                   @PathVariable Long userId) {
+        courseService.addTeacherToCourse(courseId, userId);
     }
 
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")
@@ -56,9 +56,9 @@ public class CourseController {
     @Operation(summary = "Kursun detallarını yeniləmək")
     @PutMapping(path = "/{courseId}")
     @ResponseStatus(NO_CONTENT)
-    public ResponseCourseDto updateCourse(@PathVariable String courseId,
-                                          @RequestBody CourseDto courseDto) {
-        return courseService.updateCourse(courseId, courseDto);
+    public void updateCourse(@PathVariable String courseId,
+                             @RequestBody CourseDto courseDto) {
+        courseService.updateCourse(courseId, courseDto);
     }
 
     @Operation(summary = "Kurs şəkli yükləmək")

@@ -20,7 +20,8 @@ public class TeacherMapper {
                 userProfile.getBio(),
                 userProfile.getSocialLinks(),
                 userProfile.getSkills(),
-                teacher.getHireDate()
+                teacher.getHireDate(),
+                userProfile.getProfilePhoto_url()
         );
     }
 }
