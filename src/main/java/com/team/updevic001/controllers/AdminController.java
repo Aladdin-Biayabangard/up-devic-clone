@@ -2,7 +2,6 @@ package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
-import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AdminService;
@@ -11,8 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -55,7 +52,7 @@ public class AdminController {
     @Operation(summary = "Shows all users")
     @GetMapping("search")
     public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
-        return adminServiceImpl.getAllUsers(userCriteria,pageRequest);
+        return adminServiceImpl.getAllUsers(userCriteria, pageRequest);
     }
 
 

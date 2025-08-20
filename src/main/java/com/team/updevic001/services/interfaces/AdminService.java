@@ -3,13 +3,9 @@ package com.team.updevic001.services.interfaces;
 
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
-import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
-import com.team.updevic001.model.projection.UserView;
 import com.team.updevic001.specification.UserCriteria;
-
-import java.util.List;
 
 public interface AdminService {
 

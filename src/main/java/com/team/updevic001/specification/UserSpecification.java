@@ -2,12 +2,10 @@ package com.team.updevic001.specification;
 
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
-import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

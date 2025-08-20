@@ -6,7 +6,6 @@ import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.model.projection.UserView;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 
 import java.util.List;
@@ -40,13 +39,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     void updateUserStatus(Long id, Status status);
 
     @Query("""
-    SELECT COUNT(u) FROM User u
-    WHERE NOT EXISTS (
-        SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN'
-    )
-""")
+                SELECT COUNT(u) FROM User u
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN'
+                )
+            """)
     int countNonAdminUsers();
-
 
 
 }
