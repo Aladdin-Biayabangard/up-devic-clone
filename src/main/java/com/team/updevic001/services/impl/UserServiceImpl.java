@@ -66,7 +66,8 @@ public class UserServiceImpl implements UserService {
     public ResponseUserProfileDto getUserProfile() {
         User user = authHelper.getAuthenticatedUser();
         UserProfile userProfile = userProfileRepository.findByUser(user);
-        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile);
+        List<String> roles = extractRoleNames(user);
+        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile,roles);
     }
 
     @Override
@@ -105,5 +106,11 @@ public class UserServiceImpl implements UserService {
 
     public User fetchUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private List<String> extractRoleNames(User user) {
+        return user.getRoles().stream()
+                .map(role -> role.getName().toString())
+                .toList();
     }
 }

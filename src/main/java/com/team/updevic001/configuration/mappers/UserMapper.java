@@ -19,14 +19,15 @@ public class UserMapper {
 
     private final ModelMapper modelMapper;
 
-    public ResponseUserProfileDto toUserProfileDto(String firstName, String lastName, UserProfile userProfile) {
+    public ResponseUserProfileDto toUserProfileDto(String firstName, String lastName, UserProfile userProfile, List<String> roles) {
         return new ResponseUserProfileDto(
                 firstName,
                 lastName,
                 userProfile.getProfilePhoto_url(),
                 userProfile.getBio(),
                 userProfile.getSocialLinks(),
-                userProfile.getSkills()
+                userProfile.getSkills(),
+                roles
         );
     }
 
