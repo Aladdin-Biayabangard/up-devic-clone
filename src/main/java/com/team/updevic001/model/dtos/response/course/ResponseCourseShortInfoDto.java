@@ -17,7 +17,7 @@ public class ResponseCourseShortInfoDto {
 
     private String photo_url;
 
-    private String headTeacher;
+    private Long headTeacher;
 
     private String title;
 

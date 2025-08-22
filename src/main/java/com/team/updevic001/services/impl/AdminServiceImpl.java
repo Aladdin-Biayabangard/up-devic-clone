@@ -9,23 +9,27 @@ import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.exceptions.ResourceNotFoundException;
-import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
-import com.team.updevic001.model.projection.UserView;
 import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.services.interfaces.UserService;
+import com.team.updevic001.specification.UserCriteria;
+import com.team.updevic001.specification.UserSpecification;
 import com.team.updevic001.utility.AuthHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -63,17 +67,25 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    @Cacheable(value = "users", key = "'after:' + #afterId + ':limit:' + #limit")
-    public List<ResponseUserDto> getAllUsers(Long afterId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        List<UserView> users = userRepository.findByIdGreaterThanOrderByIdAsc(afterId, pageable);
-        System.out.println(users);
-        if (users.isEmpty()) {
-            log.info("No user found!");
-        } else {
-            log.info("Found {} users.", users.size());
+    public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+
+        Specification<User> filter = null;
+        if (userCriteria.getFirstName() != null ||
+                userCriteria.getLastName() != null ||
+                userCriteria.getEmail() != null ||
+                userCriteria.getStatus() != null ||
+                (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
+            filter = UserSpecification.filter(userCriteria);
         }
-        return users.stream().map(userMapper::toResponseFromView).toList();
+        Page<User> allUsers = (filter == null)
+                ? userRepository.findAll(pageable)
+                : userRepository.findAll(filter, pageable);
+
+        return new CustomPage<>(
+                userMapper.toResponseForAdmin(allUsers.getContent()),
+                allUsers.getNumber(),
+                allUsers.getSize());
     }
 
     @Override
@@ -128,18 +140,6 @@ public class AdminServiceImpl implements AdminService {
 
         user.getRoles().remove(findRole);
         userRepository.save(user);
-    }
-
-    @Override
-    @Cacheable(value = "usersByRole", key = "#role.name()")
-    public List<ResponseUserDto> getUsersByRole(Role role) {
-        List<UserView> users = userRepository.findUsersByRole(role);
-        if (users.isEmpty()) {
-            throw new ResourceNotFoundException("User not found");
-        } else {
-            log.info("Found {} users with role: {}", users.size(), role);
-        }
-        return users.stream().map(userMapper::toResponseFromView).toList();
     }
 
 

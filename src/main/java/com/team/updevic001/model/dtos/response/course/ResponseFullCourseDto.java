@@ -16,9 +16,9 @@ public class ResponseFullCourseDto {
 
     private String photo_url;
 
-    private String headTeacher;
+    private Long headTeacher;
 
-    private List<String> teachers;
+    private List<Long> teachers;
 
     private String title;
 
@@ -35,10 +35,6 @@ public class ResponseFullCourseDto {
     private long teacherCount;
 
     private double rating;
-
-//    private List<ResponseLessonShortInfoDto> lessons;
-//
-//    private List<ResponseCommentDto> comments;
 
     private double price;
 

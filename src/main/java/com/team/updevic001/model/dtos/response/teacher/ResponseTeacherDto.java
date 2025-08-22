@@ -31,4 +31,5 @@ public class ResponseTeacherDto {
 
     private LocalDateTime hireDate;
 
+    private String teacherPhoto;
 }

@@ -3,6 +3,7 @@ package com.team.updevic001.controllers;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.services.interfaces.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,14 @@ public class TeacherController {
 
     @Operation(summary = "Muellimin profiline baxmaq")
     @GetMapping(path = "/{teacherId}/profile")
-    public ResponseTeacherDto getInfo(@PathVariable Long teacherId) {
+    public ResponseTeacherDto getProfile(@PathVariable Long teacherId) {
         return teacherServiceImpl.getTeacherProfile(teacherId);
+    }
+
+    @Operation(summary = "Muellimin card melumatlari")
+    @GetMapping(path = "/{teacherId}/info")
+    public TeacherNameDto getInfo(@PathVariable Long teacherId) {
+        return teacherServiceImpl.getTeacherShortInfo(teacherId);
     }
 
     @Operation(summary = "Delete the teacher")

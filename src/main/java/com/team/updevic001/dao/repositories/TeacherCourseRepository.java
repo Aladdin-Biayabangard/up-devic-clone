@@ -3,7 +3,6 @@ package com.team.updevic001.dao.repositories;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.TeacherCourse;
-import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,10 +22,12 @@ public interface TeacherCourseRepository extends JpaRepository<TeacherCourse, Lo
     @Query("SELECT COUNT(tc.teacher) FROM TeacherCourse tc WHERE tc.course=:course")
     int countTeacherByCourse(Course course);
 
-    @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
-            "(tc.teacher.user.firstName, tc.teacher.user.lastName) FROM TeacherCourse tc WHERE tc.course = :course")
-    List<TeacherNameDto> findTeacherNamesByCourse(@Param("course") Course course);
+//    @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
+//            "(tc.teacher.user.firstName, tc.teacher.user.lastName) FROM TeacherCourse tc WHERE tc.course = :course")
+//    List<TeacherNameDto> findTeacherNamesByCourse(@Param("course") Course course);
 
+    @Query("SELECT tc.teacher.id FROM TeacherCourse tc WHERE tc.course=:course")
+    List<Long> findTeacherIdByCourse(Course course);
 
     Optional<TeacherCourse> findByCourseIdAndTeacher(String courseId, Teacher authenticatedTeacher);
 

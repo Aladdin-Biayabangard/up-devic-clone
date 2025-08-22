@@ -18,11 +18,11 @@ public interface CourseService {
 
     ResponseCourseDto createCourse(CourseCategoryType courseCategoryType, CourseDto courseDto);
 
-    ResponseCourseDto addTeacherToCourse(String courseId, Long userId);
+    void addTeacherToCourse(String courseId, Long userId);
 
     void addToWishList(String courseId);
 
-    ResponseCourseDto updateCourse(String courseId, CourseDto courseDto);
+    void updateCourse(String courseId, CourseDto courseDto);
 
     void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException;
 

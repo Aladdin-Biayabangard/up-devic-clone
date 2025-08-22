@@ -83,7 +83,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public ResponseCourseDto addTeacherToCourse(String courseId, Long userId) {
+    public void addTeacherToCourse(String courseId, Long userId) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
@@ -105,7 +105,6 @@ public class CourseServiceImpl implements CourseService {
                     .teacherPrivilege(TeacherPrivileges.ASSISTANT_TEACHER)
                     .build());
         }
-        return courseMapper.courseDto(course);
     }
 
     @Override
@@ -124,8 +123,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
-    public ResponseCourseDto updateCourse(String courseId, CourseDto courseDto) {
+//    @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
+    public void updateCourse(String courseId, CourseDto courseDto) {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
@@ -136,7 +135,6 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(findCourse);
         teacherCourse.setCourse(findCourse);
         teacherCourseRepository.save(teacherCourse);
-        return courseMapper.courseDto(findCourse);
     }
 
     public void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException {
@@ -171,9 +169,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-//        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
-//        List<Comment> comments = commentRepository.findCommentByCourseId(courseId);
+        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         return courseMapper.toFullResponse(course);
     }
 
