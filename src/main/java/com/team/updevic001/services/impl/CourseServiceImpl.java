@@ -1,12 +1,12 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.CourseMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.criteria.CourseSearchCriteria;
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.ForbiddenException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CourseDto;
@@ -40,6 +40,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
+import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOUND;
 import static com.team.updevic001.utility.IDGenerator.normalizeString;
 
 @Slf4j
@@ -88,16 +92,18 @@ public class CourseServiceImpl implements CourseService {
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_TEACHER)) {
-            throw new ForbiddenException("NOT_ALLOWED");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
         }
 
         Course course = findCourseById(courseId);
 
-        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException(Teacher.class));
+        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(
+                () -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
+                        TEACHER_NOT_FOUND.getMessage().formatted(userId)));
 
         boolean exists = teacherCourseRepository.existsByCourseIdAndTeacher(courseId, newTeacher);
         if (exists) {
-            throw new AlreadyExistsException("TEACHER_ALREADY_EXISTS_IN_THIS_COURSE");
+            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(), "Teacher already exists in this course!");
         } else {
             teacherCourseRepository.save(TeacherCourse.builder()
                     .course(course)
@@ -129,7 +135,8 @@ public class CourseServiceImpl implements CourseService {
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
 
         Course findCourse = courseRepository
-                .findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found!"));
+                .findById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                        COURSE_NOT_FOUND.getMessage().formatted(courseId)));
 
         modelMapper.map(courseDto, findCourse);
         courseRepository.save(findCourse);
@@ -142,7 +149,8 @@ public class CourseServiceImpl implements CourseService {
             throw new IllegalArgumentException("Multipart file is empty or null!");
         }
         if (!courseRepository.existsById(courseId)) {
-            throw new ResourceNotFoundException("COURSE_NOT_FOUND");
+            throw new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                    COURSE_NOT_FOUND.getMessage().formatted(courseId));
         }
 //        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
         String photoOfWhat = "coursePhoto";
@@ -169,7 +177,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
-        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                COURSE_NOT_FOUND.getMessage().formatted(courseId)));
         return courseMapper.toFullResponse(course);
     }
 
@@ -236,7 +245,7 @@ public class CourseServiceImpl implements CourseService {
         Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_COURSE)) {
-            throw new ForbiddenException("NOT_ALLOWED");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
         }
         List<String> allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
         deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, authenticatedTeacher.getUser());
@@ -244,7 +253,8 @@ public class CourseServiceImpl implements CourseService {
 
     public Course findCourseById(String courseId) {
         return courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("COURSE_NOT_FOUND"));
+                .orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                        COURSE_NOT_FOUND.getMessage().formatted(courseId)));
     }
 
     private double getAverageRating(Course course) {
@@ -256,6 +266,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     protected TeacherCourse validateAccess(String courseId, Teacher authenticatedTeacher) {
-        return teacherCourseRepository.findByCourseIdAndTeacher(courseId, authenticatedTeacher).orElseThrow(() -> new ForbiddenException("NOT_ALLOWED"));
+        return teacherCourseRepository.findByCourseIdAndTeacher(courseId, authenticatedTeacher)
+                .orElseThrow(() -> new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!"));
     }
 }

@@ -1,6 +1,7 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.CommentMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.mappers.CommentMapper;
 import com.team.updevic001.dao.entities.Comment;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.Lesson;
@@ -9,7 +10,6 @@ import com.team.updevic001.dao.repositories.CommentRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.exceptions.PaymentStatusException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
@@ -27,6 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.COMMENT_NOT_FOUND;
+import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -89,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
         if (!comment.getUser().equals(authenticatedUser)) {
-            throw new ForbiddenException("NOT_ALLOWED_UPDATE_COMMENT");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed update comment!");
         }
         comment.setContent(commentDto.getContent());
         commentRepository.save(comment);
@@ -129,12 +132,12 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getUser().equals(authenticatedUser)) {
             commentRepository.deleteById(commentId);
         }
-        throw new ForbiddenException("NOT_ALLOWED_DELETE_COMMENT");
+        throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed delete comment!");
 
     }
 
     private Comment findCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment with ID " + commentId + " not found"));
+                .orElseThrow(() -> new NotFoundException(COMMENT_NOT_FOUND.getCode(),COMMENT_NOT_FOUND.getMessage().formatted(commentId) ));
     }
 }

@@ -3,7 +3,7 @@ package com.team.updevic001.services.impl;
 import com.team.updevic001.dao.entities.Otp;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.OtpRepository;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
@@ -14,9 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.OTP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +40,11 @@ public class OtpServiceImpl implements OtpService {
 
     @Override
     public void verifyOtp(OtpRequest otpRequest) {
-        Otp otp = otpRepository.findByCodeAndEmail(otpRequest.getOtpCode(), otpRequest.getEmail()).orElseThrow(() -> new ResourceNotFoundException("OTP_NOT_FOUND"));
+        Otp otp = otpRepository.findByCodeAndEmail(otpRequest.getOtpCode(), otpRequest.getEmail())
+                .orElseThrow(() ->
+                        new NotFoundException(
+                                OTP_NOT_FOUND.getCode(), OTP_NOT_FOUND.getMessage()
+                                .formatted(otpRequest.getOtpCode())));
         if (otp.getExpirationTime().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("OTP_EXPIRED");
         }

@@ -1,12 +1,13 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.UserMapper;
-import com.team.updevic001.configuration.mappers.UserProfileMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.enums.ExceptionConstants;
+import com.team.updevic001.model.mappers.UserMapper;
+import com.team.updevic001.model.mappers.UserProfileMapper;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.UserProfileRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.request.UserProfileDto;
 import com.team.updevic001.model.dtos.request.security.ChangePasswordDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
@@ -25,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserPassword(ChangePasswordDto passwordDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         if (!passwordEncoder.matches(passwordDto.getCurrentPassword(), authenticatedUser.getPassword()) ||
-                !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
+            !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
             throw new IllegalArgumentException("Password incorrect!");
         }
         authenticatedUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
@@ -67,12 +70,13 @@ public class UserServiceImpl implements UserService {
         User user = authHelper.getAuthenticatedUser();
         UserProfile userProfile = userProfileRepository.findByUser(user);
         List<String> roles = extractRoleNames(user);
-        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile,roles);
+        return userMapper.toUserProfileDto(user.getFirstName(), user.getLastName(), userProfile, roles);
     }
 
     @Override
     public ResponseUserDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found Exception!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(),
+                USER_NOT_FOUND.getMessage().formatted(id)));
         return userMapper.toResponse(user, ResponseUserDto.class);
     }
 
@@ -82,7 +86,8 @@ public class UserServiceImpl implements UserService {
         if (!users.isEmpty()) {
             return users.stream().map(userMapper::toResponseFromUser).toList();
         } else {
-            throw new ResourceNotFoundException("There is no user with this name.");
+            throw new NotFoundException(USER_NOT_FOUND.getCode(),
+                    USER_NOT_FOUND.getMessage().formatted(query));
         }
     }
 
@@ -105,7 +110,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public User fetchUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(),
+                USER_NOT_FOUND.getMessage().formatted(id)));
     }
 
     private List<String> extractRoleNames(User user) {

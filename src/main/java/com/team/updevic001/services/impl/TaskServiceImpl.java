@@ -2,7 +2,7 @@ package com.team.updevic001.services.impl;
 
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.*;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.request.AnswerDto;
 import com.team.updevic001.model.dtos.request.TaskDto;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;
@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
+import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -39,7 +42,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void createTask(String courseId, TaskDto taskDto) {
-        Course course = courseRepository.findCourseById(courseId).orElseThrow(()-> new ResourceNotFoundException("COURSE_NOT_FOUND"));
+        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                COURSE_NOT_FOUND.getMessage().formatted(courseId)));
         Teacher teacher = teacherServiceImpl.getAuthenticatedTeacher();
         courseServiceImpl.validateAccess(courseId, teacher);
         Task task = modelMapper.map(taskDto, Task.class);
@@ -136,7 +140,8 @@ public class TaskServiceImpl implements TaskService {
 
     private Task findTaskById(Long taskId) {
         return taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("TASK_NOT_FOUND"));
+                .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getCode(),
+                        TASK_NOT_FOUND.getMessage().formatted(taskId)));
     }
 }
 

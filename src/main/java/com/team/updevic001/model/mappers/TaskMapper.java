@@ -1,4 +1,4 @@
-package com.team.updevic001.configuration.mappers;
+package com.team.updevic001.model.mappers;
 
 import com.team.updevic001.dao.entities.Task;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;

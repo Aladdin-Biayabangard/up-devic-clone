@@ -1,6 +1,8 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.UserMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.enums.ExceptionConstants;
+import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
@@ -8,7 +10,6 @@ import com.team.updevic001.dao.repositories.TeacherRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
@@ -32,6 +33,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.ROLE_NOT_FOUND;
+import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -48,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void assignTeacherProfile(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Enter the email you registered with."));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage().formatted(email)));
         UserRole userRole = userRoleRepository.findByName(Role.TEACHER).orElseGet(() -> {
             UserRole role = UserRole.builder()
                     .name(Role.TEACHER)
@@ -65,17 +70,16 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-
     @Override
     public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
 
         Specification<User> filter = null;
         if (userCriteria.getFirstName() != null ||
-                userCriteria.getLastName() != null ||
-                userCriteria.getEmail() != null ||
-                userCriteria.getStatus() != null ||
-                (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
+            userCriteria.getLastName() != null ||
+            userCriteria.getEmail() != null ||
+            userCriteria.getStatus() != null ||
+            (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
             filter = UserSpecification.filter(userCriteria);
         }
         Page<User> allUsers = (filter == null)
@@ -136,12 +140,10 @@ public class AdminServiceImpl implements AdminService {
                 .stream()
                 .filter(userRole -> Objects.equals(userRole.getName(), role))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("This user does not have such a role."));
-
+                .orElseThrow(() -> new NotFoundException(ROLE_NOT_FOUND.getCode(), "This user does not have such a role."));
         user.getRoles().remove(findRole);
         userRepository.save(user);
     }
-
 
     @Override
     @CacheEvict(value = {"users", "usersByRole", "userCount"}, allEntries = true)
@@ -171,7 +173,7 @@ public class AdminServiceImpl implements AdminService {
 
     public void checkAdminRole(User user, Role role) {
         if (!userRoleRepository.existsByUserAndRole(user, role)) {
-            throw new ForbiddenException("No permission");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
         }
     }
 }

@@ -1,11 +1,12 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.UserMapper;
+import com.team.updevic001.exceptions.AlreadyExistsException;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.enums.ExceptionConstants;
+import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.ExpiredRefreshTokenException;
-import com.team.updevic001.exceptions.ResourceAlreadyExistException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.exceptions.UnauthorizedException;
 import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.mail.EmailTemplate;
@@ -32,6 +33,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.EXPIRED_REFRESH_TOKEN_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.NOT_FOUND;
+import static com.team.updevic001.model.enums.ExceptionConstants.UNAUTHORIZED_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -78,25 +85,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDto login(AuthRequestDto authRequest) {
-
         User user = authenticateUser(authRequest);
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authRequest.getEmail(),
-                            authRequest.getPassword()
-                    )
-            );
-
+                            authRequest.getPassword()));
 
             List<String> roles = extractRoleNames(user);
             AuthResponseDto accessTokenAndRefreshToken = getAccessTokenAndRefreshToken(user);
             accessTokenAndRefreshToken.setRole(roles);
             return accessTokenAndRefreshToken;
-
         } catch (BadCredentialsException ex) {
-            throw new UnauthorizedException("Invalid email or password.");
+            throw new UnauthorizedException(UNAUTHORIZED_EXCEPTION.getCode(), "Invalid email or password.");
         }
     }
 
@@ -135,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponseDto verifyAndGetToken(OtpRequest request) {
         User user = userRepository.findByEmailAndStatus(request.getEmail(), Status.PENDING)
-                .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND"));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage().formatted(request.getEmail())));
 
         otpService.verifyOtp(request);
         user.setStatus(Status.ACTIVE);
@@ -150,7 +151,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
-        User user = userRepository.findByEmailAndStatus(email, Status.ACTIVE).orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND"));
+        User user = userRepository.findByEmailAndStatus(email, Status.ACTIVE).orElseThrow(
+                () -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage().formatted(email)));
         String token = authHelper.generateToken();
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
                 .token(token)
@@ -175,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDto refreshAccessToken(RefreshTokenRequest tokenRequest) {
         RefreshToken refreshToken = refreshTokenRepository.findByIdAndExpiresAtAfter(tokenRequest.getId(), LocalDateTime.now())
-                .orElseThrow(() -> new ExpiredRefreshTokenException("REFRESH_TOKEN_EXPIRED_OR_INVALID"));
+                .orElseThrow(() -> new ExpiredRefreshTokenException(EXPIRED_REFRESH_TOKEN_EXCEPTION.getCode(), "Refresh token expired or invalid!"));
         User user = refreshToken.getUser();
 
         String newAccessToken = jwtUtil.createToken(user);
@@ -188,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
 
     private PasswordResetToken getValidResetToken(String token) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("SUCH_TOKEN_NOT_FOUND"));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND.getCode(), "Such token not found!"));
         if (isExpired(resetToken)) {
             throw new IllegalArgumentException("TOKEN_EXPIRED");
         }
@@ -212,7 +214,8 @@ public class AuthServiceImpl implements AuthService {
 
     private void validateUserRequest(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResourceAlreadyExistException("USER_ALREADY_EXISTS");
+            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(),
+                    ALREADY_EXISTS_EXCEPTION.getMessage().formatted(request.getEmail()));
         }
 
         if (!request.getPassword().equals(request.getPasswordConfirm())) {
@@ -241,7 +244,7 @@ public class AuthServiceImpl implements AuthService {
 
     private User authenticateUser(AuthRequestDto authRequest) {
         return userRepository.findByEmailAndStatus(authRequest.getEmail(), Status.ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND_OR_INACTIVE"));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(),"User not found or inactive!"));
     }
 
     private List<String> extractRoleNames(User user) {

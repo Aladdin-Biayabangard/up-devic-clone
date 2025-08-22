@@ -1,14 +1,13 @@
 package com.team.updevic001.services.impl;
-
-import com.team.updevic001.configuration.mappers.CourseMapper;
-import com.team.updevic001.configuration.mappers.TeacherMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.mappers.CourseMapper;
+import com.team.updevic001.model.mappers.TeacherMapper;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.ForbiddenException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
@@ -25,6 +24,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -89,7 +91,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .anyMatch(userRole -> userRole.getName().equals(Role.ADMIN));
 
         if (!isOwner && !isAdmin) {
-            throw new ForbiddenException("NOT_ALLOWED");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed!");
         }
 
         return teacher;
@@ -126,13 +128,14 @@ public class TeacherServiceImpl implements TeacherService {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Optional<Teacher> teacher = teacherRepository.findByUserId(authenticatedUser.getId());
         if (teacher.isEmpty()) {
-            throw new ForbiddenException("NOT_ALLOWED");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed!");
         }
         return teacher.get();
     }
 
     private Teacher findTeacherById(Long teacherID) {
         return teacherRepository.findById(teacherID)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found this id: " + teacherID));
+                .orElseThrow(() -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
+                        TEACHER_NOT_FOUND.getMessage().formatted(teacherID)));
     }
 }

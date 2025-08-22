@@ -1,4 +1,4 @@
-package com.team.updevic001.configuration.mappers;
+package com.team.updevic001.model.mappers;
 
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
@@ -32,25 +32,14 @@ public class UserMapper {
         );
     }
 
-    public <D, E> E toEntity(D dto, Class<E> entityClass) {
-        return modelMapper.map(dto, entityClass);
-    }
-
     public <E, D> D toResponse(E entity, Class<D> dtoClass) {
         D dto = modelMapper.map(entity, dtoClass);
 
-        // Əgər ResponseUserDto-dan extend edən bir DTO-dursa, burada əlavə dəyişikliklər edirik
         if (dto instanceof ResponseTeacherDto responseTeacherDto) {
             responseTeacherDto.setHireDate(LocalDateTime.now());
         }
 
         return dto;
-    }
-
-    public <D, E> List<E> toEntityList(List<D> dtoList, Class<E> entityClass) {
-        return dtoList.stream()
-                .map(dto -> toEntity(dto, entityClass))
-                .toList();
     }
 
     public UserResponseForAdmin toResponseForAdmin(User user) {
@@ -70,9 +59,6 @@ public class UserMapper {
         return users.stream().map(this::toResponseForAdmin).toList();
     }
 
-    public ResponseUserDto toResponseFromView(UserView user) {
-        return new ResponseUserDto(user.getFirstName(), user.getLastName(), user.getEmail());
-    }
 
     public ResponseUserDto toResponseFromUser(User user) {
         return new ResponseUserDto(user.getFirstName(), user.getLastName(), user.getEmail());

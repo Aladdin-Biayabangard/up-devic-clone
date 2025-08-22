@@ -1,4 +1,4 @@
-package com.team.updevic001.configuration.mappers;
+package com.team.updevic001.model.mappers;
 
 import com.team.updevic001.dao.entities.Lesson;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonDto;

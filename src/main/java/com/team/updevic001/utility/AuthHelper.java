@@ -2,8 +2,9 @@ package com.team.updevic001.utility;
 
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.UserRepository;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.exceptions.UnauthorizedException;
+import com.team.updevic001.model.enums.ExceptionConstants;
 import com.team.updevic001.model.enums.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.UNAUTHORIZED_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
 
 @Component
 @Slf4j
@@ -26,7 +30,7 @@ public class AuthHelper {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             log.error("No authenticated user found in the security context.");
-            throw new UnauthorizedException("No authenticated user found");
+            throw new UnauthorizedException(UNAUTHORIZED_EXCEPTION.getCode(), "No authenticated user found");
         }
         String authenticatedEmail = authentication.getName();
         log.debug("Authenticated user email: {}", authenticatedEmail);
@@ -34,7 +38,7 @@ public class AuthHelper {
         return userRepository.findByEmailAndStatus(authenticatedEmail, Status.ACTIVE)
                 .orElseThrow(() -> {
                     log.error("User with email {} not found or is inactive", authenticatedEmail);
-                    return new ResourceNotFoundException("USER_NOT_FOUND OR INACTIVE");
+                    return new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage());
                 });
     }
 

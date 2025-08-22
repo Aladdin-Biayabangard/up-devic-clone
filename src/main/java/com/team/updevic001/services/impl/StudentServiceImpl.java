@@ -1,12 +1,12 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.CourseMapper;
+import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.StudentCourse;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.CourseRepository;
 import com.team.updevic001.dao.repositories.StudentCourseRepository;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.services.interfaces.StudentService;
@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -34,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
     public void enrollInCourse(String courseId, User student) {
         Course course = courseServiceImpl.findCourseById(courseId);
         if (isAlreadyEnrolledInCourse(student, course)) {
-            throw new IllegalStateException("Student is already enrolled in this course!");
+            throw new IllegalArgumentException("Student is already enrolled in this course!");
         }
         enrollStudentInCourse(student, course);
     }
@@ -54,7 +56,8 @@ public class StudentServiceImpl implements StudentService {
     public ResponseCourseShortInfoDto getStudentCourse(String courseId) {
         User student = authHelper.getAuthenticatedUser();
         Course course = courseRepository
-                .findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Not found course !"));
+                .findById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                        COURSE_NOT_FOUND.getMessage().formatted(courseId)));
         if (!studentCourseRepository
                 .existsByStudentAndCourse(student, course)) {
             throw new IllegalArgumentException("This student does not have such a course");

@@ -11,7 +11,7 @@ import com.team.updevic001.dao.entities.UserCourseFee;
 import com.team.updevic001.dao.repositories.TeacherRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
-import com.team.updevic001.exceptions.ResourceAlreadyExistException;
+import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.PaymentRequest;
@@ -35,6 +35,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -52,6 +54,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
+    @Value("${frontend.url2}")
+    private String frontEndUrl2;
+
 
     @Override
     public StripeResponse checkoutProducts(PaymentRequest request) {
@@ -61,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, authenticatedUser);
         if (exists) {
-            throw new ResourceAlreadyExistException("The user has already purchased the course.");
+            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(), "The user has already purchased the course.");
         }
 
         SessionCreateParams.LineItem.PriceData.ProductData productData = SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -80,8 +85,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("http://localhost:8080/api/payment/success?courseId=" + request.getCourseId())
-                .setCancelUrl("http://localhost:8080/api/payment")
+                .setSuccessUrl(frontEndUrl2 + "api/v1/course/" + request.getCourseId())
+                .setCancelUrl(frontEndUrl2 + "api/v1/course/" + request.getCourseId())
                 .addLineItem(lineItem)
                 .build();
 
