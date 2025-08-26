@@ -17,14 +17,14 @@ public class TaskController {
 
     private final TaskService taskServiceImpl;
 
-    @PostMapping(path = "courses/{courseId}")
+    @PostMapping(path = "/courses/{courseId}")
     public ResponseEntity<String> createTask(@PathVariable String courseId,
                                              @RequestBody TaskDto taskDto) {
         taskServiceImpl.createTask(courseId, taskDto);
         return ResponseEntity.ok("Task successfully created!");
     }
 
-    @PostMapping(path = "{taskId}/courses/{courseId}")
+    @PostMapping(path = "/{taskId}/courses/{courseId}")
     public ResponseEntity<String> checkAnswer(@PathVariable String courseId,
                                               @PathVariable Long taskId,
                                               @RequestBody AnswerDto answerDto) {
@@ -32,7 +32,7 @@ public class TaskController {
         return ResponseEntity.ok("Correct answer!");
     }
 
-    @GetMapping(path = "courses/{courseId}")
+    @GetMapping(path = "/courses/{courseId}")
     public ResponseEntity<List<ResponseTaskDto>> getTasks(@PathVariable String courseId) {
         List<ResponseTaskDto> tasks = taskServiceImpl.getTasks(courseId);
         return ResponseEntity.ok(tasks);

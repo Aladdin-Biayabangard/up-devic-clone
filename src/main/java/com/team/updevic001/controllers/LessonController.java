@@ -27,7 +27,7 @@ public class LessonController {
     private final LessonService lessonServiceImpl;
 
     @Operation(summary = "Kursa dərs əlavə etmək")
-    @PostMapping(path = "courses/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/courses/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(CREATED)
     public void assignLessonToCourse(
             @PathVariable String courseId,
@@ -45,7 +45,7 @@ public class LessonController {
     }
 
     @Operation(summary = "Dərsin şəkilini yükləmək")
-    @PatchMapping(value = "{lessonId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{lessonId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(NO_CONTENT)
     public void uploadLessonPhoto(@PathVariable String lessonId,
                                   @RequestPart MultipartFile multipartFile) throws IOException {
@@ -53,7 +53,7 @@ public class LessonController {
     }
 
     @Operation(summary = "Kursdakı bütün dərslərin qısa məlumatlarını gətirmək")
-    @GetMapping(path = "courses/{courseId}")
+    @GetMapping(path = "/courses/{courseId}")
     public List<ResponseLessonShortInfoDto> getLessonsByCourse(@PathVariable String courseId) {
         return lessonServiceImpl.getShortLessonsByCourse(courseId);
     }

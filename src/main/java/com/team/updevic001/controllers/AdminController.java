@@ -24,53 +24,53 @@ public class AdminController {
 
 
     @Operation(summary = "Adding a teacher profile to a student")
-    @PostMapping(path = "assign/{email}")
+    @PostMapping(path = "/assign/{email}")
     @ResponseStatus(CREATED)
     public void assignTeacherProfile(@PathVariable String email) {
         adminServiceImpl.assignTeacherProfile(email);
     }
 
     @Operation(summary = "Activates the user")
-    @PutMapping("users/{id}/activate")
+    @PutMapping("/users/{id}/activate")
     public void activateUser(@PathVariable Long id) {
         adminServiceImpl.activateUser(id);
     }
 
     @Operation(summary = "Deactivates the user")
-    @PutMapping("users/{id}/deactivate")
+    @PutMapping("/users/{id}/deactivate")
     public void deactivateUser(@PathVariable Long id) {
         adminServiceImpl.deactivateUser(id);
     }
 
     @Operation(summary = "Adds a role to a user")
-    @PutMapping("users/{id}/assign/role")
+    @PutMapping("/users/{id}/assign/role")
     public void assignRoleToUser(@PathVariable Long id,
                                  @RequestParam Role role) {
         adminServiceImpl.assignRoleToUser(id, role);
     }
 
     @Operation(summary = "Shows all users")
-    @GetMapping("search")
+    @GetMapping("/search")
     public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
         return adminServiceImpl.getAllUsers(userCriteria, pageRequest);
     }
 
 
     @Operation(summary = "Shows the number of users")
-    @GetMapping(path = "users/count")
+    @GetMapping(path = "/users/count")
     public Long getUsersCount() {
         return adminServiceImpl.countUsers();
     }
 
     @Operation(summary = "Removes a user's role!")
-    @PutMapping(path = "users/{id}/role")
+    @PutMapping(path = "/users/{id}/role")
     @ResponseStatus(NO_CONTENT)
     public void removeRoleFromUser(@PathVariable Long id,
                                    @RequestParam Role role) {
         adminServiceImpl.removeRoleFromUser(id, role);
     }
 
-    @DeleteMapping(path = "users/{id}")
+    @DeleteMapping(path = "/users/{id}")
     @ResponseStatus(NO_CONTENT)
     public void softyDeleteUser(@PathVariable Long id) {
         adminServiceImpl.softyDeleteUser(id);

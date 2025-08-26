@@ -27,7 +27,7 @@ public class TeacherController {
     }
 
     @Operation(summary = "Muellimin kurs telebe sayini ve balansini gosterir ")
-    @GetMapping(path = "info")
+    @GetMapping(path = "/info")
     public ResponseEntity<TeacherMainInfo> getInfo() {
         TeacherMainInfo info = teacherServiceImpl.getInfo();
         return ResponseEntity.ok(info);

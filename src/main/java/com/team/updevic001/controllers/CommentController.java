@@ -46,13 +46,13 @@ public class CommentController {
     }
 
     @Operation(summary = "Kursun bütün kommnentleri")
-    @GetMapping(path = "courses/{courseId}")
+    @GetMapping(path = "/courses/{courseId}")
     public CustomPage<ResponseCommentDto> getCourseComment(@PathVariable String courseId, CustomPageRequest request) {
         return commentServiceImpl.getCourseComment(courseId, request);
     }
 
     @Operation(summary = "Dersin butun kommentleri")
-    @GetMapping(path = "lessons/{lessonId}")
+    @GetMapping(path = "/lessons/{lessonId}")
     public CustomPage<ResponseCommentDto> getLessonComment(@PathVariable String lessonId, CustomPageRequest request) {
         return commentServiceImpl.getLessonComment(lessonId, request);
     }

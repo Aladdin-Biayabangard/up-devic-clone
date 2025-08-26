@@ -77,7 +77,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Kursun uzerine vurduqda full data gelir")
-    @GetMapping("{courseId}")
+    @GetMapping("/{courseId}")
     public ResponseFullCourseDto getCourse(@PathVariable String courseId) {
         return courseService.getCourse(courseId);
     }
@@ -91,7 +91,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Butun categoryleri getirir.")
-    @GetMapping("categories")
+    @GetMapping("/categories")
     public List<ResponseCategoryDto> getCategories() {
         return courseService.getCategories();
     }
@@ -103,7 +103,7 @@ public class CourseController {
     }
 
     @Operation(summary = "5 eded popular kursları gətirmək")
-    @GetMapping(path = "popular-courses")
+    @GetMapping(path = "/popular-courses")
     public List<ResponseCourseShortInfoDto> getMost5PopularCourses() {
         return courseService.getMost5PopularCourses();
     }
@@ -114,7 +114,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Kursu wish listden silir")
-    @DeleteMapping(path = "{courseId}")
+    @DeleteMapping(path = "/{courseId}")
     public void deleteCourse(@PathVariable String courseId) {
         courseService.deleteCourse(courseId);
     }
