@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/task")
+@RequestMapping("/api/v1/tasks")
 @RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskServiceImpl;
 
-    @PostMapping(path = "student/{courseId}/lesson/create-task")
+    @PostMapping(path = "courses/{courseId}")
     public ResponseEntity<String> createTask(@PathVariable String courseId,
                                              @RequestBody TaskDto taskDto) {
         taskServiceImpl.createTask(courseId, taskDto);
         return ResponseEntity.ok("Task successfully created!");
     }
 
-    @PostMapping(path = "student/{courseId}/lesson/{taskId}/check")
+    @PostMapping(path = "{taskId}/courses/{courseId}")
     public ResponseEntity<String> checkAnswer(@PathVariable String courseId,
                                               @PathVariable Long taskId,
                                               @RequestBody AnswerDto answerDto) {
@@ -32,7 +32,7 @@ public class TaskController {
         return ResponseEntity.ok("Correct answer!");
     }
 
-    @GetMapping(path = "course/{courseId}")
+    @GetMapping(path = "courses/{courseId}")
     public ResponseEntity<List<ResponseTaskDto>> getTasks(@PathVariable String courseId) {
         List<ResponseTaskDto> tasks = taskServiceImpl.getTasks(courseId);
         return ResponseEntity.ok(tasks);
