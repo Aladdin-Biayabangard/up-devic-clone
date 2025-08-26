@@ -13,6 +13,7 @@ Thumbs.db
 
 # Log faylları
 *.log
+src/main/resources/.env
 
 # Temporary fayllar
 *.tmp

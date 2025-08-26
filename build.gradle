@@ -39,6 +39,9 @@ dependencies {
     implementation 'org.apache.poi:poi:5.2.2'
     implementation 'org.apache.poi:poi-ooxml:5.2.2'
 
+    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+
+
     implementation 'com.itextpdf:itext7-core:7.2.3'
     implementation platform('software.amazon.awssdk:bom:2.25.16')
     implementation 'com.stripe:stripe-java:24.10.0'

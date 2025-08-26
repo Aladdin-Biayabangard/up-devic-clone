@@ -1,12 +1,11 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.configuration.mappers.LessonMapper;
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.LessonRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.dao.repositories.UserLessonStatusRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
-import com.team.updevic001.exceptions.ResourceNotFoundException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.request.LessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonShortInfoDto;
@@ -21,11 +20,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.cloudfront.cookie.CookiesForCannedPolicy;
 
 import java.io.IOException;
 import java.util.List;
 
+import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.model.enums.ExceptionConstants.LESSON_NOT_FOUND;
 import static com.team.updevic001.utility.IDGenerator.normalizeString;
 
 @Service
@@ -37,12 +37,11 @@ public class LessonServiceImpl implements LessonService {
     private final ModelMapper modelMapper;
     private final CourseServiceImpl courseServiceImpl;
     private final FileLoadService fileLoadService;
-    private final LessonMapper lessonMapper;
+    private final com.team.updevic001.model.mappers.LessonMapper lessonMapper;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final AuthHelper authHelper;
     private final UserLessonStatusRepository userLessonStatusRepository;
     private final DeleteService deleteService;
-    private final com.team.updevic001.services.impl.CloudFrontCookieService cloudFrontCookieService;
 
 
     @Override
@@ -51,7 +50,7 @@ public class LessonServiceImpl implements LessonService {
         Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
         TeacherCourse teacherCourse = courseServiceImpl.validateAccess(courseId, authenticatedTeacher);
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_LESSON)) {
-            throw new ForbiddenException("NOT_ALLOWED");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
         }
 
         Lesson lesson = modelMapper.map(lessonDto, Lesson.class);
@@ -75,7 +74,7 @@ public class LessonServiceImpl implements LessonService {
         Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
         Lesson lesson = findLessonById(lessonId);
         if (!lesson.getTeacher().equals(authenticatedTeacher)) {
-            throw new ForbiddenException("NOT_ALLOWED_UPDATE_LESSON");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
         }
         modelMapper.map(lessonDto, lesson);
     }
@@ -87,7 +86,7 @@ public class LessonServiceImpl implements LessonService {
             throw new IllegalArgumentException("Multipart file is empty or null!");
         }
         if (!lessonRepository.existsById(lessonId)) {
-            throw new ResourceNotFoundException("Lesson not found these Id: " + lessonId);
+            throw new NotFoundException(LESSON_NOT_FOUND.getCode(), LESSON_NOT_FOUND.getMessage().formatted(lessonId));
         }
         String photoOfWhat = "lessonPhoto";
         FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, lessonId, photoOfWhat);
@@ -100,7 +99,7 @@ public class LessonServiceImpl implements LessonService {
         return lessons.isEmpty() ? List.of() : lessonMapper.toShortLesson(lessons);
     }
 
-    public ResponseLessonDto getFullLessonByLessonId(String lessonId) throws Exception {
+    public ResponseLessonDto getFullLessonByLessonId(String lessonId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Lesson lesson = findLessonById(lessonId);
 
@@ -112,23 +111,10 @@ public class LessonServiceImpl implements LessonService {
             throw new IllegalArgumentException("ACCESS_DENIED");
         }
 
-        // Dərsi izlənmiş kimi qeyd et
+        lesson.setVideoUrl(fileLoadService.getFileUrlWithEncode(lesson.getVideoKey()));
         markLessonAsWatched(authenticatedUser, lesson);
 
-        // CloudFront resource path (S3 key ilə eyni ola bilər)
-        String resourcePath = lesson.getVideoKey(); // məsələn: "videos/lesson1.mp4"
-
-        // Signed cookies yarat
-        CookiesForCannedPolicy cookies = cloudFrontCookieService.generateSignedCookies(resourcePath, 3600); // 1 saat
-
-        // DTO yarat
-        ResponseLessonDto dto = lessonMapper.toDto(lesson);
-        dto.setVideoUrl("https://d32vmhzz9hmwha.cloudfront.net/" + resourcePath);
-        dto.setCloudFrontPolicy(cookies.policy());
-        dto.setCloudFrontSignature(cookies.signature());
-        dto.setCloudFrontKeyPairId(cookies.keyPairId());
-
-        return dto;
+        return lessonMapper.toDto(lesson);
     }
 
 
@@ -139,7 +125,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = findLessonById(lessonId);
         TeacherCourse teacherCourse = courseServiceImpl.validateAccess(lesson.getCourse().getId(), authenticatedTeacher);
         if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_LESSON) || !lesson.getTeacher().getId().equals(authenticatedTeacher.getId())) {
-            throw new ForbiddenException("NOT_ALLOWED_DELETE_LESSON");
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
         }
         deleteService.deleteLessonAndReferencedData(lesson, lessonId);
     }
@@ -147,7 +133,9 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson findLessonById(String lessonId) {
         return lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found these Id"));
+                .orElseThrow(() -> new NotFoundException(LESSON_NOT_FOUND.getCode(),
+                        LESSON_NOT_FOUND.getMessage().formatted(lessonId)));
+
     }
 
     private void markLessonAsWatched(User user, Lesson lesson) {

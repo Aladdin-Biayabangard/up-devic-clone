@@ -21,10 +21,10 @@ public class ResponseLessonDto {
 
     private String duration;
 
-    //new
-    private String cloudFrontPolicy;
-    private String cloudFrontSignature;
-    private String cloudFrontKeyPairId;
+//    //new
+//    private String cloudFrontPolicy;
+//    private String cloudFrontSignature;
+//    private String cloudFrontKeyPairId;
 
 
 }
