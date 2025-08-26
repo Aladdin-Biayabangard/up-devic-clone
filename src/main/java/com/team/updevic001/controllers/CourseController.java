@@ -62,8 +62,8 @@ public class CourseController {
     }
 
     @Operation(summary = "Kurs şəkli yükləmək")
-    @PatchMapping(path = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void uploadCoursePhoto(@RequestParam String courseId,
+    @PatchMapping(path = "/{courseId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void uploadCoursePhoto(@PathVariable String courseId,
                                   @RequestPart MultipartFile multipartFile) throws IOException {
         courseService.uploadCoursePhoto(courseId, multipartFile);
     }
