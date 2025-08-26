@@ -31,7 +31,7 @@ public enum AuthMapping {
             "/api/v1/course/{courseId}/teachers/{userId}", // add teacher
             "/api/v1/lessons/courses/{courseId}", // add lesson
             "/api/v1/lessons/{lessonId}",         // delete lesson
-            "/api/v1/course/photo"                // upload course photo
+            "/api/v1/course/{courseId}/photo"
     }),
 
     // ASSISTANT_TEACHER privileges
