@@ -22,27 +22,27 @@ public class CommentController {
     private final CommentService commentServiceImpl;
 
     @Operation(summary = "Kursa coment yazmaq")
-    @PostMapping(path = "courses{courseId}")
+    @PostMapping(path = "/courses/{courseId}")
     @ResponseStatus(CREATED)
-    public ResponseCommentDto addCommentToCourse(@PathVariable String courseId,
-                                                 @RequestBody CommentDto comment) {
-        return commentServiceImpl.addCommentToCourse(courseId, comment);
+    public void addCommentToCourse(@PathVariable String courseId,
+                                   @RequestBody CommentDto comment) {
+        commentServiceImpl.addCommentToCourse(courseId, comment);
     }
 
     @Operation(summary = "Derse comment yazmaq")
-    @PostMapping(path = "/lessons{lessonId}")
+    @PostMapping(path = "/lessons/{lessonId}")
     @ResponseStatus(CREATED)
-    public ResponseCommentDto addCommentToLesson(@PathVariable String lessonId,
-                                                 @RequestBody CommentDto comment) {
-        return commentServiceImpl.addCommentToLesson(lessonId, comment);
+    public void addCommentToLesson(@PathVariable String lessonId,
+                                   @RequestBody CommentDto comment) {
+        commentServiceImpl.addCommentToLesson(lessonId, comment);
     }
 
     @Operation(summary = "Commenti yenilemek üçün")
     @PutMapping(path = "/{commentId}")
     @ResponseStatus(NO_CONTENT)
     public void updateComment(@PathVariable Long commentId,
-                                            @RequestBody CommentDto commentDto) {
-         commentServiceImpl.updateComment(commentId, commentDto);
+                              @RequestBody CommentDto commentDto) {
+        commentServiceImpl.updateComment(commentId, commentDto);
     }
 
     @Operation(summary = "Kursun bütün kommnentleri")

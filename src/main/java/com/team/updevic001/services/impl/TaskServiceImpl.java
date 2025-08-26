@@ -76,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<ResponseTaskDto> getTasks(String courseId) {
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
-        return tasks.stream().map(task -> modelMapper.map(task, ResponseTaskDto.class)).toList();
+        return tasks.stream().map(task -> new ResponseTaskDto(task.getQuestions(), task.getOptions())).toList();
     }
 
     private boolean areAllLessonsWatched(User user, Course course) {
