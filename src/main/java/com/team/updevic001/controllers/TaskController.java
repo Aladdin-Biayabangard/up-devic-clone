@@ -5,8 +5,12 @@ import com.team.updevic001.model.dtos.request.TaskDto;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;
 import com.team.updevic001.services.interfaces.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,23 +22,20 @@ public class TaskController {
     private final TaskService taskServiceImpl;
 
     @PostMapping(path = "/courses/{courseId}")
-    public ResponseEntity<String> createTask(@PathVariable String courseId,
-                                             @RequestBody TaskDto taskDto) {
+    public void createTask(@PathVariable String courseId,
+                           @RequestBody TaskDto taskDto) {
         taskServiceImpl.createTask(courseId, taskDto);
-        return ResponseEntity.ok("Task successfully created!");
     }
 
     @PostMapping(path = "/{taskId}/courses/{courseId}")
-    public ResponseEntity<String> checkAnswer(@PathVariable String courseId,
-                                              @PathVariable Long taskId,
-                                              @RequestBody AnswerDto answerDto) {
+    public void checkAnswer(@PathVariable String courseId,
+                            @PathVariable Long taskId,
+                            @RequestBody AnswerDto answerDto) {
         taskServiceImpl.checkAnswer(courseId, taskId, answerDto);
-        return ResponseEntity.ok("Correct answer!");
     }
 
     @GetMapping(path = "/courses/{courseId}")
-    public ResponseEntity<List<ResponseTaskDto>> getTasks(@PathVariable String courseId) {
-        List<ResponseTaskDto> tasks = taskServiceImpl.getTasks(courseId);
-        return ResponseEntity.ok(tasks);
+    public List<ResponseTaskDto> getTasks(@PathVariable String courseId) {
+        return taskServiceImpl.getTasks(courseId);
     }
 }

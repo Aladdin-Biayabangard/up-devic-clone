@@ -24,7 +24,7 @@ public class Task {
     private String taskNumbers;
     private String questions;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> options = new ArrayList<>();
 
     private String correctAnswer;

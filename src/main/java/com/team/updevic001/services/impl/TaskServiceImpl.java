@@ -56,6 +56,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
         User student = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
@@ -74,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<ResponseTaskDto> getTasks(String courseId) {
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
         return tasks.stream().map(task -> new ResponseTaskDto(task.getQuestions(), task.getOptions())).toList();
