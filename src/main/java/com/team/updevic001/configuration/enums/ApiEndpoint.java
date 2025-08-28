@@ -29,14 +29,14 @@ public enum ApiEndpoint {
     ADMIN_DELETE_USER("/api/v1/admins/users/*", HttpMethod.DELETE, ADMIN),
     // Auth Controller
 
-    AUTH_CREATE_ADMIN("/v1/auth/create-admin", HttpMethod.PUT, PUBLIC),
-    AUTH_GET_LOGGED_IN_USER("/v1/auth", HttpMethod.GET, PUBLIC),
-    AUTH_SIGN_UP("/v1/auth/sign-up", HttpMethod.POST, PUBLIC),
-    AUTH_VERIFY_OTP("/v1/auth/verify-otp", HttpMethod.POST, PUBLIC),
-    AUTH_SIGN_IN("/v1/auth/sign-in", HttpMethod.POST, PUBLIC),
-    AUTH_FORGOT_PASSWORD("/v1/auth/forgot-password", HttpMethod.POST, PUBLIC),
-    AUTH_RESET_PASSWORD("/v1/auth/reset-password", HttpMethod.PATCH, STUDENT),
-    AUTH_REFRESH_TOKEN("/v1/auth/refresh-token", HttpMethod.POST, PUBLIC),
+    AUTH_CREATE_ADMIN("/api/v1/auth/create-admin", HttpMethod.PUT, PUBLIC),
+    AUTH_GET_LOGGED_IN_USER("/api/v1/auth", HttpMethod.GET, PUBLIC),
+    AUTH_SIGN_UP("/api/v1/auth/sign-up", HttpMethod.POST, PUBLIC),
+    AUTH_VERIFY_OTP("/api/v1/auth/verify-otp", HttpMethod.POST, PUBLIC),
+    AUTH_SIGN_IN("/api/v1/auth/sign-in", HttpMethod.POST, PUBLIC),
+    AUTH_FORGOT_PASSWORD("/api/v1/auth/forgot-password", HttpMethod.POST, PUBLIC),
+    AUTH_RESET_PASSWORD("/api/v1/auth/reset-password", HttpMethod.PATCH, STUDENT),
+    AUTH_REFRESH_TOKEN("/api/v1/auth/refresh-token", HttpMethod.POST, PUBLIC),
 
     // Certificate Controller
         CERTIFICATE_DOWNLOAD("/api/certificate/download", HttpMethod.GET, STUDENT),
