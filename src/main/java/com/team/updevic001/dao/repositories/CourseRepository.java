@@ -19,7 +19,7 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
 
     List<Course> findCourseByTeacher(User teacher);
 
-    @EntityGraph(attributePaths = {"tasks", "headTeacher"})
+    @EntityGraph(attributePaths = {"tasks", "teacher"})
     Optional<Course> findCourseById(String id);
 
     @Query("SELECT c.id FROM Course c WHERE c.teacher = :teacher")
