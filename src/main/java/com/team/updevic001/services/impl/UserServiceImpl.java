@@ -1,7 +1,7 @@
 package com.team.updevic001.services.impl;
 
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.enums.ExceptionConstants;
+import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.model.mappers.UserProfileMapper;
 import com.team.updevic001.dao.entities.User;
@@ -13,7 +13,6 @@ import com.team.updevic001.model.dtos.request.security.ChangePasswordDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserProfileDto;
 import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
-import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
@@ -81,17 +80,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ResponseUserDto> getUser(String query) {
-        List<User> users = userRepository.findByFirstNameContainingIgnoreCase(query);
-        if (!users.isEmpty()) {
-            return users.stream().map(userMapper::toResponseFromUser).toList();
-        } else {
-            throw new NotFoundException(USER_NOT_FOUND.getCode(),
-                    USER_NOT_FOUND.getMessage().formatted(query));
-        }
-    }
-
-    @Override
     public void uploadUserPhoto(MultipartFile multipartFile) throws IOException {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         String photoOfWhat = "profilePhoto";
@@ -103,10 +91,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public void deleteUser() {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        userRepository.updateUserStatus(authenticatedUser.getId(), Status.DELETED);
+    public boolean existsByUserAndRole(User user, Role roleName) {
+        return userRepository.existsByUserAndRole(user, roleName);
     }
 
     public User fetchUserById(Long id) {

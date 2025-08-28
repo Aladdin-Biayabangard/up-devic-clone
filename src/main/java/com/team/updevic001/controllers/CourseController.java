@@ -39,13 +39,6 @@ public class CourseController {
         return courseService.createCourse(courseCategoryType, courseDto);
     }
 
-    @Operation(summary = "Mövcud kursa müəllif əlavə etmək")
-    @PostMapping(path = "/{courseId}/teachers/{userId}")
-    public void addTeacherToCourse(@PathVariable String courseId,
-                                   @PathVariable Long userId) {
-        courseService.addTeacherToCourse(courseId, userId);
-    }
-
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")
     @PostMapping(path = "/{courseId}/wish")
     @ResponseStatus(NO_CONTENT)

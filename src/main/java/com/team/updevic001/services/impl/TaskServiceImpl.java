@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
 import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
 
@@ -26,14 +24,12 @@ import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
-
     private final ModelMapper modelMapper;
     private final TaskRepository taskRepository;
     private final TestResultRepository testResultRepository;
     private final CourseRepository courseRepository;
     private final StudentTaskRepository studentTaskRepository;
     private final CourseServiceImpl courseServiceImpl;
-    private final TeacherServiceImpl teacherServiceImpl;
     private final AuthHelper authHelper;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final UserLessonStatusRepository userLessonStatusRepository;
@@ -42,16 +38,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void createTask(String courseId, TaskDto taskDto) {
-        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
-                COURSE_NOT_FOUND.getMessage().formatted(courseId)));
-        Teacher teacher = teacherServiceImpl.getAuthenticatedTeacher();
+        Course course = courseRepository.findCourseById(courseId)
+                .orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                        COURSE_NOT_FOUND.getMessage().formatted(courseId)));
+
+        User teacher = authHelper.getAuthenticatedUser();
         courseServiceImpl.validateAccess(courseId, teacher);
+
         Task task = modelMapper.map(taskDto, Task.class);
-        List<String> options = formatedOptions(taskDto.getOptions());
-        task.setOptions(options);
+        task.setOptions(formatOptions(taskDto.getOptions()));
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
-        course.getTasks().add(task);
         task.setCourse(course);
+
+        if (course.getTasks() != null && !course.getTasks().isEmpty()) {
+            course.getTasks().add(task);
+        } else {
+            course.setTasks(new ArrayList<>());
+            course.getTasks().add(task);
+        }
         taskRepository.save(task);
     }
 
@@ -60,84 +64,66 @@ public class TaskServiceImpl implements TaskService {
     public void checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
         User student = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
-        boolean enrolled = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, student);
-        if (!enrolled) {
-            throw new IllegalArgumentException("This student is not enrolled in this course.");
+
+        if (!userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, student)) {
+            throw new IllegalArgumentException("You are not enrolled in this course.");
         }
-        boolean allVideosWatched = areAllLessonsWatched(student, course);
-        if (!allVideosWatched) {
-            throw new IllegalArgumentException("You need to watch the lessons to watch the tests.");
+
+        if (!areAllLessonsWatched(student, course)) {
+            throw new IllegalArgumentException("You must watch all lessons before taking the test.");
         }
+
         Task task = findTaskById(taskId);
-        checkCompletionTask(student, task);
-        TestResult result = checkTestResult(student, course);
-        validateAnswerAndUpdateScore(student, result, task, answerDto, course);
+        ensureTaskNotCompleted(student, task);
+
+        TestResult result = testResultRepository
+                .findTestResultByStudentAndCourse(student, course)
+                .orElseGet(() -> {
+                    TestResult newResult = new TestResult();
+                    newResult.setScore(0);
+                    newResult.setCourse(course);
+                    newResult.setStudent(student);
+                    return newResult;
+                });
+
+        if (task.getCorrectAnswer().equalsIgnoreCase(answerDto.getAnswer())) {
+            double scorePerTask = calculateScore(course.getId());
+            result.setScore(result.getScore() + scorePerTask);
+            testResultRepository.save(result);
+
+            StudentTask studentTask = new StudentTask();
+            studentTask.setCompleted(true);
+            studentTask.setStudent(student);
+            studentTask.setTask(task);
+            studentTaskRepository.save(studentTask);
+        } else {
+            throw new IllegalArgumentException("Incorrect answer!");
+        }
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
-        List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
-        return tasks.stream().map(task -> new ResponseTaskDto(task.getQuestions(), task.getOptions())).toList();
+        return taskRepository.findTaskByCourseId(courseId).stream()
+                .map(task -> new ResponseTaskDto(task.getQuestions(), task.getOptions()))
+                .toList();
     }
 
     private boolean areAllLessonsWatched(User user, Course course) {
         List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
-        for (String lessonId : lessonIds) {
-            if (!userLessonStatusRepository.findByUserAndLesson(user, lessonId)) {
-                return false;
-            }
-        }
-        return true;
+        return lessonIds.stream()
+                .allMatch(lessonId -> userLessonStatusRepository.findByUserAndLesson(user, lessonId));
     }
 
-    private void checkCompletionTask(User student, Task task) {
+    private void ensureTaskNotCompleted(User student, Task task) {
         if (studentTaskRepository.existsStudentTaskByCompletedAndStudentAndTask(true, student, task)) {
-            throw new IllegalArgumentException("This question has already been answered.");
+            throw new IllegalArgumentException("You have already completed this task.");
         }
     }
 
-    private TestResult checkTestResult(User student, Course course) {
-        return testResultRepository
-                .findTestResultByStudentAndCourse(student, course).orElseGet(
-                        () -> {
-                            TestResult testResult = new TestResult();
-                            testResult.setScore(0);
-                            testResult.setCourse(course);
-                            testResult.setStudent(student);
-                            return testResult;
-                        });
-    }
-
-    private void validateAnswerAndUpdateScore(User student, TestResult result, Task task, AnswerDto answerDto, Course course) {
-        String correctAnswer = task.getCorrectAnswer();
-
-        double percent = calculateScore(course);
-        StudentTask studentTask = new StudentTask();
-
-        if (correctAnswer.contains(answerDto.getAnswer())) {
-            result.setScore(result.getScore() + percent);
-            testResultRepository.save(result);
-            studentTask.setCompleted(true);
-        } else {
-            studentTask.setCompleted(false);
-            throw new IllegalArgumentException("Incorrect answer!");
-        }
-        studentTask.setStudent(student);
-        studentTask.setTask(task);
-        studentTaskRepository.save(studentTask);
-    }
-
-    private List<String> formatedOptions(List<String> options) {
-        final char[] optionChar = {'A'};
-        return options.stream()
-                .map(option -> optionChar[0]++ + ") " + option)
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private double calculateScore(Course course) {
-        int taskCount = course.getTasks().size();
-        return (double) 100 / taskCount;
+    private double calculateScore(String courseId) {
+        int taskCount = taskRepository.countByCourseId(courseId);
+        return taskCount > 0 ? (100.0 / taskCount) : 0;
     }
 
     private Task findTaskById(Long taskId) {
@@ -145,5 +131,11 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getCode(),
                         TASK_NOT_FOUND.getMessage().formatted(taskId)));
     }
-}
 
+    private List<String> formatOptions(List<String> options) {
+        final char[] optionChar = {'A'};
+        return options.stream()
+                .map(option -> optionChar[0]++ + ") " + option)
+                .toList();
+    }
+}

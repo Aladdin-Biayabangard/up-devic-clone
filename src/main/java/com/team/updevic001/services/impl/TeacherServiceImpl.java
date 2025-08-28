@@ -1,19 +1,19 @@
 package com.team.updevic001.services.impl;
+
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.model.mappers.TeacherMapper;
 import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.*;
-import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.TeacherService;
+import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
 import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOUND;
 
 @Slf4j
@@ -33,109 +31,63 @@ import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOU
 @RequiredArgsConstructor
 public class TeacherServiceImpl implements TeacherService {
 
-    private final TeacherRepository teacherRepository;
-    private final TeacherCourseRepository teacherCourseRepository;
     private final AuthHelper authHelper;
     private final TeacherMapper teacherMapper;
     private final CourseMapper courseMapper;
     private final StudentCourseRepository studentCourseRepository;
     private final CourseRepository courseRepository;
     private final UserProfileRepository userProfileRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
 
     @Override
     public List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses() {
-        Teacher teacher = getAuthenticatedTeacher();
-        List<Course> courses = courseRepository.findCourseByHeadTeacher(teacher);
+        User authenticatedUser = authHelper.getAuthenticatedUser();
+        List<Course> courses = courseRepository.findCourseByTeacher(authenticatedUser);
         return courses.stream().map(courseMapper::toCourseResponse).toList();
     }
 
     @Override
     public TeacherMainInfo getInfo() {
-        Teacher teacher = getAuthenticatedTeacher();
-        List<String> allCourseIdsByTeacher = teacherCourseRepository.findAllCourseIdsByTeacher(teacher);
-        int courseCount = allCourseIdsByTeacher.size();
-        int studentCount = studentCourseRepository.countAllStudentsByCourseIds(allCourseIdsByTeacher);
-        return new TeacherMainInfo(courseCount, studentCount, teacher.getBalance());
+        User authenticatedUser = authHelper.getAuthenticatedUser();
+        var courseIds = courseRepository.findCourseIdsByTeacher(authenticatedUser);
+        int studentCount = studentCourseRepository.countAllStudentsByCourseIds(courseIds);
+        return new TeacherMainInfo(courseIds.size(), studentCount);
     }
 
-    public ResponseTeacherDto getTeacherProfile(Long teacherId) {
-        Teacher teacher = findTeacherById(teacherId);
-        UserProfile teacherProfile = userProfileRepository.findByUser(teacher.getUser());
-        return teacherMapper.toTeacherDto(teacher, teacherProfile);
+    public ResponseTeacherDto getTeacherProfile(Long userId) {
+        User user = userService.fetchUserById(userId);
+        if (!userService.existsByUserAndRole(user, Role.TEACHER)) {
+            throw new NotFoundException(TEACHER_NOT_FOUND.getCode(), TEACHER_NOT_FOUND.getMessage().formatted(userId));
+        }
+        UserProfile teacherProfile = userProfileRepository.findTeacherWithRelations(user);
+        return teacherMapper.toTeacherDto(user, teacherProfile);
     }
-
 
     public TeacherNameDto getTeacherShortInfo(Long teacherId) {
-        return teacherRepository.findTeacherNamesByCourse(teacherId);
-    }
-
-    @Override
-    public void deleteTeacher(Long teacherId) {
-        Teacher teacher = validateTeacherAndAccess(teacherId);
-        teacherRepository.delete(teacher);
-    }
-
-    @Override
-    public void deleteAllTeachers() {
-        teacherRepository.deleteAll();
-        teacherRepository.resetAutoIncrement();
-    }
-
-    private Teacher validateTeacherAndAccess(Long teacherId) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Teacher teacher = findTeacherById(teacherId);
-
-        boolean isOwner = teacherRepository.existsTeacherByUserId(authenticatedUser.getId());
-        boolean isAdmin = authenticatedUser.getRoles().stream()
-                .anyMatch(userRole -> userRole.getName().equals(Role.ADMIN));
-
-        if (!isOwner && !isAdmin) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed!");
-        }
-
-        return teacher;
+        return userRepository.findTeacherNameByUserId(teacherId);
     }
 
     public List<ResponseTeacherDto> searchTeacher(String keyword) {
         // 1. Teacher-ları axtar
-        List<Teacher> teachers = teacherRepository.searchTeacher(keyword);
+        List<User> teachers = userRepository.searchTeacher(keyword);
 
         if (teachers.isEmpty()) {
             return List.of();
         }
 
-        List<User> users = teachers.stream()
-                .map(Teacher::getUser)
-                .toList();
-
-        List<UserProfile> userProfiles = userProfileRepository.findByUsers(users);
+        List<UserProfile> userProfiles = userProfileRepository.findByUsers(teachers);
 
         Map<Long, UserProfile> userIdToProfile = userProfiles.stream()
                 .collect(Collectors.toMap(p -> p.getUser().getId(), Function.identity()));
 
         return teachers.stream()
                 .map(teacher -> {
-                    User user = teacher.getUser();
-                    UserProfile profile = userIdToProfile.get(user.getId());
+                    UserProfile profile = userIdToProfile.get(teacher.getId());
                     return teacherMapper.toTeacherDto(teacher, profile);
                 })
                 .toList();
     }
 
-
-    public Teacher getAuthenticatedTeacher() {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Optional<Teacher> teacher = teacherRepository.findByUserId(authenticatedUser.getId());
-        if (teacher.isEmpty()) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed!");
-        }
-        return teacher.get();
-    }
-
-    private Teacher findTeacherById(Long teacherID) {
-        return teacherRepository.findById(teacherID)
-                .orElseThrow(() -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
-                        TEACHER_NOT_FOUND.getMessage().formatted(teacherID)));
-    }
 }

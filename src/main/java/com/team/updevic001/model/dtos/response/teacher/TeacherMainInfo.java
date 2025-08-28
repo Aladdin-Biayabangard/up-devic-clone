@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +12,6 @@ public class TeacherMainInfo {
 
     int totalCourseCount;
     int totalStudentCount;
-    BigDecimal balance;
+ //   BigDecimal balance;
 
 }

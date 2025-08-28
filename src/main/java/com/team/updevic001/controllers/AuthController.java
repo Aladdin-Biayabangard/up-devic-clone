@@ -15,7 +15,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
@@ -42,8 +42,8 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public AuthResponseDto verifyOtp(@RequestBody OtpRequest request) {
-        return authService.verifyAndGetToken(request);
+    public AuthResponseDto verifyOtpAndGenerateToken(@RequestBody OtpRequest request) {
+        return authService.verifyOtpAndGenerateToken(request);
     }
 
     @PostMapping("/sign-in")

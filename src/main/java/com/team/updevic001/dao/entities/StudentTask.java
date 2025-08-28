@@ -27,7 +27,4 @@ public class StudentTask {
     private Task task;
 
     private Boolean completed;
-
-    
-
 }

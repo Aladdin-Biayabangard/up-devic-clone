@@ -12,10 +12,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileDto {
-//
-//    private String firstName;
-//    private String lastName;
-//    private String password;
 
     private String bio;
 

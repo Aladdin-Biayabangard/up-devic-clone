@@ -6,7 +6,9 @@ application:
   security:
     jwt:
       expiration: 86400000
+      refresh-expiration: 604800000 # 7 gün
       key: ${SECURITY_KEY}
+
 
 ALGORITHM: ${ALGORITHM}
 

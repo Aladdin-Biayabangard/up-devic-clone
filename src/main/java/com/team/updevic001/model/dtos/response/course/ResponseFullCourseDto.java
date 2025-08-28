@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +15,7 @@ public class ResponseFullCourseDto {
 
     private String photo_url;
 
-    private Long headTeacher;
-
-    private List<Long> teachers;
+    private Long teacher;
 
     private String title;
 
@@ -31,8 +28,6 @@ public class ResponseFullCourseDto {
     private long lessonCount;
 
     private long studentCount;
-
-    private long teacherCount;
 
     private double rating;
 

@@ -1,6 +1,5 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.configuration.config.syncrn.RateLimit;
 import com.team.updevic001.model.dtos.request.UserProfileDto;
 import com.team.updevic001.model.dtos.request.security.ChangePasswordDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -48,18 +46,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserProfile());
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<ResponseUserDto> getUserById(@PathVariable Long id) {
         ResponseUserDto userById = userService.getUserById(id);
         return new ResponseEntity<>(userById, HttpStatus.OK);
     }
-
-//    @DeleteMapping
-//    public ResponseEntity<String> deleteUser() {
-//        userService.deleteUser();
-//        return ResponseEntity.ok("Delete all users!");
-//    }
-
 
 }
