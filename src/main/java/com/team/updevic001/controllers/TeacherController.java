@@ -45,20 +45,6 @@ public class TeacherController {
         return teacherServiceImpl.getTeacherShortInfo(teacherId);
     }
 
-    @Operation(summary = "Delete the teacher")
-    @DeleteMapping(path = "/{userId}")
-    public ResponseEntity<String> deleteTeacher(@PathVariable Long userId) {
-        teacherServiceImpl.deleteTeacher(userId);
-        return ResponseEntity.ok("Teacher deleted!");
-    }
-
-    @Operation(summary = "Delete all teachers")
-    @DeleteMapping(path = "/all")
-    public ResponseEntity<String> deleteAllTeachers() {
-        teacherServiceImpl.deleteAllTeachers();
-        return ResponseEntity.ok("All teacher deleted!");
-    }
-
     @Operation(summary = "Muellimleri axtarir")
     @GetMapping(path = "/search")
     public ResponseEntity<List<ResponseTeacherDto>> searchTeacher(@RequestParam String keyword) {

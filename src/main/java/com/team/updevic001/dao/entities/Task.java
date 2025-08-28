@@ -30,9 +30,9 @@ public class Task {
     private String correctAnswer;
 
     @OneToMany(mappedBy = "task", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StudentTask> tasks;
+    private List<StudentTask> studentTasks = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;

@@ -3,9 +3,7 @@ package com.team.updevic001.utility;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.repositories.UserRepository;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.security.Key;
 import java.util.Date;
@@ -29,40 +26,36 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final UserRepository userRepository;
-
     @Value("${application.security.jwt.key}")
     private String secret_key;
     @Value("${application.security.jwt.expiration}")
     private long accessTokenValidity;
     private static Key key;
 
-public Key initializeKey() {
-    if (key != null) {
+    public Key initializeKey() {
+        if (key != null) {
+            return key;
+        }
+
+        byte[] keyBytes;
+        try {
+            keyBytes = Base64.getDecoder().decode(secret_key);
+        } catch (IllegalArgumentException e) {
+            keyBytes = secret_key.getBytes(StandardCharsets.UTF_8);
+        }
+
+        if (keyBytes.length < 64) {
+            throw new IllegalArgumentException(
+                    "JWT Secret key is too short for HS512, must be at least 512 bits"
+            );
+        }
+        key = Keys.hmacShaKeyFor(keyBytes);
         return key;
     }
-
-    byte[] keyBytes;
-    try {
-        keyBytes = Base64.getDecoder().decode(secret_key);
-    } catch (IllegalArgumentException e) {
-        keyBytes = secret_key.getBytes(StandardCharsets.UTF_8);
-    }
-
-    if (keyBytes.length < 64) {
-        throw new IllegalArgumentException(
-            "JWT Secret key is too short for HS512, must be at least 512 bits"
-        );
-    }
-    key = Keys.hmacShaKeyFor(keyBytes);
-    return key;
-}
 
 
     public String createToken(User user) {
         key = initializeKey();
-        user = userRepository.findByEmail(user.getEmail()).orElseThrow(()-> new UsernameNotFoundException("USER_NOT_FOUND"));
-
         List<String> roles = user.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)

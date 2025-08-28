@@ -16,9 +16,9 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/admins")
 @RequiredArgsConstructor
-public class AdminController {
+public class    AdminController {
 
     private final AdminService adminServiceImpl;
 
@@ -75,27 +75,5 @@ public class AdminController {
     public void softyDeleteUser(@PathVariable Long id) {
         adminServiceImpl.softyDeleteUser(id);
     }
-
-    @Operation(summary = "All User Deletes.")
-    @DeleteMapping(path = "/all")
-    @ResponseStatus(NO_CONTENT)
-    public void deleteUsers() {
-        adminServiceImpl.deleteUsers();
-    }
-
-//    @Operation(summary = "Bütün kursları silmək üçün.")
-//    @DeleteMapping(path = "delete-courses")
-//    @ResponseStatus(NO_CONTENT)
-//    public void deleteAllCourses() {
-//        List<Course> all = courseRepository.findAll();
-//        all.forEach(course -> {
-//            List<User> users = userRepository.findAllByWishlistContaining(course);
-//            if (!users.isEmpty()) {
-//                users.forEach(user -> user.getWishlist().remove(course));
-//                userRepository.saveAll(users);
-//            }
-//        });
-//        courseRepository.deleteAll();
-//    }
 
 }

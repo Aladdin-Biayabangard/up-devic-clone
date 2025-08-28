@@ -3,10 +3,8 @@ package com.team.updevic001.model.mappers;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
-import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserProfileDto;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
-import com.team.updevic001.model.projection.UserView;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -24,7 +22,7 @@ public class UserMapper {
         return new ResponseUserProfileDto(
                 firstName,
                 lastName,
-                userProfile.getProfilePhoto_url(),
+                userProfile.getProfilePhotoUrl(),
                 userProfile.getBio(),
                 userProfile.getSocialLinks(),
                 userProfile.getSkills(),
@@ -58,11 +56,4 @@ public class UserMapper {
     public List<UserResponseForAdmin> toResponseForAdmin(List<User> users) {
         return users.stream().map(this::toResponseForAdmin).toList();
     }
-
-
-    public ResponseUserDto toResponseFromUser(User user) {
-        return new ResponseUserDto(user.getFirstName(), user.getLastName(), user.getEmail());
-    }
-
-
 }

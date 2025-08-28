@@ -37,5 +37,4 @@ public class StudentCourse {
     @CreationTimestamp
     private LocalDateTime enrolledAt;
 
-    
 }

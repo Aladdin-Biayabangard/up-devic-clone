@@ -7,9 +7,9 @@ import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 
 public interface CommentService {
 
-    ResponseCommentDto addCommentToCourse(String courseId, CommentDto commentDto);
+    void addCommentToCourse(String courseId, CommentDto commentDto);
 
-    ResponseCommentDto addCommentToLesson(String lessonId, CommentDto commentDto);
+    void addCommentToLesson(String lessonId, CommentDto commentDto);
 
     void updateComment(Long commentId, CommentDto commentDto);
 

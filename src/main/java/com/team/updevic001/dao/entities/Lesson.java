@@ -53,6 +53,6 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     @JsonIgnore
-    private Teacher teacher;
+    private User teacher;
 
 }

@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/course")
+@RequestMapping("/api/v1/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
@@ -37,13 +37,6 @@ public class CourseController {
     public ResponseCourseDto createCourse(@RequestParam CourseCategoryType courseCategoryType,
                                           @RequestBody CourseDto courseDto) {
         return courseService.createCourse(courseCategoryType, courseDto);
-    }
-
-    @Operation(summary = "Mövcud kursa müəllif əlavə etmək")
-    @PostMapping(path = "/{courseId}/teachers/{userId}")
-    public void addTeacherToCourse(@PathVariable String courseId,
-                                   @PathVariable Long userId) {
-        courseService.addTeacherToCourse(courseId, userId);
     }
 
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")

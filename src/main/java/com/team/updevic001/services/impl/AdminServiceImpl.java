@@ -1,12 +1,9 @@
 package com.team.updevic001.services.impl;
 
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.enums.ExceptionConstants;
 import com.team.updevic001.model.mappers.UserMapper;
-import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
-import com.team.updevic001.dao.repositories.TeacherRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
@@ -16,6 +13,7 @@ import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.services.interfaces.AdminService;
+import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.specification.UserCriteria;
 import com.team.updevic001.specification.UserSpecification;
@@ -25,9 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -46,33 +42,25 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserRoleRepository userRoleRepository;
-    private final TeacherRepository teacherRepository;
     private final UserService userServiceImpl;
     private final AuthHelper authHelper;
+    private final AuthService authService;
 
     @Override
     public void assignTeacherProfile(String email) {
-        User user = userRepository.findByEmail(email)
+        var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage().formatted(email)));
-        UserRole userRole = userRoleRepository.findByName(Role.TEACHER).orElseGet(() -> {
-            UserRole role = UserRole.builder()
-                    .name(Role.TEACHER)
-                    .build();
-            return userRoleRepository.save(role);
 
-        });
+        var userRole = authService.createOrFetchRole(Role.TEACHER);
         if (!user.getRoles().contains(userRole)) {
             user.getRoles().add(userRole);
-            Teacher teacher = new Teacher();
-            teacher.setUser(user);
-            teacherRepository.save(teacher);
             userRepository.save(user);
         }
     }
 
     @Override
     public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
-        Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+        var pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
 
         Specification<User> filter = null;
         if (userCriteria.getFirstName() != null ||
@@ -82,7 +70,7 @@ public class AdminServiceImpl implements AdminService {
             (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
             filter = UserSpecification.filter(userCriteria);
         }
-        Page<User> allUsers = (filter == null)
+        var allUsers = (filter == null)
                 ? userRepository.findAll(pageable)
                 : userRepository.findAll(filter, pageable);
 
@@ -95,7 +83,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @CacheEvict(value = "users", allEntries = true)
     public void activateUser(Long id) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
+        var authenticatedUser = authHelper.getAuthenticatedUser();
         checkAdminRole(authenticatedUser, Role.ADMIN);
         userRepository.updateUserStatus(id, Status.ACTIVE);
 
@@ -104,7 +92,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @CacheEvict(value = "users", allEntries = true)
     public void deactivateUser(Long id) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
+        var authenticatedUser = authHelper.getAuthenticatedUser();
         checkAdminRole(authenticatedUser, Role.ADMIN);
         userRepository.updateUserStatus(id, Status.INACTIVE);
 
@@ -113,10 +101,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @CacheEvict(value = {"usersByRole", "users"}, allEntries = true)
     public void assignRoleToUser(Long id, Role role) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        User user = userServiceImpl.fetchUserById(id);
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var user = userServiceImpl.fetchUserById(id);
         checkAdminRole(authenticatedUser, Role.ADMIN);
-        UserRole userRole = userRoleRepository.findByName(role).orElseGet(() -> {
+        var userRole = userRoleRepository.findByName(role).orElseGet(() -> {
             UserRole newRole = UserRole.builder()
                     .name(role)
                     .build();
@@ -133,22 +121,16 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @CacheEvict(value = {"usersByRole", "users"}, allEntries = true)
     public void removeRoleFromUser(Long userId, Role role) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        User user = userServiceImpl.fetchUserById(userId);
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var user = userServiceImpl.fetchUserById(userId);
         checkAdminRole(authenticatedUser, Role.ADMIN);
-        UserRole findRole = user.getRoles()
+        var findRole = user.getRoles()
                 .stream()
                 .filter(userRole -> Objects.equals(userRole.getName(), role))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(ROLE_NOT_FOUND.getCode(), "This user does not have such a role."));
         user.getRoles().remove(findRole);
         userRepository.save(user);
-    }
-
-    @Override
-    @CacheEvict(value = {"users", "usersByRole", "userCount"}, allEntries = true)
-    public void deleteUsers() {
-        userRepository.deleteAll();
     }
 
     @Override

@@ -14,7 +14,6 @@ public class DeleteService {
 
     private final CourseRepository courseRepository;
 
-    private final TeacherCourseRepository teacherCourseRepository;
     private final CourseRatingRepository courseRatingRepository;
     private final WishListRepository wishListRepository;
     private final LessonRepository lessonRepository;
@@ -37,7 +36,6 @@ public class DeleteService {
         courseRatingRepository.deleteRatingByCourseId(courseId);
         studentCourseRepository.deleteStudentCourseByCourseId(courseId);
         taskRepository.deleteTaskByCourseId(courseId);
-        teacherCourseRepository.deleteTeacherCourseByCourseId(courseId);
         userCourseFeeRepository.deleteCourseFeeByCourseId(courseId);
         testResultRepository.deleteAllByCourseId(courseId);
         courseRatingRepository.deleteAllByCourseId(courseId);

@@ -1,12 +1,12 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
-import com.team.updevic001.model.projection.UserView;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,22 +16,19 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     boolean existsByEmail(String email);
 
 
-    List<User> findByFirstNameContainingIgnoreCase(String query);
-
     long count();
-
-    @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :role")
-    List<UserView> findUsersByRole(Role role);
 
     @EntityGraph(attributePaths = "roles")
     Optional<User> findByEmail(String email);
 
-    @EntityGraph(attributePaths = "roles")
     Optional<User> findByEmailAndStatus(String email, Status status);
 
 
-    List<UserView> findByIdGreaterThanOrderByIdAsc(Long afterId, Pageable pageable);
-
+    @Query(value = "SELECT * FROM users u " +
+                   "WHERE MATCH(u.first_name, u.last_name) AGAINST (:keyword IN BOOLEAN MODE)",
+            nativeQuery = true)
+    @EntityGraph(attributePaths = "roles")
+    List<User> searchTeacher(@Param("keyword") String keyword);
 
     @Modifying
     @Transactional
@@ -46,5 +43,18 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             """)
     int countNonAdminUsers();
 
+    @Query("""
+                SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END
+                FROM User u
+                JOIN u.roles r
+                WHERE u = :user AND r.name = :roleName
+            """)
+    boolean existsByUserAndRole(@Param("user") User user, @Param("roleName") Role roleName);
+
+    @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
+           "(u.id, u.firstName, u.lastName, p.profilePhotoUrl) " +
+           "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
+           "WHERE u.id = :userId")
+    TeacherNameDto findTeacherNameByUserId(@Param("userId") Long userId);
 
 }

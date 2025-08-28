@@ -5,7 +5,6 @@ import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.criteria.CourseSearchCriteria;
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.*;
-import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
@@ -14,13 +13,9 @@ import com.team.updevic001.model.dtos.response.course.ResponseCategoryDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
-import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
 import com.team.updevic001.model.enums.CourseCategoryType;
-import com.team.updevic001.model.enums.TeacherPermission;
-import com.team.updevic001.model.enums.TeacherPrivileges;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.FileLoadService;
-import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.specification.CourseSpecification;
 import com.team.updevic001.utility.AuthHelper;
 import jakarta.transaction.Transactional;
@@ -40,10 +35,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
 import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
-import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOUND;
 import static com.team.updevic001.utility.IDGenerator.normalizeString;
 
 @Slf4j
@@ -54,10 +47,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
-    private final TeacherRepository teacherRepository;
-    private final TeacherService teacherService;
     private final ModelMapper modelMapper;
-    private final TeacherCourseRepository teacherCourseRepository;
     private final FileLoadService fileLoadServiceImpl;
     private final CourseRatingRepository courseRatingRepository;
     private final AuthHelper authHelper;
@@ -70,57 +60,52 @@ public class CourseServiceImpl implements CourseService {
     @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
     public ResponseCourseDto createCourse(CourseCategoryType courseCategoryType,
                                           CourseDto courseDto) {
-        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-        Course course = modelMapper.map(courseDto, Course.class);
+        var teacher = authHelper.getAuthenticatedUser();
+
+        var course = modelMapper.map(courseDto, Course.class);
         course.setId(normalizeString(course.getTitle()));
         course.setCourseCategoryType(courseCategoryType);
-        course.setHeadTeacher(authenticatedTeacher);
+        course.setTeacher(teacher);
         courseRepository.save(course);
-        TeacherCourse teacherCourse = TeacherCourse.builder()
-                .teacher(authenticatedTeacher)
-                .course(course)
-                .teacherPrivilege(TeacherPrivileges.HEAD_TEACHER)
-                .build();
-        teacherCourseRepository.save(teacherCourse);
         return courseMapper.courseDto(course);
     }
 
-    @Override
-    @Transactional
-    public void addTeacherToCourse(String courseId, Long userId) {
-        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-        TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
-
-        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_TEACHER)) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
-        }
-
-        Course course = findCourseById(courseId);
-
-        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(
-                () -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
-                        TEACHER_NOT_FOUND.getMessage().formatted(userId)));
-
-        boolean exists = teacherCourseRepository.existsByCourseIdAndTeacher(courseId, newTeacher);
-        if (exists) {
-            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(), "Teacher already exists in this course!");
-        } else {
-            teacherCourseRepository.save(TeacherCourse.builder()
-                    .course(course)
-                    .teacher(newTeacher)
-                    .teacherPrivilege(TeacherPrivileges.ASSISTANT_TEACHER)
-                    .build());
-        }
-    }
+//    @Override
+//    @Transactional
+//    public void addTeacherToCourse(String courseId, Long userId) {
+//        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
+//        Teacher teacherCourse = validateAccess(courseId, authenticatedTeacher);
+//
+//        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_TEACHER)) {
+//            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
+//        }
+//
+//        Course course = findCourseById(courseId);
+//
+//        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(
+//                () -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
+//                        TEACHER_NOT_FOUND.getMessage().formatted(userId)));
+//
+//        boolean exists = teacherCourseRepository.existsByCourseIdAndTeacher(courseId, newTeacher);
+//        if (exists) {
+//            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(), "Teacher already exists in this course!");
+//        } else {
+//            teacherCourseRepository.save(Teacher.builder()
+//                    .course(course)
+//                    .teacher(newTeacher)
+//                    .teacherPrivilege(TeacherPrivileges.ASSISTANT_TEACHER)
+//                    .build());
+//        }
+//    }
 
     @Override
     public void addToWishList(String courseId) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Course course = findCourseById(courseId);
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var course = findCourseById(courseId);
         if (wishListRepository.existsWishListByCourseAndUser(course, authenticatedUser)) {
             throw new IllegalArgumentException("This course is already in your favorites.");
         }
-        WishList wishList = WishList.builder()
+        var wishList = WishList.builder()
                 .course(course)
                 .user(authenticatedUser)
                 .build();
@@ -129,19 +114,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-//    @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
     public void updateCourse(String courseId, CourseDto courseDto) {
-        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-        TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
+        var teacher = authHelper.getAuthenticatedUser();
 
-        Course findCourse = courseRepository
+        validateAccess(courseId, teacher);
+
+        var findCourse = courseRepository
                 .findById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
                         COURSE_NOT_FOUND.getMessage().formatted(courseId)));
 
         modelMapper.map(courseDto, findCourse);
         courseRepository.save(findCourse);
-        teacherCourse.setCourse(findCourse);
-        teacherCourseRepository.save(teacherCourse);
     }
 
     public void uploadCoursePhoto(String courseId, MultipartFile multipartFile) throws IOException {
@@ -154,15 +137,15 @@ public class CourseServiceImpl implements CourseService {
         }
 //        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
         String photoOfWhat = "coursePhoto";
-        FileUploadResponse fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
+        var fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
         courseRepository.updateCourseFileInfo(courseId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
     }
 
     @Override
     public void updateRatingCourse(String courseId, int rating) {
-        User user = authHelper.getAuthenticatedUser();
-        Course course = findCourseById(courseId);
-        CourseRating courseRating = courseRatingRepository.findCourseRatingByCourseAndUser(course, user)
+        var user = authHelper.getAuthenticatedUser();
+        var course = findCourseById(courseId);
+        var courseRating = courseRatingRepository.findCourseRatingByCourseAndUser(course, user)
                 .orElseGet(() ->
                         CourseRating.builder()
                                 .course(course)
@@ -177,7 +160,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
-        Course course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+        var course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
                 COURSE_NOT_FOUND.getMessage().formatted(courseId)));
         return courseMapper.toFullResponse(course);
     }
@@ -217,8 +200,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CustomPage<ResponseCourseShortInfoDto> getWishList(CustomPageRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Page<Course> courseByUser = wishListRepository.findCourseByUser(authenticatedUser, pageable);
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var courseByUser = wishListRepository.findCourseByUser(authenticatedUser, pageable);
         return new CustomPage<>(
                 courseMapper.toCourseResponse(courseByUser.getContent()),
                 courseByUser.getNumber(),
@@ -228,7 +211,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<ResponseCourseShortInfoDto> getMost5PopularCourses() {
-        List<Course> top5ByOrderByRatingDesc = courseRepository.findTop5ByOrderByRatingDesc();
+        var top5ByOrderByRatingDesc = courseRepository.findTop5ByOrderByRatingDesc();
         return courseMapper.toCourseResponse(top5ByOrderByRatingDesc);
     }
 
@@ -242,13 +225,11 @@ public class CourseServiceImpl implements CourseService {
     @CacheEvict(value = {"courseSearchCache", "courseSortCache"}, allEntries = true)
     @Transactional
     public void deleteCourse(String courseId) {
-        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-        TeacherCourse teacherCourse = validateAccess(courseId, authenticatedTeacher);
-        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_COURSE)) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
-        }
-        List<String> allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
-        deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, authenticatedTeacher.getUser());
+        var teacher = authHelper.getAuthenticatedUser();
+
+        validateAccess(courseId, teacher);
+        var allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
+        deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, teacher);
     }
 
     public Course findCourseById(String courseId) {
@@ -265,8 +246,9 @@ public class CourseServiceImpl implements CourseService {
                 .orElse(0.0);
     }
 
-    protected TeacherCourse validateAccess(String courseId, Teacher authenticatedTeacher) {
-        return teacherCourseRepository.findByCourseIdAndTeacher(courseId, authenticatedTeacher)
-                .orElseThrow(() -> new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!"));
+    protected void validateAccess(String courseId, User teacher) {
+        if (!courseRepository.existsCourseByIdAndTeacher(courseId, teacher)) {
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
+        }
     }
 }

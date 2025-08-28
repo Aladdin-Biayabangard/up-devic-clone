@@ -1,7 +1,5 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.dao.repositories.CourseRepository;
-import com.team.updevic001.dao.repositories.TeacherCourseRepository;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
@@ -17,15 +15,14 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
 
 
     AuthService authService;
-    CourseRepository courseRepository;
-    TeacherCourseRepository teacherCourseRepository;
+
 
     @PutMapping(path = "create-admin")
     @ResponseStatus(CREATED)
@@ -45,8 +42,8 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public AuthResponseDto verifyOtp(@RequestBody OtpRequest request) {
-        return authService.verifyAndGetToken(request);
+    public AuthResponseDto verifyOtpAndGenerateToken(@RequestBody OtpRequest request) {
+        return authService.verifyOtpAndGenerateToken(request);
     }
 
     @PostMapping("/sign-in")
@@ -69,13 +66,6 @@ public class AuthController {
     @PostMapping("/refresh-token")
     public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequest request) {
         return authService.refreshAccessToken(request);
-    }
-
-    @DeleteMapping(path = "all-course-delete")
-    @ResponseStatus(NO_CONTENT)
-    public void deleteAll() {
-        teacherCourseRepository.deleteAll();
-        courseRepository.deleteAll();
     }
 
 }

@@ -10,9 +10,5 @@ spring:
       - file
 
 
-  config:
-    import: "optional:classpath:.env"
-
-
 
 
