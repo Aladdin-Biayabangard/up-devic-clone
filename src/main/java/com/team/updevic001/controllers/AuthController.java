@@ -1,7 +1,5 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.dao.repositories.CourseRepository;
-import com.team.updevic001.dao.repositories.TeacherCourseRepository;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
@@ -24,8 +22,7 @@ public class AuthController {
 
 
     AuthService authService;
-    CourseRepository courseRepository;
-    TeacherCourseRepository teacherCourseRepository;
+
 
     @PutMapping(path = "create-admin")
     @ResponseStatus(CREATED)
@@ -69,13 +66,6 @@ public class AuthController {
     @PostMapping("/refresh-token")
     public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequest request) {
         return authService.refreshAccessToken(request);
-    }
-
-    @DeleteMapping(path = "all-course-delete")
-    @ResponseStatus(NO_CONTENT)
-    public void deleteAll() {
-        teacherCourseRepository.deleteAll();
-        courseRepository.deleteAll();
     }
 
 }

@@ -11,3 +11,4 @@ logging:
     root: info
     org.hibernate.SQL: DEBUG
     org.springframework.data.jpa.repository: DEBUG
+    org.springframework.web: DEBUG

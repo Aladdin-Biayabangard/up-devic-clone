@@ -26,7 +26,7 @@ public interface AdminService {
 
     Long countUsers();
 
-    void deleteUsers();
+//    void deleteUsers();
 
 
 }

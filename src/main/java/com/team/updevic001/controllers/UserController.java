@@ -27,7 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PutMapping("/profile")
+    @PutMapping()
     public void updateUserProfileInfo(@RequestBody UserProfileDto userProfileDto) {
         userService.updateUserProfileInfo(userProfileDto);
     }
@@ -37,12 +37,12 @@ public class UserController {
         userService.updateUserPassword(passwordDto);
     }
 
-    @PatchMapping(path = "profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(path = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadUserPhoto(@RequestPart MultipartFile multipartFile) throws IOException {
         userService.uploadUserPhoto(multipartFile);
     }
 
-    @GetMapping(path = "profile")
+    @GetMapping(path = "/profile")
     @Operation(summary = "Profili göstərmək üçün")
     public ResponseEntity<ResponseUserProfileDto> getUserProfile() {
         return ResponseEntity.ok(userService.getUserProfile());
@@ -55,18 +55,11 @@ public class UserController {
         return new ResponseEntity<>(userById, HttpStatus.OK);
     }
 
-    @RateLimit
-    @GetMapping("/search")
-    public ResponseEntity<List<ResponseUserDto>> searchUsers(@RequestParam String query) {
-        List<ResponseUserDto> user = userService.getUser(query);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> deleteUser() {
-        userService.deleteUser();
-        return ResponseEntity.ok("Delete all users!");
-    }
+//    @DeleteMapping
+//    public ResponseEntity<String> deleteUser() {
+//        userService.deleteUser();
+//        return ResponseEntity.ok("Delete all users!");
+//    }
 
 
 }

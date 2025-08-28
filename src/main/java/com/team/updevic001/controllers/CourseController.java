@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/course")
+@RequestMapping("/api/v1/courses")
 @RequiredArgsConstructor
 public class CourseController {
 

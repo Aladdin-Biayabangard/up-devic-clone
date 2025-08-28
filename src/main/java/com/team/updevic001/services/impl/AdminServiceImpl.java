@@ -145,11 +145,11 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(user);
     }
 
-    @Override
-    @CacheEvict(value = {"users", "usersByRole", "userCount"}, allEntries = true)
-    public void deleteUsers() {
-        userRepository.deleteAll();
-    }
+//    @Override
+//    @CacheEvict(value = {"users", "usersByRole", "userCount"}, allEntries = true)
+//    public void deleteUsers() {
+//        userRepository.deleteAll();
+//    }
 
     @Override
     @Cacheable("userCount")
