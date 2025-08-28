@@ -99,20 +99,6 @@ public class CourseServiceImpl implements CourseService {
 //    }
 
     @Override
-    public void addToWishList(String courseId) {
-        var authenticatedUser = authHelper.getAuthenticatedUser();
-        var course = findCourseById(courseId);
-        if (wishListRepository.existsWishListByCourseAndUser(course, authenticatedUser)) {
-            throw new IllegalArgumentException("This course is already in your favorites.");
-        }
-        var wishList = WishList.builder()
-                .course(course)
-                .user(authenticatedUser)
-                .build();
-        wishListRepository.save(wishList);
-    }
-
-    @Override
     @Transactional
     public void updateCourse(String courseId, CourseDto courseDto) {
         var teacher = authHelper.getAuthenticatedUser();
@@ -215,10 +201,19 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toCourseResponse(top5ByOrderByRatingDesc);
     }
 
+
     @Override
-    public void removeFromWishList(String courseId) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        wishListRepository.deleteWishListByCourseIdAndUser(courseId, authenticatedUser);
+    public void wishListFunction(String courseId) {
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var course = findCourseById(courseId);
+        if (wishListRepository.existsWishListByCourseAndUser(course, authenticatedUser)) {
+            wishListRepository.deleteWishListByCourseIdAndUser(courseId, authenticatedUser);
+        }
+        var wishList = WishList.builder()
+                .course(course)
+                .user(authenticatedUser)
+                .build();
+        wishListRepository.save(wishList);
     }
 
     @Override

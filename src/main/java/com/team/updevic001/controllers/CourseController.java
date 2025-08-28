@@ -42,8 +42,8 @@ public class CourseController {
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")
     @PostMapping(path = "/{courseId}/wish")
     @ResponseStatus(NO_CONTENT)
-    public void addToWishList(@PathVariable String courseId) {
-        courseService.addToWishList(courseId);
+    public void wishListFunction(@PathVariable String courseId) {
+        courseService.wishListFunction(courseId);
     }
 
     @Operation(summary = "Kursun detallarını yeniləmək")
@@ -99,11 +99,6 @@ public class CourseController {
     @GetMapping(path = "/popular-courses")
     public List<ResponseCourseShortInfoDto> getMost5PopularCourses() {
         return courseService.getMost5PopularCourses();
-    }
-
-    @DeleteMapping(path = "/{courseId}/wish")
-    void removeFromWishList(@PathVariable String courseId) {
-        courseService.removeFromWishList(courseId);
     }
 
     @Operation(summary = "Kursu wish listden silir")

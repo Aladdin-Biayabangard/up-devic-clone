@@ -18,7 +18,7 @@ public interface CourseService {
 
     ResponseCourseDto createCourse(CourseCategoryType courseCategoryType, CourseDto courseDto);
 
-    void addToWishList(String courseId);
+    void wishListFunction(String courseId);
 
     void updateCourse(String courseId, CourseDto courseDto);
 
@@ -36,8 +36,6 @@ public interface CourseService {
     CustomPage<ResponseCourseShortInfoDto> getWishList(CustomPageRequest request);
 
     List<ResponseCourseShortInfoDto> getMost5PopularCourses();
-
-    void removeFromWishList(String courseId);
 
     void deleteCourse(String courseId);
 
