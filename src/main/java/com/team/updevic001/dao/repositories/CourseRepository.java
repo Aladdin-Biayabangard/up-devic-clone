@@ -29,6 +29,6 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
 
     @Transactional
     @Modifying
-    @Query("UPDATE Course c SET c.photo_url=:photo_url,c.photoKey=:photoKey WHERE c.id=:id ")
+    @Query("UPDATE Course c SET c.photo_url=:fileUrl,c.photoKey=:fileKey WHERE c.id=:id ")
     void updateCourseFileInfo(String id, @Param("photoKey") String fileKey, @Param("photo_url") String fileUrl);
 }
