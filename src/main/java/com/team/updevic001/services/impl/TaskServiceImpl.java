@@ -45,18 +45,17 @@ public class TaskServiceImpl implements TaskService {
         User teacher = authHelper.getAuthenticatedUser();
         courseServiceImpl.validateAccess(courseId, teacher);
 
-        Task task = modelMapper.map(taskDto, Task.class);
+        Task task = new Task();
+        task.setQuestions(taskDto.getQuestions());
         task.setOptions(formatOptions(taskDto.getOptions()));
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
         task.setCourse(course);
 
-        if (course.getTasks() != null && !course.getTasks().isEmpty()) {
-            course.getTasks().add(task);
-        } else {
+        if (course.getTasks() == null) {
             course.setTasks(new ArrayList<>());
-            course.getTasks().add(task);
         }
-        taskRepository.save(task);
+        course.getTasks().add(task);
+        courseRepository.save(course);
     }
 
     @Override
