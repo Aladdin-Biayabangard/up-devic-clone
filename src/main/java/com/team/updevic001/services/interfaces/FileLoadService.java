@@ -17,5 +17,4 @@ public interface FileLoadService {
 
     void deleteFileFromAws(String key);
 
-
 }
