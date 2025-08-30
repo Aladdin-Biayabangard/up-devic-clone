@@ -10,7 +10,6 @@ import com.team.updevic001.model.dtos.request.LessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonDto;
 import com.team.updevic001.model.dtos.response.lesson.ResponseLessonShortInfoDto;
 import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
-import com.team.updevic001.model.enums.TeacherPermission;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.services.interfaces.LessonService;
 import com.team.updevic001.utility.AuthHelper;
@@ -33,7 +32,6 @@ import static com.team.updevic001.utility.IDGenerator.normalizeString;
 @RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
-    private final TeacherServiceImpl teacherServiceImpl;
     private final ModelMapper modelMapper;
     private final CourseServiceImpl courseServiceImpl;
     private final FileLoadService fileLoadService;
@@ -47,15 +45,13 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public void assignLessonToCourse(String courseId, LessonDto lessonDto, MultipartFile multipartFile) throws Exception {
-        Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-        TeacherCourse teacherCourse = courseServiceImpl.validateAccess(courseId, authenticatedTeacher);
-        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_LESSON)) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
-        }
+        var teacher = authHelper.getAuthenticatedUser();
 
-        Lesson lesson = modelMapper.map(lessonDto, Lesson.class);
+        courseServiceImpl.validateAccess(courseId, teacher);
+
+        var lesson = modelMapper.map(lessonDto, Lesson.class);
         lesson.setId(normalizeString(lesson.getTitle()));
-        Course course = courseServiceImpl.findCourseById(courseId);
+        var course = courseServiceImpl.findCourseById(courseId);
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
             lesson.setCourse(course);
@@ -63,7 +59,7 @@ public class LessonServiceImpl implements LessonService {
             FileUploadResponse fileUploadResponse = fileLoadService.uploadFileWithEncode(multipartFile, lesson.getId(), videoOfWhat);
             lesson.setVideoUrl(fileUploadResponse.getUrl());
             lesson.setVideoKey(fileUploadResponse.getKey());
-            lesson.setTeacher(authenticatedTeacher);
+            lesson.setTeacher(teacher);
             lessonRepository.save(lesson);
         }
     }
@@ -71,9 +67,9 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public void updateLessonInfo(String lessonId, LessonDto lessonDto) {
-        Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-        Lesson lesson = findLessonById(lessonId);
-        if (!lesson.getTeacher().equals(authenticatedTeacher)) {
+        var teacher = authHelper.getAuthenticatedUser();
+        var lesson = findLessonById(lessonId);
+        if (!lesson.getTeacher().equals(teacher)) {
             throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
         }
         modelMapper.map(lessonDto, lesson);
@@ -95,24 +91,23 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<ResponseLessonShortInfoDto> getShortLessonsByCourse(String courseId) {
-        List<Lesson> lessons = lessonRepository.findLessonByCourseId(courseId);
+        var lessons = lessonRepository.findLessonByCourseId(courseId);
         return lessons.isEmpty() ? List.of() : lessonMapper.toShortLesson(lessons);
     }
 
     public ResponseLessonDto getFullLessonByLessonId(String lessonId) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Lesson lesson = findLessonById(lessonId);
+        var teacher = authHelper.getAuthenticatedUser();
+        var lesson = findLessonById(lessonId);
 
-        // User icazəsi yoxlanır
-        boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), authenticatedUser);
-        boolean isTeacher = lessonRepository.existsLessonByTeacherAndLesson(teacherServiceImpl.getAuthenticatedTeacher(), lesson);
+        boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), teacher);
+        boolean isTeacher = lessonRepository.existsLessonByTeacherAndLesson(teacher, lesson);
 
         if (!exists && !isTeacher) {
             throw new IllegalArgumentException("ACCESS_DENIED");
         }
 
         lesson.setVideoUrl(fileLoadService.getFileUrlWithEncode(lesson.getVideoKey()));
-        markLessonAsWatched(authenticatedUser, lesson);
+        markLessonAsWatched(teacher, lesson);
 
         return lessonMapper.toDto(lesson);
     }
@@ -121,12 +116,9 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public void deleteLesson(String lessonId) {
-        Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-        Lesson lesson = findLessonById(lessonId);
-        TeacherCourse teacherCourse = courseServiceImpl.validateAccess(lesson.getCourse().getId(), authenticatedTeacher);
-        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.DELETE_LESSON) || !lesson.getTeacher().getId().equals(authenticatedTeacher.getId())) {
-            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), FORBIDDEN_EXCEPTION.getMessage());
-        }
+        var teacher = authHelper.getAuthenticatedUser();
+        var lesson = findLessonById(lessonId);
+        courseServiceImpl.validateAccess(lesson.getCourse().getId(), teacher);
         deleteService.deleteLessonAndReferencedData(lesson, lessonId);
     }
 

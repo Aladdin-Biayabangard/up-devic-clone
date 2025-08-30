@@ -20,7 +20,6 @@ public class LessonMapper {
                 lesson.getDescription(),
                 lesson.getVideoUrl(),
                 lesson.getDuration()
-//                commentMapper.toDto(comments)
         );
     }
 
@@ -46,6 +45,3 @@ public class LessonMapper {
     }
 
 }
-//    public List<ResponseLessonDto> toDto(List<Lesson> lessons) {
-//        return lessons.stream().map(this::toDto).toList();
-//    }

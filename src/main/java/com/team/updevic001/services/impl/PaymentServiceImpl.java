@@ -5,35 +5,22 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.Teacher;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserCourseFee;
-import com.team.updevic001.dao.repositories.TeacherRepository;
+import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
-import com.team.updevic001.dao.repositories.UserRepository;
+import com.team.updevic001.dao.repositories.UserProfileRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
-import com.team.updevic001.mail.EmailServiceImpl;
-import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.PaymentRequest;
 import com.team.updevic001.model.dtos.response.payment.StripeResponse;
-import com.team.updevic001.model.enums.Role;
-import com.team.updevic001.model.projection.UserView;
 import com.team.updevic001.services.interfaces.PaymentService;
 import com.team.updevic001.services.interfaces.StudentService;
-import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.utility.AuthHelper;
-import com.team.updevic001.utility.Export;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
+
 
 import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
 
@@ -45,11 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CourseServiceImpl courseServiceImpl;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final StudentService studentServiceImpl;
-    private final TeacherService teacherServiceImpl;
-    private final TeacherRepository teacherRepository;
-    private final UserRepository userRepository;
-    private final EmailServiceImpl emailServiceImpl;
-    private final Export export;
+    private final UserProfileRepository userProfileRepository;
 
     @Value("${stripe.secret.key}")
     private String secretKey;
@@ -85,8 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(frontEndUrl2 + "/courses/" + request.getCourseId())
-                .setCancelUrl(frontEndUrl2 + "/courses/" + request.getCourseId())
+                .setSuccessUrl(frontEndUrl2 + "/v1/course/" + request.getCourseId())
+                .setCancelUrl(frontEndUrl2 + "/v1/course/" + request.getCourseId())
                 .addLineItem(lineItem)
                 .build();
 
@@ -120,45 +103,45 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
         userCourseFeeRepository.save(userCourseFee);
         studentServiceImpl.enrollInCourse(courseId, authenticatedUser);
-        Teacher headTeacher = course.getHeadTeacher();
-        BigDecimal balance = headTeacher.getBalance();
+        UserProfile userProfile = userProfileRepository.findByUser(authenticatedUser);
+        BigDecimal balance = userProfile.getBalance();
         if (balance != null) {
             balance = balance.add(BigDecimal.valueOf(course.getPrice()));
         } else {
             balance = BigDecimal.valueOf(course.getPrice());
         }
-        headTeacher.setBalance(balance);
-        teacherRepository.save(headTeacher);
+        userProfile.setBalance(balance);
+        userProfileRepository.save(userProfile);
     }
 
 
     @Override
     public BigDecimal teacherBalance() {
-        Teacher authenticatedTeacher = teacherServiceImpl.getAuthenticatedTeacher();
-        return authenticatedTeacher.getBalance() == null ? BigDecimal.ZERO : authenticatedTeacher.getBalance();
+        UserProfile userProfile = userProfileRepository.findByUser(authHelper.getAuthenticatedUser());
+        return userProfile.getBalance() == null ? BigDecimal.ZERO : userProfile.getBalance();
     }
 
-    @Scheduled(cron = "0 0 8 * * *")
-    public void resetTeacherBalance() {
-        LocalDate today = LocalDate.now();
-
-        if (today.getDayOfMonth() == 1) {
-            List<Teacher> teacherByBalanceGreaterThan = teacherRepository.findTeacherByBalanceGreaterThanEqual(BigDecimal.ZERO);
-
-            List<UserView> admins = userRepository.findUsersByRole(Role.ADMIN);
-            admins.forEach(user -> {
-                try {
-                    File file = export.exportToExcel(teacherByBalanceGreaterThan);
-                    emailServiceImpl.sendFileEmail(user.getEmail(), EmailTemplate.BALANCE_RESET_INFO, new HashMap<>(), file);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            teacherByBalanceGreaterThan.forEach(teacher -> teacher.setBalance(BigDecimal.ZERO));
-            teacherRepository.saveAll(teacherByBalanceGreaterThan);
-
-        }
-    }
+//    @Scheduled(cron = "0 0 8 * * *")
+//    public void resetTeacherBalance() {
+//        LocalDate today = LocalDate.now();
+//
+//        if (today.getDayOfMonth() == 1) {
+//            List<Teacher> teacherByBalanceGreaterThan = teacherRepository.findTeacherByBalanceGreaterThanEqual(BigDecimal.ZERO);
+//
+//            List<UserView> admins = userRepository.findUsersByRole(Role.ADMIN);
+//            admins.forEach(user -> {
+//                try {
+//                    File file = export.exportToExcel(teacherByBalanceGreaterThan);
+//                    emailServiceImpl.sendFileEmail(user.getEmail(), EmailTemplate.BALANCE_RESET_INFO, new HashMap<>(), file);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
+//            teacherByBalanceGreaterThan.forEach(teacher -> teacher.setBalance(BigDecimal.ZERO));
+//            teacherRepository.saveAll(teacherByBalanceGreaterThan);
+//
+//        }
+//    }
 
 
 }

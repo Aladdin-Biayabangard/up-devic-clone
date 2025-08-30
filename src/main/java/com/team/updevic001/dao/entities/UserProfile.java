@@ -1,9 +1,13 @@
 package com.team.updevic001.dao.entities;
 
 
+import com.team.updevic001.model.enums.Specialty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,15 +22,15 @@ import java.util.Set;
 public class UserProfile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @MapsId
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "profile_photo_url", columnDefinition = "TEXT")
-    private String profilePhoto_url;
+    private String profilePhotoUrl;
 
     @Column(name = "profile_photo_key")
     private String profilePhotoKey;
@@ -42,4 +46,15 @@ public class UserProfile {
     @Column(name = "skill")
     private Set<String> skills = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    private Specialty speciality;
+
+    @Column(name = "experience_years")
+    private Integer experienceYears;
+
+    private BigDecimal balance;
+
+    @CreationTimestamp
+    @Column(name = "hire_date")
+    private LocalDateTime hireDate;
 }

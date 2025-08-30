@@ -62,7 +62,7 @@ public enum AuthMapping {
 
     // Auth, Swagger və error
     PERMIT_ALL(null, new String[]{
-            "/api/v1/auth/**",
+            "/v1/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -71,7 +71,6 @@ public enum AuthMapping {
             "/configuration/ui",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/api/auth/**",
             "/error"
     });
 

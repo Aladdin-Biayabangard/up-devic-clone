@@ -3,8 +3,6 @@ package com.team.updevic001.services.impl;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.mappers.CommentMapper;
 import com.team.updevic001.dao.entities.Comment;
-import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.Lesson;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.CommentRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
@@ -15,7 +13,6 @@ import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 import com.team.updevic001.services.interfaces.CommentService;
-import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,50 +38,47 @@ public class CommentServiceImpl implements CommentService {
     private final CourseServiceImpl courseServiceImpl;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final LessonServiceImpl lessonServiceImpl;
-    private final TeacherService teacherService;
 
     @Override
     @Transactional
     @CacheEvict(value = "courseComments", key = "{#courseId, 0}")
-    public ResponseCommentDto addCommentToCourse(String courseId, CommentDto commentDto) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Course course = courseServiceImpl.findCourseById(courseId);
+    public void addCommentToCourse(String courseId, CommentDto commentDto) {
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var course = courseServiceImpl.findCourseById(courseId);
 
-        boolean isHeadTeacher = course.getHeadTeacher().equals(teacherService.getAuthenticatedTeacher());
+        boolean teacher = course.getTeacher().equals(authenticatedUser);
         boolean hasPaid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, authenticatedUser);
 
-        if (!isHeadTeacher && !hasPaid) {
+        if (!teacher && !hasPaid) {
             throw new PaymentStatusException("Access denied. You must be the course owner or a paying student to comment.");
         }
 
-        Comment comment = Comment.builder()
+        var comment = Comment.builder()
                 .content(commentDto.getContent())
                 .user(authenticatedUser)
                 .course(course)
                 .build();
 
         commentRepository.save(comment);
-        return commentMapper.toDto(comment);
     }
 
     @Override
     @CacheEvict(value = "lessonComments", key = "{#lessonId, 0}")
-    public ResponseCommentDto addCommentToLesson(String lessonId, CommentDto commentDto) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        Lesson lesson = lessonServiceImpl.findLessonById(lessonId);
-        boolean isTeacher = lesson.getTeacher().equals(teacherService.getAuthenticatedTeacher());
+    public void addCommentToLesson(String lessonId, CommentDto commentDto) {
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var lesson = lessonServiceImpl.findLessonById(lessonId);
+        boolean isTeacher = lesson.getTeacher().equals(authenticatedUser);
         boolean hasPaid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), authenticatedUser);
         if (!hasPaid && !isTeacher) {
             throw new PaymentStatusException("Access denied. You must be the course owner or a paying student to comment.");
 
         }
-        Comment comment = Comment.builder()
+        var comment = Comment.builder()
                 .content(commentDto.getContent())
                 .user(authenticatedUser)
                 .lesson(lesson)
                 .build();
         commentRepository.save(comment);
-        return commentMapper.toDto(comment);
     }
 
 
@@ -138,6 +132,6 @@ public class CommentServiceImpl implements CommentService {
 
     private Comment findCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException(COMMENT_NOT_FOUND.getCode(),COMMENT_NOT_FOUND.getMessage().formatted(commentId) ));
+                .orElseThrow(() -> new NotFoundException(COMMENT_NOT_FOUND.getCode(), COMMENT_NOT_FOUND.getMessage().formatted(commentId)));
     }
 }

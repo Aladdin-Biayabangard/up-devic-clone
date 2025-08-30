@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.OTP_NOT_FOUND;
 
@@ -26,39 +27,73 @@ import static com.team.updevic001.model.enums.ExceptionConstants.OTP_NOT_FOUND;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OtpServiceImpl implements OtpService {
+
     OtpRepository otpRepository;
     EmailServiceImpl emailService;
+
 
     @Override
     @Transactional
     public void sendOtp(User user) {
+        LocalDateTime now = LocalDateTime.now();
+
+        Optional<Otp> existingOtp = otpRepository.findFirstByEmailAndUsedFalseOrderByCreatedAtDesc(user.getEmail());
+        if (existingOtp.isPresent()) {
+            Otp otp = existingOtp.get();
+
+            // Əgər OTP hələ də keçərlidirsə və limit aşılmayıbsa
+            if (otp.getExpirationTime().isAfter(now) && otp.getRetryCount() < 5) {
+                otp.setRetryCount(otp.getRetryCount() + 1);
+                otp.setLastSentTime(now);
+                otpRepository.save(otp);
+                resendEmail(user.getEmail(), user.getFirstName(), otp.getCode());
+                return;
+            }
+
+            // Əgər vaxt keçibsə → yenisini yaradırıq
+            otp.setUsed(true);
+            otpRepository.save(otp);
+        }
+
+        // Yeni OTP yaradılır
         String code = generateOtp(user.getEmail());
         Map<String, String> placeholders = Map.of("userName", user.getFirstName(), "code", code);
         emailService.sendEmail(user.getEmail(), EmailTemplate.VERIFICATION, placeholders);
     }
 
-
     @Override
+    @Transactional
     public void verifyOtp(OtpRequest otpRequest) {
-        Otp otp = otpRepository.findByCodeAndEmail(otpRequest.getOtpCode(), otpRequest.getEmail())
-                .orElseThrow(() ->
-                        new NotFoundException(
-                                OTP_NOT_FOUND.getCode(), OTP_NOT_FOUND.getMessage()
-                                .formatted(otpRequest.getOtpCode())));
+        Otp otp = otpRepository.findByCodeAndEmailAndUsedFalse(otpRequest.getOtpCode(), otpRequest.getEmail())
+                .orElseThrow(() -> new NotFoundException(
+                        OTP_NOT_FOUND.getCode(),
+                        OTP_NOT_FOUND.getMessage().formatted(otpRequest.getOtpCode())));
+
         if (otp.getExpirationTime().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("OTP_EXPIRED");
         }
+
+        otp.setUsed(true);
+        otpRepository.save(otp);
     }
 
     private String generateOtp(String email) {
         SecureRandom random = new SecureRandom();
-        Integer code = 100_000 + random.nextInt(900_000);
+        int code = 100_000 + random.nextInt(900_000);
         Otp otp = Otp.builder()
                 .email(email)
                 .code(code)
-                .expirationTime(LocalDateTime.now().plusMinutes(15))
+                .expirationTime(LocalDateTime.now().plusMinutes(5))
+                .retryCount(1)
+                .lastSentTime(LocalDateTime.now())
+                .used(false)
                 .build();
         otpRepository.save(otp);
         return String.valueOf(code);
+    }
+
+    private void resendEmail(String email, String firstName, int code) {
+        Map<String, String> placeholders = Map.of("userName", firstName, "code", String.valueOf(code));
+        emailService.sendEmail(email, EmailTemplate.VERIFICATION, placeholders);
     }
 }

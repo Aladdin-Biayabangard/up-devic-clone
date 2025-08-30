@@ -1,5 +1,6 @@
 package com.team.updevic001.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -52,6 +53,7 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<RefreshToken> refreshTokens;
 
 

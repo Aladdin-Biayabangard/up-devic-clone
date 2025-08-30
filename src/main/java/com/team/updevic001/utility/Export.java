@@ -1,6 +1,6 @@
 package com.team.updevic001.utility;
 
-import com.team.updevic001.dao.entities.Teacher;
+import com.team.updevic001.dao.entities.User;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,7 +19,7 @@ public class Export {
 
     String path = "D://UpDevic-history/";
 
-    public File exportToExcel(List<Teacher> teachers) throws IOException {
+    public File exportToExcel(List<User> teachers) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Teacher's amount!");
 
@@ -32,13 +32,13 @@ public class Export {
         header.createCell(4).setCellValue("Teacher's balance");
 
         int rowNum = 1;
-        for (Teacher teacher : teachers) {
+        for (User teacher : teachers) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(LocalDateTime.now());
-            row.createCell(1).setCellValue(teacher.getUser().getEmail());
-            row.createCell(2).setCellValue(teacher.getUser().getFirstName());
-            row.createCell(3).setCellValue(teacher.getUser().getLastName());
-            row.createCell(4).setCellValue(String.valueOf(teacher.getBalance()));
+            row.createCell(1).setCellValue(teacher.getEmail());
+            row.createCell(2).setCellValue(teacher.getFirstName());
+            row.createCell(3).setCellValue(teacher.getLastName());
+         //   row.createCell(4).setCellValue(String.valueOf(teacher.getBalance()));
         }
 
         for (int i = 0; i < 5; i++) {

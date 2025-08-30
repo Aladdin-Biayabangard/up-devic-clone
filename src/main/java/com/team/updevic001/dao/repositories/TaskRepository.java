@@ -17,4 +17,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Transactional
     @Query("DELETE FROM Task t WHERE t.course.id = :id")
     void deleteTaskByCourseId(String id);
+
+    int countByCourseId(String courseId);
 }

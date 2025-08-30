@@ -5,16 +5,14 @@ import com.team.updevic001.model.dtos.request.UserProfileDto;
 import com.team.updevic001.model.dtos.request.security.ChangePasswordDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserProfileDto;
+import com.team.updevic001.model.enums.Role;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface UserService {
 
     ResponseUserDto getUserById(Long id);
-
-    List<ResponseUserDto> getUser(String query);
 
     ResponseUserProfileDto getUserProfile();
 
@@ -24,7 +22,7 @@ public interface UserService {
 
     void updateUserPassword(ChangePasswordDto passwordDto);
 
-    void deleteUser();
+    boolean existsByUserAndRole( User user,  Role roleName);
 
     User fetchUserById(Long id);
 

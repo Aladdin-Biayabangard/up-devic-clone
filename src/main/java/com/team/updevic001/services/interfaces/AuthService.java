@@ -1,8 +1,10 @@
 package com.team.updevic001.services.interfaces;
 
+import com.team.updevic001.dao.entities.UserRole;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.enums.Role;
 
 
 public interface AuthService {
@@ -15,11 +17,13 @@ public interface AuthService {
 
     AuthResponseDto login(AuthRequestDto authRequestDto);
 
-    AuthResponseDto verifyAndGetToken(OtpRequest request);
+    AuthResponseDto verifyOtpAndGenerateToken(OtpRequest request);
 
     void requestPasswordReset(String email);
 
     void resetPassword(String token, RecoveryPassword recoveryPassword);
 
     AuthResponseDto refreshAccessToken(RefreshTokenRequest request);
+
+    UserRole createOrFetchRole(Role role);
 }

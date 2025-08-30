@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/course")
+@RequestMapping("/api/v1/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
@@ -39,18 +39,11 @@ public class CourseController {
         return courseService.createCourse(courseCategoryType, courseDto);
     }
 
-    @Operation(summary = "Mövcud kursa müəllif əlavə etmək")
-    @PostMapping(path = "/{courseId}/teachers/{userId}")
-    public void addTeacherToCourse(@PathVariable String courseId,
-                                   @PathVariable Long userId) {
-        courseService.addTeacherToCourse(courseId, userId);
-    }
-
     @Operation(summary = "Kursu wishlist-ə əlavə etmək")
     @PostMapping(path = "/{courseId}/wish")
     @ResponseStatus(NO_CONTENT)
-    public void addToWishList(@PathVariable String courseId) {
-        courseService.addToWishList(courseId);
+    public void wishListFunction(@PathVariable String courseId) {
+        courseService.wishListFunction(courseId);
     }
 
     @Operation(summary = "Kursun detallarını yeniləmək")
@@ -106,11 +99,6 @@ public class CourseController {
     @GetMapping(path = "/popular-courses")
     public List<ResponseCourseShortInfoDto> getMost5PopularCourses() {
         return courseService.getMost5PopularCourses();
-    }
-
-    @DeleteMapping(path = "/{courseId}/wish")
-    void removeFromWishList(@PathVariable String courseId) {
-        courseService.removeFromWishList(courseId);
     }
 
     @Operation(summary = "Kursu wish listden silir")

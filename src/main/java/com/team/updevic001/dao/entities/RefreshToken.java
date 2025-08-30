@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.entities;
 
- 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,5 +34,5 @@ public class RefreshToken {
     @Column(nullable = false)
     LocalDateTime expiresAt;
 
-    
+
 }
