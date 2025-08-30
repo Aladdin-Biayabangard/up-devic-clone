@@ -19,8 +19,8 @@ import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
 
+import java.math.BigDecimal;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
 
@@ -68,8 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(frontEndUrl2 + "/v1/course/" + request.getCourseId())
-                .setCancelUrl(frontEndUrl2 + "/v1/course/" + request.getCourseId())
+                .setSuccessUrl(frontEndUrl2 + "/success/" + request.getCourseId())
+                .setCancelUrl(frontEndUrl2 + "/cancel/" + request.getCourseId())
                 .addLineItem(lineItem)
                 .build();
 
@@ -120,28 +120,5 @@ public class PaymentServiceImpl implements PaymentService {
         UserProfile userProfile = userProfileRepository.findByUser(authHelper.getAuthenticatedUser());
         return userProfile.getBalance() == null ? BigDecimal.ZERO : userProfile.getBalance();
     }
-
-//    @Scheduled(cron = "0 0 8 * * *")
-//    public void resetTeacherBalance() {
-//        LocalDate today = LocalDate.now();
-//
-//        if (today.getDayOfMonth() == 1) {
-//            List<Teacher> teacherByBalanceGreaterThan = teacherRepository.findTeacherByBalanceGreaterThanEqual(BigDecimal.ZERO);
-//
-//            List<UserView> admins = userRepository.findUsersByRole(Role.ADMIN);
-//            admins.forEach(user -> {
-//                try {
-//                    File file = export.exportToExcel(teacherByBalanceGreaterThan);
-//                    emailServiceImpl.sendFileEmail(user.getEmail(), EmailTemplate.BALANCE_RESET_INFO, new HashMap<>(), file);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
-//            teacherByBalanceGreaterThan.forEach(teacher -> teacher.setBalance(BigDecimal.ZERO));
-//            teacherRepository.saveAll(teacherByBalanceGreaterThan);
-//
-//        }
-//    }
-
 
 }

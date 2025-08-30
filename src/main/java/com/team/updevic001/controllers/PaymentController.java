@@ -19,8 +19,8 @@ public class PaymentController {
 
 
     @Operation(summary = "Kursa qeydiyyat ucun odenis edilir")
-    @GetMapping(path = "success")
-    public ResponseEntity<String> success(@RequestParam String courseId) {
+    @GetMapping(path = "success/{courseId}")
+    public ResponseEntity<String> success(@PathVariable String courseId) {
         paymentServiceImpl.paymentStatus(courseId);
         return ResponseEntity.ok("Payment successfully!");
     }
