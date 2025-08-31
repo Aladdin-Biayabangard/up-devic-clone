@@ -10,6 +10,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -42,24 +44,24 @@ public class AiGradingService {
         }
         """.formatted(question, correctAnswer, studentAnswer);
 
-        String body = """
-        {
-          "model": "%s",
-          "messages": [
-            {"role": "user", "content": "%s"}
-          ],
-          "temperature": 0
-        }
-        """.formatted(model, prompt.replace("\"", "\\\""));
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openai.com/v1/chat/completions"))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
-                .POST(HttpRequest.BodyPublishers.ofString(body))
-                .build();
-
         try {
+            // OpenAI üçün düzgün JSON qurmaq (Jackson ilə təhlükəsiz)
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> payload = Map.of(
+                    "model", model,
+                    "messages", List.of(Map.of("role", "user", "content", prompt)),
+                    "temperature", 0
+            );
+
+            String body = mapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
             System.out.println("=== OPENAI REQUEST BODY ===");
             System.out.println(body);
 
@@ -94,7 +96,7 @@ public class AiGradingService {
             System.out.println("=== PARSED CONTENT ===");
             System.out.println(content);
 
-            return new ObjectMapper().readValue(content, AiGradeResult.class);
+            return mapper.readValue(content, AiGradeResult.class);
 
         } catch (Exception e) {
             e.printStackTrace(); // Tam stack trace göstərmək üçün
