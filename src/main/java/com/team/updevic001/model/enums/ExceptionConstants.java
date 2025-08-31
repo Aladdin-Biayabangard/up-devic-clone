@@ -19,6 +19,7 @@ public enum ExceptionConstants {
     LESSON_NOT_FOUND("LESSON_NOT_FOUND", "Lesson not found with id: %s"),
     OTP_NOT_FOUND("OTP_NOT_FOUND", "Otp not found with id: %s"),
     TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found with id: %s"),
+    APPLICATION_NOT_FOUND("APPLICATION_NOT_FOUND", "Application not found with id: %s"),
     NOT_FOUND("NOT_FOUND", "%s"),
 
 

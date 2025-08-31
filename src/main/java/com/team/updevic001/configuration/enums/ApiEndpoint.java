@@ -102,8 +102,17 @@ public enum ApiEndpoint {
     USER_UPDATE_PASSWORD("/api/users/password", HttpMethod.PATCH, STUDENT),
     USER_UPLOAD_PHOTO("/api/users/photo", HttpMethod.PATCH, STUDENT),
     USER_GET_PROFILE("/api/users/profile", HttpMethod.GET, STUDENT),
-    USER_GET_BY_ID("/api/users/*", HttpMethod.GET, STUDENT);
+    USER_GET_BY_ID("/api/users/*", HttpMethod.GET, STUDENT),
 
+    // --- Teacher Applications Controller ---
+    TEACHER_APPLICATION_CREATE("/api/v1/applications", HttpMethod.POST, STUDENT), // login olmuş userlər üçün
+    TEACHER_APPLICATION_GET("/api/v1/applications/*", HttpMethod.GET, ADMIN),
+    TEACHER_APPLICATION_READ("/api/v1/applications/*/read", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_APPROVE("/api/v1/applications/*/success", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, ADMIN),
+    TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, ADMIN),
+    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, ADMIN);
 
     private final String pathPattern;
     private final HttpMethod httpMethod;

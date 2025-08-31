@@ -1,6 +1,6 @@
-package com.team.updevic001.domain.applications.dto;
+package com.team.updevic001.model.dtos.application;
 
-import com.team.updevic001.domain.applications.domain.ApplicationStatus;
+import com.team.updevic001.model.enums.ApplicationStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,22 +16,31 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CourseApplicationResponseDto {
+public class TeacherApplicationResponseDto {
+
     UUID id;
-
-    UUID courseId;
-
-    String email;
 
     String fullName;
 
-    String phone;
+    String email;
 
-    String resultMessage;
+    String teachingField;
+
+    String linkedinProfile;
+
+    String githubProfile;
+
+    String portfolio;
+
+    String additionalInfo;
+
+    String phoneNumber;
+
+    LocalDateTime createdAt;
 
     ApplicationStatus status;
 
-    LocalDateTime createdAt;
+    String resultMessage;
 
     LocalDateTime completedAt;
 }

@@ -1,4 +1,4 @@
-package com.team.updevic001.domain.applications.dto;
+package com.team.updevic001.model.dtos.application;
 
 import lombok.Data;
 

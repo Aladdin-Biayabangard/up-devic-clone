@@ -174,6 +174,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Cacheable(value = "categories")
     public List<ResponseCategoryDto> getCategories() {
         return Arrays.stream(CourseCategoryType.values())
                 .map(type -> {
