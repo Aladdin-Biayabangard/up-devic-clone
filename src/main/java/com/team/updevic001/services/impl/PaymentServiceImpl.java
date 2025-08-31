@@ -19,6 +19,7 @@ import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -91,11 +92,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public void paymentStatus(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
-
         Course course = courseServiceImpl.findCourseById(courseId);
-
+        course.setPaid(true);
         UserCourseFee userCourseFee = UserCourseFee.builder()
                 .user(authenticatedUser)
                 .course(course)
