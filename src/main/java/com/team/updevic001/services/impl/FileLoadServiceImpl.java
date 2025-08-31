@@ -34,14 +34,14 @@ public class FileLoadServiceImpl implements FileLoadService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    public FileUploadResponse uploadFileWithEncode(MultipartFile multipartFile, String id,String keyOfWhat) throws IOException {
-        String key = createKey(id,keyOfWhat, multipartFile);
+    public FileUploadResponse uploadFileWithEncode(MultipartFile multipartFile, String id, String keyOfWhat) throws IOException {
+        String key = "private/" + createKey(id, keyOfWhat, multipartFile);
         createAwsObject(multipartFile, key);
         return new FileUploadResponse(key, getFileUrlWithEncode(key));
     }
 
-    public FileUploadResponse uploadFile(MultipartFile multipartFile, String id,String keyOfWhat) throws IOException {
-        String key = createKey(id,keyOfWhat, multipartFile);
+    public FileUploadResponse uploadFile(MultipartFile multipartFile, String id, String keyOfWhat) throws IOException {
+        String key = "public/" + createKey(id, keyOfWhat, multipartFile);
         createAwsObject(multipartFile, key);
         return new FileUploadResponse(key, getPublicFileUrl(key));
     }
@@ -95,10 +95,10 @@ public class FileLoadServiceImpl implements FileLoadService {
         return contentType != null && allowedMimeTypes.contains(contentType);
     }
 
-    public String createKey(String id,String keyOfWhat ,MultipartFile multipartFile) {
+    public String createKey(String id, String keyOfWhat, MultipartFile multipartFile) {
         String contentType = multipartFile.getContentType();
         String extensionFromContentType = getExtensionFromContentType(Objects.requireNonNull(contentType));
-        return id + keyOfWhat+ extensionFromContentType;
+        return id + keyOfWhat + extensionFromContentType;
     }
 
     public String getExtensionFromContentType(String contentType) {
@@ -111,7 +111,5 @@ public class FileLoadServiceImpl implements FileLoadService {
             default -> "";
         };
     }
-
-
 }
 

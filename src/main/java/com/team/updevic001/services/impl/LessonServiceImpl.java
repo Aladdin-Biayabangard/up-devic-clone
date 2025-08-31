@@ -1,6 +1,8 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.dao.entities.*;
+import com.team.updevic001.dao.entities.Lesson;
+import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.UserLessonStatus;
 import com.team.updevic001.dao.repositories.LessonRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.dao.repositories.UserLessonStatusRepository;

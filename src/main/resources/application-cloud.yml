@@ -12,5 +12,5 @@ cloud:
       access-key: ${ACCESS_KEY}
       secret-key: ${SECRET_KEY}
     s3:
-      bucket: followme21
+      bucket: updevic-001
 
