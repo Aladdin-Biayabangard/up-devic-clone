@@ -71,7 +71,7 @@ public enum ApiEndpoint {
     LESSON_UPLOAD_PHOTO("/api/v1/lessons/*/photo", HttpMethod.PATCH, TEACHER),
     LESSON_DELETE("/api/v1/lessons/*", HttpMethod.DELETE, TEACHER),
 
-    LESSON_GET_BY_COURSE("/api/v1/lessons/courses/*", HttpMethod.GET, STUDENT),
+    LESSON_GET_BY_COURSE("/api/v1/lessons/courses/*", HttpMethod.GET, PUBLIC),
     LESSON_GET_FULL("/api/v1/lessons/*", HttpMethod.GET, STUDENT),
 
     // --- Payment Controller ---

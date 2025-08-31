@@ -10,6 +10,7 @@ import com.team.updevic001.model.dtos.application.TeacherApplicationRequest;
 import com.team.updevic001.model.dtos.application.TeacherApplicationResponseDto;
 import com.team.updevic001.model.dtos.application.MessageDto;
 import com.team.updevic001.model.mappers.ApplicationFormMapper;
+import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.specification.CourseApplicationSpecification;
 import com.team.updevic001.dao.entities.TeacherApplicationsEntity;
 import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
@@ -38,6 +39,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
     private final TeacherApplicationsRepository teacherApplicationsRepository;
     private final EmailServiceImpl emailServiceImpl;
     private final ApplicationFormMapper applicationFormMapper;
+    private final AdminService adminService;
 
     @Override
     public TeacherApplicationResponseDto createApplication(TeacherApplicationRequest dto) {
@@ -120,6 +122,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         entity.setResultMessage(message.getMessage());
         entity.setCompletedAt(LocalDateTime.now());
         teacherApplicationsRepository.save(entity);
+        adminService.assignTeacherProfile(entity.getEmail());
         Map<String, String> placeholders = Map.of("userName", entity.getFullName());
         emailServiceImpl.sendEmail(entity.getEmail(), APPLICATION_APPROVED, placeholders);
     }
