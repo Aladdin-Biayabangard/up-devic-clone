@@ -1,5 +1,8 @@
 package com.team.updevic001.services.impl;
 
+import com.team.updevic001.configuration.config.ai.AiGradeResult;
+import com.team.updevic001.configuration.config.ai.AiGradingService;
+import com.team.updevic001.configuration.config.ai.TaskResultDto;
 import com.team.updevic001.dao.entities.*;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.NotFoundException;
@@ -10,12 +13,12 @@ import com.team.updevic001.services.interfaces.TaskService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
 import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
 
@@ -24,7 +27,6 @@ import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
-    private final ModelMapper modelMapper;
     private final TaskRepository taskRepository;
     private final TestResultRepository testResultRepository;
     private final CourseRepository courseRepository;
@@ -34,6 +36,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final UserLessonStatusRepository userLessonStatusRepository;
     private final LessonRepository lessonRepository;
+    private final AiGradingService aiGradingService;
 
     @Override
     @Transactional
@@ -47,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = new Task();
         task.setQuestions(taskDto.getQuestions());
-        task.setOptions(formatOptions(taskDto.getOptions()));
+        task.setOptions(taskDto.getOptions());
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
         task.setCourse(course);
 
@@ -60,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
+    public TaskResultDto checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
         User student = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
 
@@ -75,19 +78,26 @@ public class TaskServiceImpl implements TaskService {
         Task task = findTaskById(taskId);
         ensureTaskNotCompleted(student, task);
 
-        TestResult result = testResultRepository
-                .findTestResultByStudentAndCourse(student, course)
-                .orElseGet(() -> {
-                    TestResult newResult = new TestResult();
-                    newResult.setScore(0);
-                    newResult.setCourse(course);
-                    newResult.setStudent(student);
-                    return newResult;
-                });
+        AiGradeResult aiResult = aiGradingService.check(
+                task.getQuestions(),
+                task.getCorrectAnswer(),
+                answerDto.getAnswer()
+        );
 
-        if (task.getCorrectAnswer().equalsIgnoreCase(answerDto.getAnswer())) {
-            double scorePerTask = calculateScore(course.getId());
-            result.setScore(result.getScore() + scorePerTask);
+        double taskScore = 0.0;
+        if (aiResult.isCorrect()) {
+            taskScore = 100.0;
+            TestResult result = testResultRepository
+                    .findTestResultByStudentAndCourse(student, course)
+                    .orElseGet(() -> {
+                        TestResult newResult = new TestResult();
+                        newResult.setScore(0);
+                        newResult.setCourse(course);
+                        newResult.setStudent(student);
+                        return newResult;
+                    });
+
+            result.setScore(result.getScore() + taskScore);
             testResultRepository.save(result);
 
             StudentTask studentTask = new StudentTask();
@@ -95,10 +105,16 @@ public class TaskServiceImpl implements TaskService {
             studentTask.setStudent(student);
             studentTask.setTask(task);
             studentTaskRepository.save(studentTask);
-        } else {
-            throw new IllegalArgumentException("Incorrect answer!");
         }
+
+        return new TaskResultDto(
+                aiResult.isCorrect(),
+                taskScore,
+                aiResult.getFeedback(),
+                aiResult.getCorrectAnswer()
+        );
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -120,21 +136,10 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private double calculateScore(String courseId) {
-        int taskCount = taskRepository.countByCourseId(courseId);
-        return taskCount > 0 ? (100.0 / taskCount) : 0;
-    }
-
     private Task findTaskById(Long taskId) {
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getCode(),
                         TASK_NOT_FOUND.getMessage().formatted(taskId)));
     }
 
-    private List<String> formatOptions(List<String> options) {
-        final char[] optionChar = {'A'};
-        return options.stream()
-                .map(option -> optionChar[0]++ + ") " + option)
-                .toList();
-    }
 }

@@ -46,7 +46,7 @@ public class Course {
     @Column(name = "price")
     private Double price;
 
-    private boolean paid = false;
+    private Boolean paid = false;
 
     @Column(name = "created_at")
     @CreationTimestamp
