@@ -20,4 +20,6 @@ public interface UserLessonStatusRepository extends JpaRepository<UserLessonStat
     @Query("DELETE FROM UserLessonStatus ul WHERE ul.lesson.id IN :ids")
     void deleteUserLessonStatusByLessonsId(List<String> ids);
 
+
+    boolean existsByUserAndLessonId(User user, String lessonId);
 }

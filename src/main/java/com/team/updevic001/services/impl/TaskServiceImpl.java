@@ -84,28 +84,28 @@ public class TaskServiceImpl implements TaskService {
                 answerDto.getAnswer()
         );
 
-        double taskScore = 0.0;
-        if (aiResult.isCorrect()) {
-            taskScore = 100.0;
-            TestResult result = testResultRepository
-                    .findTestResultByStudentAndCourse(student, course)
-                    .orElseGet(() -> {
-                        TestResult newResult = new TestResult();
-                        newResult.setScore(0);
-                        newResult.setCourse(course);
-                        newResult.setStudent(student);
-                        return newResult;
-                    });
+        double taskScore = aiResult.getScore(); // <-- AI-dan gələn bal
 
-            result.setScore(result.getScore() + taskScore);
-            testResultRepository.save(result);
+        // TestResult yeniləmə
+        TestResult result = testResultRepository
+                .findTestResultByStudentAndCourse(student, course)
+                .orElseGet(() -> {
+                    TestResult newResult = new TestResult();
+                    newResult.setScore(0);
+                    newResult.setCourse(course);
+                    newResult.setStudent(student);
+                    return newResult;
+                });
 
-            StudentTask studentTask = new StudentTask();
-            studentTask.setCompleted(true);
-            studentTask.setStudent(student);
-            studentTask.setTask(task);
-            studentTaskRepository.save(studentTask);
-        }
+        result.setScore(result.getScore() + taskScore);
+        testResultRepository.save(result);
+
+        // Task tamamlandı kimi qeyd et
+        StudentTask studentTask = new StudentTask();
+        studentTask.setCompleted(true);
+        studentTask.setStudent(student);
+        studentTask.setTask(task);
+        studentTaskRepository.save(studentTask);
 
         return new TaskResultDto(
                 aiResult.isCorrect(),
@@ -114,6 +114,7 @@ public class TaskServiceImpl implements TaskService {
                 aiResult.getCorrectAnswer()
         );
     }
+
 
 
     @Override
@@ -127,8 +128,9 @@ public class TaskServiceImpl implements TaskService {
     private boolean areAllLessonsWatched(User user, Course course) {
         List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
         return lessonIds.stream()
-                .allMatch(lessonId -> userLessonStatusRepository.findByUserAndLesson(user, lessonId));
+                .allMatch(lessonId -> userLessonStatusRepository.existsByUserAndLessonId(user, lessonId));
     }
+
 
     private void ensureTaskNotCompleted(User student, Task task) {
         if (studentTaskRepository.existsStudentTaskByCompletedAndStudentAndTask(true, student, task)) {
