@@ -155,14 +155,25 @@ public class CourseServiceImpl implements CourseService {
     public CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
                                                          CustomPageRequest request) {
 
+        int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
+        int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (criteria == null || isCriteriaEmpty(criteria)) {
+            Page<Course> coursePage = courseRepository.findAll(pageable);
+            return new CustomPage<>(
+                    courseMapper.toCourseResponse(coursePage.getContent()),
+                    coursePage.getNumber(),
+                    coursePage.getSize()
+            );
+        }
+
         Specification<Course> specification = Specification
                 .where(CourseSpecification.hasLevel(criteria.getLevel()))
                 .and(CourseSpecification.priceGreaterThanOrEqual(criteria.getMinPrice())
                         .and(CourseSpecification.priceLessThanOrEqual(criteria.getMaxPrice()))
                         .and(CourseSpecification.hasCategory(criteria.getCourseCategoryType()))
                         .and(CourseSpecification.hasName(criteria.getName())));
-
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
         Page<Course> coursePage = courseRepository.findAll(specification, pageable);
 
@@ -246,5 +257,14 @@ public class CourseServiceImpl implements CourseService {
         if (!courseRepository.existsCourseByIdAndTeacher(courseId, teacher)) {
             throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
         }
+    }
+
+
+    private boolean isCriteriaEmpty(CourseSearchCriteria criteria) {
+        return criteria.getLevel() == null &&
+               criteria.getMinPrice() == null &&
+               criteria.getMaxPrice() == null &&
+               criteria.getCourseCategoryType() == null &&
+               (criteria.getName() == null || criteria.getName().isBlank());
     }
 }
