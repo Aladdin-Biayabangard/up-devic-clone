@@ -2,6 +2,7 @@ package com.team.updevic001.configuration.config.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class AiGradingService {
     @Value("${openai.api.key}")
     private String apiKey;
 
-    @Value("${openai.model}")
+    @Value("${openai.model:gpt-4o-mini}")
     private String model;
 
     public AiGradeResult check(String question, String correctAnswer, String studentAnswer) {
@@ -62,11 +63,17 @@ public class AiGradingService {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            String content = new JSONObject(response.body())
+            JSONObject json = new JSONObject(response.body());
+
+            JSONArray contentArray = json
                     .getJSONArray("choices")
                     .getJSONObject(0)
                     .getJSONObject("message")
-                    .getString("content")
+                    .getJSONArray("content");
+
+            String content = contentArray
+                    .getJSONObject(0)
+                    .getString("text")
                     .trim();
 
             if (content.startsWith("```")) {
