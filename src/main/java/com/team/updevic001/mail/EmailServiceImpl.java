@@ -1,22 +1,16 @@
 package com.team.updevic001.mail;
 
-import com.team.updevic001.domain.applications.dto.EmailDto;
-import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 
-import javax.naming.Context;
 import java.io.File;
 import java.util.Map;
 
@@ -27,26 +21,7 @@ import java.util.Map;
 public class EmailServiceImpl {
 
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
 
-
-    @Override
-    @SneakyThrows
-    public void send(EmailDto emailDto) {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setFrom(emailDto.getFrom());
-        helper.setTo(emailDto.getTo());
-        helper.setSubject(emailDto.getSubject());
-        Context context = new Context();
-        for (String key : emailDto.getVariables().keySet()) {
-            context.setVariable(key, emailDto.getVariables().get(key));
-        }
-        String htmlContent = templateEngine.process(emailDto.getTemplate().name().toLowerCase(), context);
-        helper.setText(htmlContent, true);
-        mailSender.send(message);
-        log.info("Mail sent to {}", emailDto.getTo());
-    }
 
     @Async("asyncTaskExecutor")
     public void sendEmail(String receiver, EmailTemplate template, Map<String, String> placeholders) {

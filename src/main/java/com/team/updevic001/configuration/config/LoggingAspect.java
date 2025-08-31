@@ -30,7 +30,7 @@ public class LoggingAspect {
             Object result = joinPoint.proceed();
             logger.info("ActionLog.{}.SUCCESS{}", methodName, userId != null ? " id: " + userId : "");
             return result;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             logger.error("ActionLog.{}.FAILED{} - Error: {}", methodName,
                     userId != null ? " id: " + userId : "", ex.getMessage(), ex);
             throw ex;

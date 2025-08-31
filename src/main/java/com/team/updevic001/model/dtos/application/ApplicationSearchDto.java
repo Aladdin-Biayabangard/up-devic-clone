@@ -1,6 +1,6 @@
-package com.team.updevic001.domain.applications.dto;
+package com.team.updevic001.model.dtos.application;
 
-import com.team.updevic001.domain.applications.domain.ApplicationStatus;
+import com.team.updevic001.model.enums.ApplicationStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,10 +10,9 @@ public class ApplicationSearchDto {
 
     private String email;
     private String fullName;
+    private String teachingField;
     private String phone;
-    private String message;
     private ApplicationStatus status;
-    private Boolean success;
     private LocalDateTime createdAtFrom;
     private LocalDateTime createdAtTo;
 }
