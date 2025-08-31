@@ -12,14 +12,13 @@ import java.util.List;
 
 public interface UserLessonStatusRepository extends JpaRepository<UserLessonStatus, Long> {
 
-    @Query("SELECT uls.isWatched FROM UserLessonStatus uls WHERE uls.user=:user and uls.lesson.id=:lessonId")
-    boolean findByUserAndLesson(User user, String lessonId);
-
     @Modifying
     @Transactional
     @Query("DELETE FROM UserLessonStatus ul WHERE ul.lesson.id IN :ids")
     void deleteUserLessonStatusByLessonsId(List<String> ids);
 
-
-    boolean existsByUserAndLessonId(User user, String lessonId);
+    @Query("SELECT CASE WHEN COUNT(uls) > 0 THEN TRUE ELSE FALSE END " +
+           "FROM UserLessonStatus uls " +
+           "WHERE uls.user = :user AND uls.lesson.id = :lessonId AND uls.isWatched = TRUE")
+    boolean existsWatchedByUserAndLesson(User user, String lessonId);
 }

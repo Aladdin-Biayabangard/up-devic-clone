@@ -128,7 +128,7 @@ public class TaskServiceImpl implements TaskService {
     private boolean areAllLessonsWatched(User user, Course course) {
         List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
         return lessonIds.stream()
-                .allMatch(lessonId -> userLessonStatusRepository.existsByUserAndLessonId(user, lessonId));
+                .allMatch(lessonId -> userLessonStatusRepository.existsWatchedByUserAndLesson(user, lessonId));
     }
 
 
