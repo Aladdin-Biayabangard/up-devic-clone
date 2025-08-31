@@ -2,7 +2,6 @@ package com.team.updevic001.configuration.config.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -61,28 +60,45 @@ public class AiGradingService {
                 .build();
 
         try {
+            System.out.println("=== OPENAI REQUEST BODY ===");
+            System.out.println(body);
+
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("=== OPENAI RAW RESPONSE ===");
+            System.out.println("Status: " + response.statusCode());
+            System.out.println(response.body());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("OpenAI API qeyri-200 cavab qaytardı: " + response.statusCode()
+                                           + " | Body: " + response.body());
+            }
 
             JSONObject json = new JSONObject(response.body());
 
-            JSONArray contentArray = json
+            if (!json.has("choices")) {
+                throw new RuntimeException("OpenAI cavabı `choices` daxil etmir! Cavab: " + response.body());
+            }
+
+            String content = json
                     .getJSONArray("choices")
                     .getJSONObject(0)
                     .getJSONObject("message")
-                    .getJSONArray("content");
-
-            String content = contentArray
-                    .getJSONObject(0)
-                    .getString("text")
+                    .getString("content")
                     .trim();
 
             if (content.startsWith("```")) {
                 content = content.replaceAll("(?s)```json|```", "").trim();
             }
 
+            System.out.println("=== PARSED CONTENT ===");
+            System.out.println(content);
+
             return new ObjectMapper().readValue(content, AiGradeResult.class);
+
         } catch (Exception e) {
-            throw new RuntimeException("AI cavabını əldə etmək mümkün olmadı", e);
+            e.printStackTrace(); // Tam stack trace göstərmək üçün
+            throw new RuntimeException("AI cavabını əldə etmək mümkün olmadı: " + e.getMessage(), e);
         }
     }
 }
