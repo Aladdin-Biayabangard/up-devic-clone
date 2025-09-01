@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskResultDto {
-    private boolean correct;
+    private boolean isCorrect;
     private double score;
     private String feedback;
     private String correctAnswer;
