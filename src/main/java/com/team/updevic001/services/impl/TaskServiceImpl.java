@@ -3,8 +3,18 @@ package com.team.updevic001.services.impl;
 import com.team.updevic001.configuration.config.ai.AiGradeResult;
 import com.team.updevic001.configuration.config.ai.AiGradingService;
 import com.team.updevic001.configuration.config.ai.TaskResultDto;
-import com.team.updevic001.dao.entities.*;
-import com.team.updevic001.dao.repositories.*;
+import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.StudentTask;
+import com.team.updevic001.dao.entities.Task;
+import com.team.updevic001.dao.entities.TestResult;
+import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.repositories.CourseRepository;
+import com.team.updevic001.dao.repositories.LessonRepository;
+import com.team.updevic001.dao.repositories.StudentTaskRepository;
+import com.team.updevic001.dao.repositories.TaskRepository;
+import com.team.updevic001.dao.repositories.TestResultRepository;
+import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
+import com.team.updevic001.dao.repositories.UserLessonStatusRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.request.AnswerDto;
 import com.team.updevic001.model.dtos.request.TaskDto;
@@ -50,7 +60,9 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = new Task();
         task.setQuestions(taskDto.getQuestions());
-        task.setOptions(taskDto.getOptions());
+        if (taskDto.getOptions() != null) {
+            task.setOptions(taskDto.getOptions());
+        }
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
         task.setCourse(course);
 
@@ -114,7 +126,6 @@ public class TaskServiceImpl implements TaskService {
                 aiResult.getCorrectAnswer()
         );
     }
-
 
 
     @Override

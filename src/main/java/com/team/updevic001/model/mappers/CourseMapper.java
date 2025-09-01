@@ -30,7 +30,8 @@ public class CourseMapper {
                 lessonCount(course),
                 studentCount(course),
                 course.getRating(),
-                course.getPrice()
+                course.getPrice(),
+                course.getPaid()
         );
     }
 

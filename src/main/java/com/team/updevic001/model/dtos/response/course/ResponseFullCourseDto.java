@@ -33,4 +33,6 @@ public class ResponseFullCourseDto {
 
     private double price;
 
+    private Boolean paid;
+
 }
