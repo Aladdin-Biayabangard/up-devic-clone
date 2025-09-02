@@ -45,7 +45,7 @@ public enum ApiEndpoint {
     COMMENT_ADD_TO_COURSE("/api/v1/comments/courses/*", HttpMethod.POST, STUDENT),
     COMMENT_ADD_TO_LESSON("/api/v1/comments/lessons/*", HttpMethod.POST, STUDENT),
     COMMENT_UPDATE("/api/v1/comments/*", HttpMethod.PUT, STUDENT),
-    COMMENT_GET_COURSE("/api/v1/comments/courses/*", HttpMethod.GET, STUDENT),
+    COMMENT_GET_COURSE("/api/v1/comments/courses/*", HttpMethod.GET, PUBLIC),
     COMMENT_GET_LESSON("/api/v1/comments/lessons/*", HttpMethod.GET, STUDENT),
     COMMENT_DELETE("/api/v1/comments/*", HttpMethod.DELETE, STUDENT),
 
