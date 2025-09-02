@@ -3,12 +3,14 @@ package com.team.updevic001.model.dtos.response.course;
 
 import com.team.updevic001.model.enums.CourseLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseFullCourseDto {

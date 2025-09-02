@@ -20,20 +20,20 @@ public class CourseMapper {
 
 
     public ResponseFullCourseDto toFullResponse(Course course) {
-        return new ResponseFullCourseDto(
-                course.getPhoto_url(),
-                course.getTeacher().getId(),
-                course.getTitle(),
-                course.getDescription(),
-                course.getLevel(),
-                course.getCreatedAt(),
-                lessonCount(course),
-                studentCount(course),
-                course.getRating(),
-                course.getPrice(),
-                course.getPaid()
-        );
+        return ResponseFullCourseDto.builder()
+                .photo_url(course.getPhoto_url())
+                .teacher(course.getTeacher().getId())
+                .title(course.getTitle())
+                .description(course.getDescription())
+                .level(course.getLevel())
+                .createdAt(course.getCreatedAt())
+                .lessonCount(lessonCount(course))
+                .studentCount(studentCount(course))
+                .rating(course.getRating())
+                .price(course.getPrice())
+                .build();
     }
+
 
     public ResponseCourseShortInfoDto toCourseResponse(Course course) {
         return new ResponseCourseShortInfoDto(
