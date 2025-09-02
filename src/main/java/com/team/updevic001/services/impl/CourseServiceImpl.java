@@ -54,6 +54,7 @@ public class CourseServiceImpl implements CourseService {
     private final WishListRepository wishListRepository;
     private final LessonRepository lessonRepository;
     private final DeleteService deleteService;
+    private final UserCourseFeeRepository userCourseFeeRepository;
 
     @Override
     @Transactional
@@ -148,7 +149,17 @@ public class CourseServiceImpl implements CourseService {
     public ResponseFullCourseDto getCourse(String courseId) {
         var course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
                 COURSE_NOT_FOUND.getMessage().formatted(courseId)));
-        return courseMapper.toFullResponse(course);
+        boolean paid;
+        try {
+            var user = authHelper.getAuthenticatedUser();
+            paid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, user);
+
+        } catch (Exception ex) {
+            paid = false;
+        }
+        var courseResponse = courseMapper.toFullResponse(course);
+        courseResponse.setPaid(paid);
+        return courseResponse;
     }
 
     @Override
