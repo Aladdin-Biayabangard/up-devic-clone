@@ -120,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
         studentTaskRepository.save(studentTask);
 
         return new TaskResultDto(
-                aiResult.isCorrect(),
+                aiResult.getCorrect(),
                 taskScore,
                 aiResult.getFeedback(),
                 aiResult.getCorrectAnswer()

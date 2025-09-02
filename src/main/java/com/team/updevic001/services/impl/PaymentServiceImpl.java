@@ -96,7 +96,6 @@ public class PaymentServiceImpl implements PaymentService {
     public void paymentStatus(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
-        course.setPaid(true);
         UserCourseFee userCourseFee = UserCourseFee.builder()
                 .user(authenticatedUser)
                 .course(course)
