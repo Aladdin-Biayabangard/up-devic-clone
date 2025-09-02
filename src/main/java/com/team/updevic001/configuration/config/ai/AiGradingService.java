@@ -37,7 +37,7 @@ public class AiGradingService {
         3. 0-dan 100-ə qədər bal ver. Tam uyğun cavab = 100, qismən uyğun cavab = 1–99, uyğun olmayan cavab = 0.
         4. JSON formatında cavab ver:
         {
-          "isCorrect": true/false,
+          "correct": true/false,
           "score": 0–100,
           "feedback": "qısa izah",
           "correctAnswer": "düzgün cavab"
