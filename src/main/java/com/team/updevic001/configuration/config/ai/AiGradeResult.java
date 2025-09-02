@@ -1,6 +1,5 @@
 package com.team.updevic001.configuration.config.ai;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
