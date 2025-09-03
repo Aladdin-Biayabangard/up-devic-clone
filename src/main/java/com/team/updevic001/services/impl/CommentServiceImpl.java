@@ -1,17 +1,17 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.mappers.CommentMapper;
 import com.team.updevic001.dao.entities.Comment;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.CommentRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.exceptions.PaymentStatusException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CommentDto;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
+import com.team.updevic001.model.mappers.CommentMapper;
 import com.team.updevic001.services.interfaces.CommentService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
@@ -123,10 +123,10 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
-        if (comment.getUser().equals(authenticatedUser)) {
-            commentRepository.deleteById(commentId);
+        if (!comment.getUser().equals(authenticatedUser)) {
+            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed delete comment!");
         }
-        throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed delete comment!");
+        commentRepository.deleteById(commentId);
 
     }
 
