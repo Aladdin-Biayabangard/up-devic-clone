@@ -1,11 +1,17 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.criteria.CourseSearchCriteria;
-import com.team.updevic001.dao.entities.*;
-import com.team.updevic001.dao.repositories.*;
+import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.CourseRating;
+import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.WishList;
+import com.team.updevic001.dao.repositories.CourseRatingRepository;
+import com.team.updevic001.dao.repositories.CourseRepository;
+import com.team.updevic001.dao.repositories.LessonRepository;
+import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
+import com.team.updevic001.dao.repositories.WishListRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CourseDto;
@@ -14,6 +20,7 @@ import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.model.enums.CourseCategoryType;
+import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.specification.CourseSpecification;
@@ -149,13 +156,18 @@ public class CourseServiceImpl implements CourseService {
     public ResponseFullCourseDto getCourse(String courseId) {
         var course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
                 COURSE_NOT_FOUND.getMessage().formatted(courseId)));
-        boolean paid;
+        boolean paid = false;
         try {
             var user = authHelper.getAuthenticatedUser();
-            paid = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, user);
+
+            if (userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, user)) {
+                paid = true;
+            } else if (course.getTeacher().equals(user)) {
+                paid = true;
+            }
+
 
         } catch (Exception ex) {
-            paid = false;
         }
         var courseResponse = courseMapper.toFullResponse(course);
         courseResponse.setPaid(paid);
@@ -273,9 +285,9 @@ public class CourseServiceImpl implements CourseService {
 
     private boolean isCriteriaEmpty(CourseSearchCriteria criteria) {
         return criteria.getLevel() == null &&
-               criteria.getMinPrice() == null &&
-               criteria.getMaxPrice() == null &&
-               criteria.getCourseCategoryType() == null &&
-               (criteria.getName() == null || criteria.getName().isBlank());
+                criteria.getMinPrice() == null &&
+                criteria.getMaxPrice() == null &&
+                criteria.getCourseCategoryType() == null &&
+                (criteria.getName() == null || criteria.getName().isBlank());
     }
 }
