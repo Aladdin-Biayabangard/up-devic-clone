@@ -106,13 +106,13 @@ public enum ApiEndpoint {
 
     // --- Teacher Applications Controller ---
     TEACHER_APPLICATION_CREATE("/api/v1/applications", HttpMethod.POST, STUDENT), // login olmuş userlər üçün
-    TEACHER_APPLICATION_GET("/api/v1/applications/*", HttpMethod.GET, ADMIN),
-    TEACHER_APPLICATION_READ("/api/v1/applications/*/read", HttpMethod.PUT, ADMIN),
-    TEACHER_APPLICATION_APPROVE("/api/v1/applications/*/success", HttpMethod.PUT, ADMIN),
-    TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, ADMIN),
-    TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, ADMIN),
-    TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, ADMIN),
-    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, ADMIN);
+    TEACHER_APPLICATION_GET("/api/v1/applications/*", HttpMethod.GET, PUBLIC),
+    TEACHER_APPLICATION_READ("/api/v1/applications/*/read", HttpMethod.PUT, PUBLIC),
+    TEACHER_APPLICATION_APPROVE("/api/v1/applications/*/success", HttpMethod.PUT, PUBLIC),
+    TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, PUBLIC),
+    TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, PUBLIC),
+    TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, PUBLIC),
+    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, PUBLIC);
 
     private final String pathPattern;
     private final HttpMethod httpMethod;
