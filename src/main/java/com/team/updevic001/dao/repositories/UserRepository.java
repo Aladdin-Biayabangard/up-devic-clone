@@ -36,12 +36,16 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     void updateUserStatus(Long id, Status status);
 
     @Query("""
-                SELECT COUNT(u) FROM User u
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN'
-                )
-            """)
-    int countNonAdminUsers();
+    SELECT 
+        SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END),
+        SUM(CASE WHEN u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END),
+        SUM(CASE WHEN u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END)
+    FROM User u
+""")
+    Object[] countUserStats();
+
+
+
 
     @Query("""
                 SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END

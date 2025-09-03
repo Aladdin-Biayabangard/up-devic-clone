@@ -2,6 +2,7 @@ package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AdminService;
@@ -9,7 +10,15 @@ import com.team.updevic001.specification.UserCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -18,10 +27,9 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RestController
 @RequestMapping("/api/v1/admins")
 @RequiredArgsConstructor
-public class    AdminController {
+public class AdminController {
 
     private final AdminService adminServiceImpl;
-
 
     @Operation(summary = "Adding a teacher profile to a student")
     @PostMapping(path = "/assign/{email}")
@@ -55,11 +63,10 @@ public class    AdminController {
         return adminServiceImpl.getAllUsers(userCriteria, pageRequest);
     }
 
-
     @Operation(summary = "Shows the number of users")
-    @GetMapping(path = "/users/count")
-    public Long getUsersCount() {
-        return adminServiceImpl.countUsers();
+    @GetMapping(path = "/dashboard")
+    public DashboardResponse getDashboard() {
+        return adminServiceImpl.getDashboard();
     }
 
     @Operation(summary = "Removes a user's role!")

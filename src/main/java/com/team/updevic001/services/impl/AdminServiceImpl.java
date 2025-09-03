@@ -1,17 +1,19 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
+import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
+import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.UserService;
@@ -45,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserService userServiceImpl;
     private final AuthHelper authHelper;
     private final AuthService authService;
+    private final TeacherApplicationsRepository teacherApplicationsRepository;
 
     @Override
     public void assignTeacherProfile(String email) {
@@ -64,10 +67,10 @@ public class AdminServiceImpl implements AdminService {
 
         Specification<User> filter = null;
         if (userCriteria.getFirstName() != null ||
-            userCriteria.getLastName() != null ||
-            userCriteria.getEmail() != null ||
-            userCriteria.getStatus() != null ||
-            (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
+                userCriteria.getLastName() != null ||
+                userCriteria.getEmail() != null ||
+                userCriteria.getStatus() != null ||
+                (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {
             filter = UserSpecification.filter(userCriteria);
         }
         var allUsers = (filter == null)
@@ -133,10 +136,15 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(user);
     }
 
-    @Override
-    @Cacheable("userCount")
-    public Long countUsers() {
-        return (long) userRepository.countNonAdminUsers();
+    public DashboardResponse getDashboard() {
+        Object[] userCounts = userRepository.countUserStats();
+        Long pendingApplications = teacherApplicationsRepository.countPendingApplications();
+        DashboardResponse response = new DashboardResponse();
+        response.setTotalUsers(((Number) userCounts[0]).longValue());
+        response.setActiveUsers(((Number) userCounts[1]).longValue());
+        response.setPendingUsers(((Number) userCounts[2]).longValue());
+        response.setPendingApplicationsForTeaching(pendingApplications);
+        return response;
     }
 
     private void saveUser(User user) {

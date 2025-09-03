@@ -3,6 +3,7 @@ package com.team.updevic001.services.interfaces;
 
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.specification.UserCriteria;
@@ -17,13 +18,12 @@ public interface AdminService {
 
     void removeRoleFromUser(Long userId, Role role);
 
+    DashboardResponse getDashboard();
 
     void activateUser(Long id);
 
     void softyDeleteUser(Long userId);
 
     void deactivateUser(Long id);
-
-    Long countUsers();
 
 }

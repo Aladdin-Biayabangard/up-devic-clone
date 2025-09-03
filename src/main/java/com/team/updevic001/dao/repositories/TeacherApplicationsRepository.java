@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface TeacherApplicationsRepository extends JpaRepository<TeacherAppl
 
     Page<TeacherApplicationsEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    @Query("SELECT COUNT(t) FROM TeacherApplicationsEntity t WHERE t.status = 'PENDING'")
+    Long countPendingApplications();
 }
