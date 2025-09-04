@@ -19,23 +19,20 @@ public class StudentController {
 
     @Operation(summary = "Unenroll a student from a course")
     @DeleteMapping("/unenroll")
-    public ResponseEntity<String> unenrollFromCourse(@RequestParam String courseId) {
+    public void unenrollFromCourse(@RequestParam String courseId) {
         studentService.unenrollUserFromCourse(courseId);
-        return ResponseEntity.ok("Student successfully unenrolled from the course.");
     }
 
     @Operation(summary = "Get a student's course information")
     @GetMapping
-    public ResponseEntity<ResponseCourseShortInfoDto> getStudentCourse(@RequestParam String courseId) {
-        ResponseCourseShortInfoDto studentCourse = studentService.getStudentCourse(courseId);
-        return ResponseEntity.ok(studentCourse);
+    public ResponseCourseShortInfoDto getStudentCourse(@RequestParam String courseId) {
+        return studentService.getStudentCourse(courseId);
     }
 
     @Operation(summary = "Get all courses of a student")
     @GetMapping("/courses")
-    public ResponseEntity<List<ResponseCourseShortInfoDto>> getStudentCourses() {
-        List<ResponseCourseShortInfoDto> courses = studentService.getStudentCourses();
-        return ResponseEntity.ok(courses);
+    public List<ResponseCourseShortInfoDto> getStudentCourses() {
+        return studentService.getStudentCourses();
     }
 
     @Operation(summary = "API request to become a teacher!")
