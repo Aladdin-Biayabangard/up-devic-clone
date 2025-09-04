@@ -136,12 +136,15 @@ public class TaskServiceImpl implements TaskService {
                 .toList();
     }
 
+    public void deleteTask(Long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+
     private boolean areAllLessonsWatched(User user, Course course) {
         List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
         return lessonIds.stream()
                 .allMatch(lessonId -> userLessonStatusRepository.existsWatchedByUserAndLesson(user, lessonId));
     }
-
 
     private void ensureTaskNotCompleted(User student, Task task) {
         if (studentTaskRepository.existsStudentTaskByCompletedAndStudentAndTask(true, student, task)) {

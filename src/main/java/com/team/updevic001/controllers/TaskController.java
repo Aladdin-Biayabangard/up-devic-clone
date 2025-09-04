@@ -6,6 +6,7 @@ import com.team.updevic001.model.dtos.request.TaskDto;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;
 import com.team.updevic001.services.interfaces.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +39,10 @@ public class TaskController {
     @GetMapping(path = "/courses/{courseId}")
     public List<ResponseTaskDto> getTasks(@PathVariable String courseId) {
         return taskServiceImpl.getTasks(courseId);
+    }
+
+    @DeleteMapping(path = "/{taskId}")
+    public void deleteTask(@PathVariable Long taskId) {
+        taskServiceImpl.deleteTask(taskId);
     }
 }

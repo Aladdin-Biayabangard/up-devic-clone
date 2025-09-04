@@ -14,6 +14,8 @@ public interface TaskService {
     TaskResultDto checkAnswer(String courseId, Long taskId, AnswerDto answerDto);
 
     List<ResponseTaskDto> getTasks(String courseId);
+
+    void deleteTask(Long taskId);
 }
 
 

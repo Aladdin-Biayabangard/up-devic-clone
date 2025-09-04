@@ -45,8 +45,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Object[] countUserStats();
 
 
-
-
     @Query("""
                 SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END
                 FROM User u
