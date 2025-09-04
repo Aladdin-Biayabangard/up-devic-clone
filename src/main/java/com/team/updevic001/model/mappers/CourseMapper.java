@@ -6,6 +6,7 @@ import com.team.updevic001.dao.repositories.StudentCourseRepository;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +20,10 @@ public class CourseMapper {
     private final StudentCourseRepository studentCourseRepository;
 
 
-    public ResponseFullCourseDto toFullResponse(Course course) {
+    public ResponseFullCourseDto toFullResponse(Course course, TeacherNameDto teacher) {
         return ResponseFullCourseDto.builder()
                 .photo_url(course.getPhoto_url())
-                .teacher(course.getTeacher().getId())
+                .teacher(teacher)
                 .title(course.getTitle())
                 .description(course.getDescription())
                 .level(course.getLevel())
@@ -64,14 +65,11 @@ public class CourseMapper {
         return courses.stream().map(this::toCourseResponse).toList();
     }
 
-
-
     private String shortDescription(Course course) {
         String description = course.getDescription();
         String[] split = description.split("\\.");
         return split[0];
     }
-
 
     private int lessonCount(Course course) {
         return lessonRepository.findLessonByCourseId(course.getId()).size();
@@ -79,11 +77,6 @@ public class CourseMapper {
 
     private int studentCount(Course course) {
         return studentCourseRepository.countStudentByCourse(course);
-    }
-
-
-    public List<ResponseCourseDto> courseDto(List<Course> courses) {
-        return courses.stream().map(this::courseDto).toList();
     }
 
 }

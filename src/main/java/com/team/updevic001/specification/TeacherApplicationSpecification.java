@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
-public class CourseApplicationSpecification {
+public class TeacherApplicationSpecification {
 
     public static Specification<TeacherApplicationsEntity> hasEmail(String email) {
         return (root, query, cb) ->

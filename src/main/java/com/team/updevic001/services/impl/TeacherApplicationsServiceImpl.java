@@ -11,7 +11,7 @@ import com.team.updevic001.model.dtos.application.TeacherApplicationResponseDto;
 import com.team.updevic001.model.dtos.application.MessageDto;
 import com.team.updevic001.model.mappers.ApplicationFormMapper;
 import com.team.updevic001.services.interfaces.AdminService;
-import com.team.updevic001.specification.CourseApplicationSpecification;
+import com.team.updevic001.specification.TeacherApplicationSpecification;
 import com.team.updevic001.dao.entities.TeacherApplicationsEntity;
 import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.services.interfaces.TeacherApplicationService;
@@ -81,7 +81,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
 
         if (hasFilters) {
             resultPage = teacherApplicationsRepository.findAll(
-                    CourseApplicationSpecification.buildSpecification(searchDto),
+                    TeacherApplicationSpecification.buildSpecification(searchDto),
                     pageable
             );
         } else {
@@ -97,7 +97,6 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
                 resultPage.getSize()
         );
     }
-
 
     @Override
     public void deleteApplication(UUID id) {

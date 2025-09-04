@@ -1,11 +1,11 @@
 package com.team.updevic001.specification;
 
+import com.team.updevic001.criteria.CourseSearchCriteria;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.Course.Fields;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
 import org.springframework.data.jpa.domain.Specification;
-
 
 public class CourseSpecification {
 
@@ -33,7 +33,15 @@ public class CourseSpecification {
         return (root, query, cb) ->
                 (name == null || name.isEmpty())
                         ? cb.conjunction()
-                        : cb.like(cb.lower(root.get(Course.Fields.title)), "%" + name.toLowerCase() + "%");
+                        : cb.like(cb.lower(root.get(Fields.title)), "%" + name.toLowerCase() + "%");
     }
 
+    public static Specification<Course> buildSpecification(CourseSearchCriteria dto) {
+        return Specification
+                .where(hasName(dto.getName()))
+                .and(hasLevel(dto.getLevel()))
+                .and(hasCategory(dto.getCourseCategoryType()))
+                .and(priceGreaterThanOrEqual(dto.getMinPrice()))
+                .and(priceLessThanOrEqual(dto.getMaxPrice()));
+    }
 }

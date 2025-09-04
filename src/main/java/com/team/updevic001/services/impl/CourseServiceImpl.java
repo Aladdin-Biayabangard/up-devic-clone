@@ -23,6 +23,7 @@ import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.mappers.CourseMapper;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.FileLoadService;
+import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.specification.CourseSpecification;
 import com.team.updevic001.utility.AuthHelper;
 import jakarta.transaction.Transactional;
@@ -34,7 +35,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,6 +62,7 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
     private final DeleteService deleteService;
     private final UserCourseFeeRepository userCourseFeeRepository;
+    private final TeacherService teacherService;
 
     @Override
     @Transactional
@@ -129,7 +130,6 @@ public class CourseServiceImpl implements CourseService {
             throw new NotFoundException(COURSE_NOT_FOUND.getCode(),
                     COURSE_NOT_FOUND.getMessage().formatted(courseId));
         }
-//        courseRepository.findProfilePhotoKeyBy(courseId).ifPresent(fileLoadServiceImpl::deleteFileFromAws);
         String photoOfWhat = "coursePhoto";
         var fileUploadResponse = fileLoadServiceImpl.uploadFile(multipartFile, courseId, photoOfWhat);
         courseRepository.updateCourseFileInfo(courseId, fileUploadResponse.getKey(), fileUploadResponse.getUrl());
@@ -169,7 +169,8 @@ public class CourseServiceImpl implements CourseService {
 
         } catch (Exception ex) {
         }
-        var courseResponse = courseMapper.toFullResponse(course);
+        var teacherShortInfo = teacherService.getTeacherShortInfo(course.getTeacher());
+        var courseResponse = courseMapper.toFullResponse(course, teacherShortInfo);
         courseResponse.setPaid(paid);
         return courseResponse;
     }
@@ -182,28 +183,19 @@ public class CourseServiceImpl implements CourseService {
         int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
         Pageable pageable = PageRequest.of(page, size);
 
-        if (criteria == null || isCriteriaEmpty(criteria)) {
-            Page<Course> coursePage = courseRepository.findAll(pageable);
-            return new CustomPage<>(
-                    courseMapper.toCourseResponse(coursePage.getContent()),
-                    coursePage.getNumber(),
-                    coursePage.getSize()
+        Page<Course> resultPage;
+        if (criteriaChecking(criteria)) {
+            resultPage = courseRepository.findAll(
+                    CourseSpecification.buildSpecification(criteria), pageable
             );
+        } else {
+            resultPage = courseRepository.findAllByOrderByCreatedAtDesc(pageable);
         }
 
-        Specification<Course> specification = Specification
-                .where(CourseSpecification.hasLevel(criteria.getLevel()))
-                .and(CourseSpecification.priceGreaterThanOrEqual(criteria.getMinPrice())
-                        .and(CourseSpecification.priceLessThanOrEqual(criteria.getMaxPrice()))
-                        .and(CourseSpecification.hasCategory(criteria.getCourseCategoryType()))
-                        .and(CourseSpecification.hasName(criteria.getName())));
-
-        Page<Course> coursePage = courseRepository.findAll(specification, pageable);
-
         return new CustomPage<>(
-                courseMapper.toCourseResponse(coursePage.getContent()),
-                coursePage.getNumber(),
-                coursePage.getSize()
+                courseMapper.toCourseResponse(resultPage.getContent()),
+                resultPage.getNumber(),
+                resultPage.getSize()
         );
     }
 
@@ -283,11 +275,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
-    private boolean isCriteriaEmpty(CourseSearchCriteria criteria) {
-        return criteria.getLevel() == null &&
-                criteria.getMinPrice() == null &&
-                criteria.getMaxPrice() == null &&
-                criteria.getCourseCategoryType() == null &&
-                (criteria.getName() == null || criteria.getName().isBlank());
+    private boolean criteriaChecking(CourseSearchCriteria criteria) {
+        return criteria.getName() != null && (
+                criteria.getLevel() != null ||
+                criteria.getMaxPrice() != null ||
+                criteria.getMinPrice() != null ||
+                criteria.getCourseCategoryType() != null);
     }
 }

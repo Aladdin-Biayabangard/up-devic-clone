@@ -4,6 +4,8 @@ import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +33,7 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
     @Modifying
     @Query("UPDATE Course c SET c.photo_url=:fileUrl,c.photoKey=:fileKey WHERE c.id=:id ")
     void updateCourseFileInfo(String id,  String fileKey,  String fileUrl);
+
+    Page<Course> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
 }

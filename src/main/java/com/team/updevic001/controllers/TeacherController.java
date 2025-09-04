@@ -2,8 +2,6 @@ package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
-import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
-import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.services.interfaces.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,23 +24,10 @@ public class TeacherController {
         return ResponseEntity.ok(teacherAndCourses);
     }
 
-    @Operation(summary = "Muellimin kurs telebe sayini ve balansini gosterir ")
-    @GetMapping(path = "/info")
-    public ResponseEntity<TeacherMainInfo> getInfo() {
-        TeacherMainInfo info = teacherServiceImpl.getInfo();
-        return ResponseEntity.ok(info);
-    }
-
     @Operation(summary = "Muellimin profiline baxmaq")
     @GetMapping(path = "/{teacherId}/profile")
     public ResponseTeacherDto getProfile(@PathVariable Long teacherId) {
         return teacherServiceImpl.getTeacherProfile(teacherId);
-    }
-
-    @Operation(summary = "Muellimin card melumatlari")
-    @GetMapping(path = "/{teacherId}/info")
-    public TeacherNameDto getInfo(@PathVariable Long teacherId) {
-        return teacherServiceImpl.getTeacherShortInfo(teacherId);
     }
 
     @Operation(summary = "Muellimleri axtarir")

@@ -65,8 +65,8 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherMapper.toTeacherDto(user, teacherProfile);
     }
 
-    public TeacherNameDto getTeacherShortInfo(Long teacherId) {
-        return userRepository.findTeacherNameByUserId(teacherId);
+    public TeacherNameDto getTeacherShortInfo(User teacher) {
+        return userRepository.findTeacherNameByUser(teacher);
     }
 
     public List<ResponseTeacherDto> searchTeacher(String keyword) {

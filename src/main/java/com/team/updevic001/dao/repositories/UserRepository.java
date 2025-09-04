@@ -56,7 +56,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
            "(u.id, u.firstName, u.lastName, p.profilePhotoUrl) " +
            "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
-           "WHERE u.id = :userId")
-    TeacherNameDto findTeacherNameByUserId(@Param("userId") Long userId);
+           "WHERE u = :user")
+    TeacherNameDto findTeacherNameByUser(@Param("userId") User user);
 
 }

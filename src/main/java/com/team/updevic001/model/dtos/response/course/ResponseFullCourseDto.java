@@ -1,6 +1,7 @@
 package com.team.updevic001.model.dtos.response.course;
 
 
+import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.CourseLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ public class ResponseFullCourseDto {
 
     private String photo_url;
 
-    private Long teacher;
+    private TeacherNameDto teacher;
 
     private String title;
 
