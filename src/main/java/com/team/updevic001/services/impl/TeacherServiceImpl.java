@@ -9,7 +9,6 @@ import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
-import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.TeacherService;
@@ -34,7 +33,6 @@ public class TeacherServiceImpl implements TeacherService {
     private final AuthHelper authHelper;
     private final TeacherMapper teacherMapper;
     private final CourseMapper courseMapper;
-    private final StudentCourseRepository studentCourseRepository;
     private final CourseRepository courseRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserService userService;
@@ -48,15 +46,7 @@ public class TeacherServiceImpl implements TeacherService {
         return courses.stream().map(courseMapper::toCourseResponse).toList();
     }
 
-    @Override
-    public TeacherMainInfo getInfo() {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        var courseIds = courseRepository.findCourseIdsByTeacher(authenticatedUser);
-        int studentCount = studentCourseRepository.countAllStudentsByCourseIds(courseIds);
-        return new TeacherMainInfo(courseIds.size(), studentCount);
-    }
-
-    public ResponseTeacherDto getTeacherProfile(Long userId) {
+      public ResponseTeacherDto getTeacherProfile(Long userId) {
         User user = userService.fetchUserById(userId);
         if (!userService.existsByUserAndRole(user, Role.TEACHER)) {
             throw new NotFoundException(TEACHER_NOT_FOUND.getCode(), TEACHER_NOT_FOUND.getMessage().formatted(userId));

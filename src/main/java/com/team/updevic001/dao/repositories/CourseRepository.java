@@ -24,9 +24,6 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
     @EntityGraph(attributePaths = {"tasks", "teacher"})
     Optional<Course> findCourseById(String id);
 
-    @Query("SELECT c.id FROM Course c WHERE c.teacher = :teacher")
-    List<String> findCourseIdsByTeacher(@Param("teacher") User teacher);
-
     boolean existsCourseByIdAndTeacher(String courseId, User teacher);
 
     @Transactional
