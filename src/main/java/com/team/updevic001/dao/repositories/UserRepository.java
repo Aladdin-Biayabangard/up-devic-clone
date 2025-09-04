@@ -57,6 +57,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
            "(u.id, u.firstName, u.lastName, p.profilePhotoUrl) " +
            "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
            "WHERE u = :user")
-    TeacherNameDto findTeacherNameByUser(@Param("userId") User user);
+    TeacherNameDto findTeacherNameByUser(User user);
 
 }
