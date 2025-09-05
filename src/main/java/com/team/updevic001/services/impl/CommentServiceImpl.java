@@ -123,11 +123,11 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Comment comment = findCommentById(commentId);
-        if (!comment.getUser().equals(authenticatedUser)) {
+        if (comment.getUser().equals(authenticatedUser) || commentRepository.checkCourseTeacher(commentId, authenticatedUser)) {
+            commentRepository.deleteById(commentId);
+        } else {
             throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "Not allowed delete comment!");
         }
-        commentRepository.deleteById(commentId);
-
     }
 
     private Comment findCommentById(Long commentId) {

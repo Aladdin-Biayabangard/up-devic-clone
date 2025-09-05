@@ -1,6 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.Comment;
+import com.team.updevic001.dao.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findCommentByCourseId(String id, Pageable pageable);
 
     Page<Comment> findCommentByLessonId(String id, Pageable pageable);
+
+    @Query("SELECT COUNT(c) > 0 FROM Comment c WHERE c.id = :id AND c.course.teacher = :user")
+    boolean checkCourseTeacher(Long id, User user);
 
     @Modifying
     @Transactional
