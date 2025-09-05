@@ -26,8 +26,8 @@ public class PaymentController {
     }
 
   
-    @GetMapping(path = "cancel")
-    public ResponseEntity<String> cancel() {
+    @GetMapping(path = "cancel/{courseId}")
+    public ResponseEntity<String> cancel(@PathVariable String courseId) {
         return ResponseEntity.ok("Payment failed. Please try again.");
     }
 

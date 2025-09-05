@@ -2,9 +2,15 @@ package com.team.updevic001.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.UNEXPECTED_EXCEPTION;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -24,6 +30,23 @@ public class GlobalExceptionHandler {
         log.error("Exception: " + ex);
         return new ErrorResponse(UNEXPECTED_EXCEPTION.getCode(), UNEXPECTED_EXCEPTION.getMessage());
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", "VALIDATION_FAILED");
+        response.put("message", "Validation failed");
+        response.put("errors", fieldErrors);
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(NOT_FOUND)
