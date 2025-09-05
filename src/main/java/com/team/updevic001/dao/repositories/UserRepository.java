@@ -15,14 +15,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     boolean existsByEmail(String email);
 
-
     long count();
 
     @EntityGraph(attributePaths = "roles")
     Optional<User> findByEmail(String email);
 
     Optional<User> findByEmailAndStatus(String email, Status status);
-
 
     @Query(value = "SELECT * FROM users u " +
                    "WHERE MATCH(u.first_name, u.last_name) AGAINST (:keyword IN BOOLEAN MODE)",
@@ -43,7 +41,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     FROM User u
 """)
     Object[] countUserStats();
-
 
     @Query("""
                 SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END

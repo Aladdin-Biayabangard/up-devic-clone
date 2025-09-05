@@ -27,6 +27,7 @@ public enum ApiEndpoint {
     ADMIN_GET_USERS_COUNT("/api/v1/admins/users/count", HttpMethod.GET, ADMIN),
     ADMIN_REMOVE_ROLE("/api/v1/admins/users/*/role", HttpMethod.PUT, ADMIN),
     ADMIN_DELETE_USER("/api/v1/admins/users/*", HttpMethod.DELETE, ADMIN),
+    ADMIN_DASHBOARD("/api/v1/admins/dashboard", HttpMethod.DELETE, ADMIN),
     // Auth Controller
 
     AUTH_CREATE_ADMIN("/api/v1/auth/create-admin", HttpMethod.PUT, PUBLIC),
@@ -106,13 +107,13 @@ public enum ApiEndpoint {
 
     // --- Teacher Applications Controller ---
     TEACHER_APPLICATION_CREATE("/api/v1/applications", HttpMethod.POST, STUDENT), // login olmuş userlər üçün
-    TEACHER_APPLICATION_GET("/api/v1/applications/*", HttpMethod.GET, PUBLIC),
-    TEACHER_APPLICATION_READ("/api/v1/applications/*/read", HttpMethod.PUT, PUBLIC),
-    TEACHER_APPLICATION_APPROVE("/api/v1/applications/*/success", HttpMethod.PUT, PUBLIC),
-    TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, PUBLIC),
-    TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, PUBLIC),
-    TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, PUBLIC),
-    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, PUBLIC);
+    TEACHER_APPLICATION_GET("/api/v1/applications/*", HttpMethod.GET, ADMIN),
+    TEACHER_APPLICATION_READ("/api/v1/applications/*/read", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_APPROVE("/api/v1/applications/*/success", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, ADMIN),
+    TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, ADMIN),
+    TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, ADMIN),
+    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, ADMIN);
 
     private final String pathPattern;
     private final HttpMethod httpMethod;
