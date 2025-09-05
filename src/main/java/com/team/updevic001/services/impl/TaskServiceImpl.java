@@ -132,7 +132,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
         return taskRepository.findTaskByCourseId(courseId).stream()
-                .map(task -> new ResponseTaskDto(task.getQuestions(), task.getOptions()))
+                .map(task -> new ResponseTaskDto(task.getId(),task.getQuestions(), task.getOptions()))
                 .toList();
     }
 

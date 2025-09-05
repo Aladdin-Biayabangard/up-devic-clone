@@ -10,6 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ResponseTaskDto {
 
+    private Long id;
+
     private String questions;
 
     private List<String> options;
