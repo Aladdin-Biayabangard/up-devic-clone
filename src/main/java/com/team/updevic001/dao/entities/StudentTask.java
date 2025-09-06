@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.entities;
 
- 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,5 +26,9 @@ public class StudentTask {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
+    private String answer;
+
     private Boolean completed;
+
+    private double score;
 }

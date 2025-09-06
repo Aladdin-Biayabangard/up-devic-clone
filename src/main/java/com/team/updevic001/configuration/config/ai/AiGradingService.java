@@ -32,7 +32,7 @@ public class AiGradingService {
         Tələbənin cavabı: %s
 
         Tapşırıq:
-        1. Tələbənin cavabını düzgün cavabla müqayisə et.
+        1. Tələbənin cavabını düzgün cavabla müqayisə et və feeadback zamani Sanki birbasa telebe ile danisirsan kimi cavab ver. Sizin deyerek başla.
         2. Cavabın düzgünlüyünü müəyyən et.
         3. 0-dan 100-ə qədər bal ver. Tam uyğun cavab = 100, qismən uyğun cavab = 1–99, uyğun olmayan cavab = 0.
         4. JSON formatında cavab ver:

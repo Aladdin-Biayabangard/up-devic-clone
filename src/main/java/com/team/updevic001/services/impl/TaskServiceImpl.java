@@ -117,6 +117,8 @@ public class TaskServiceImpl implements TaskService {
         studentTask.setCompleted(true);
         studentTask.setStudent(student);
         studentTask.setTask(task);
+        studentTask.setAnswer(answerDto.getAnswer());
+        studentTask.setScore(taskScore);
         studentTaskRepository.save(studentTask);
 
         return new TaskResultDto(
@@ -135,12 +137,25 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findTaskByCourseId(courseId).stream()
                 .map(task -> {
                     var submitted = false;
-                    try {
-                        ensureTaskNotCompleted(student, task);
-                    } catch (IllegalArgumentException ex) {
+                    String studentAnswer = null;
+                    var score = 0.0;
+
+                    var studentTaskOpt = studentTaskRepository.findByStudentAndTask(student, task);
+                    if (studentTaskOpt.isPresent()) {
                         submitted = true;
+                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
+                        score = studentTaskOpt.get().getScore();
                     }
-                    return new ResponseTaskDto(task.getId(), task.getQuestions(), submitted, task.getOptions());
+
+                    return new ResponseTaskDto(
+                            task.getId(),
+                            task.getQuestions(),
+                            submitted,
+                            task.getOptions(),
+                            task.getCorrectAnswer(),
+                            studentAnswer,
+                            score
+                    );
                 })
                 .toList();
     }

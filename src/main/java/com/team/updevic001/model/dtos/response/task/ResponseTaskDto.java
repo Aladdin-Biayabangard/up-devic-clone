@@ -18,4 +18,10 @@ public class ResponseTaskDto {
     private boolean submitted =false;
 
     private List<String> options;
+
+    private String correctAnswer;
+
+    private String studentAnswer;
+
+    private double score;
 }
