@@ -12,4 +12,6 @@ public class TaskResultDto {
     private double score;
     private String feedback;
     private String correctAnswer;
+    private String studentAnswer;
+
 }

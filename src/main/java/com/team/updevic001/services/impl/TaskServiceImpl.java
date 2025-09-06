@@ -125,7 +125,8 @@ public class TaskServiceImpl implements TaskService {
                 aiResult.getCorrect(),
                 taskScore,
                 aiResult.getFeedback(),
-                aiResult.getCorrectAnswer()
+                aiResult.getCorrectAnswer(),
+                answerDto.getAnswer()
         );
     }
 
