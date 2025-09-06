@@ -131,8 +131,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
+        User student = authHelper.getAuthenticatedUser();
         return taskRepository.findTaskByCourseId(courseId).stream()
-                .map(task -> new ResponseTaskDto(task.getId(),task.getQuestions(), task.getOptions()))
+                .map(task -> {
+                    var submitted = false;
+                    try {
+                        ensureTaskNotCompleted(student, task);
+                    } catch (IllegalArgumentException ex) {
+                        submitted = true;
+                    }
+                    return new ResponseTaskDto(task.getId(), task.getQuestions(), submitted, task.getOptions());
+                })
                 .toList();
     }
 
