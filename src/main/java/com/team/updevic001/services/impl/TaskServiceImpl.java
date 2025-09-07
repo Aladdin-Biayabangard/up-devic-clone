@@ -174,6 +174,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 1 dəfə bütün student task-ları gətiririk
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
+        System.out.println(studentTasks.size());
 
         // Map: taskId -> studentTask
         Map<Long, StudentTask> studentTaskMap = studentTasks.stream()
@@ -182,6 +183,7 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream()
                 .map(task -> {
                     StudentTask st = studentTaskMap.get(task.getId());
+                    System.out.println(st);
                     if (st != null) {
                         return new ResponseSubmission(
                                 st.getScore(),
@@ -198,7 +200,6 @@ public class TaskServiceImpl implements TaskService {
                 .filter(Objects::nonNull)
                 .toList();
     }
-
 
 
     public void deleteTask(Long taskId) {

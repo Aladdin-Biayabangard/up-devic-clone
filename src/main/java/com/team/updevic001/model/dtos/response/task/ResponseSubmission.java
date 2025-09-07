@@ -2,8 +2,10 @@ package com.team.updevic001.model.dtos.response.task;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class ResponseSubmission {
 
