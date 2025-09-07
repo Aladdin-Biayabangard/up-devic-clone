@@ -122,9 +122,10 @@ public class TaskServiceImpl implements TaskService {
         studentTask.setStudentAnswer(answerDto.getAnswer());
         studentTask.setFeedback(aiResult.getFeedback());
         studentTask.setTask(task);
-        studentTask.setCorrectAnswer(answerDto.getAnswer());
+        studentTask.setCorrectAnswer(task.getCorrectAnswer());
         studentTask.setScore(taskScore);
         studentTask.setSubmitted(true);
+        studentTask.setCorrect(aiResult.getCorrect());
         studentTaskRepository.save(studentTask);
 
         return new TaskResultDto(
@@ -168,12 +169,10 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<ResponseSubmission> getSubmissionTasks(String courseId) {
         User student = authHelper.getAuthenticatedUser();
-        System.out.println(student.getId());
-        // 1 dəfə bütün task-ları gətiririk
+
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
         System.out.println("Tasklar gelmeli idi");
-        tasks.forEach(System.out::println);
-        // 1 dəfə bütün student task-ları gətiririk
+
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
         System.out.println(studentTasks.size());
 
@@ -184,7 +183,6 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream()
                 .map(task -> {
                     StudentTask st = studentTaskMap.get(task.getId());
-                    System.out.println(st);
                     if (st != null) {
                         return new ResponseSubmission(
                                 st.getScore(),
