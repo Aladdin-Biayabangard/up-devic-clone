@@ -24,6 +24,8 @@ import com.team.updevic001.services.interfaces.TaskService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,24 +144,23 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
+        User student = authHelper.getAuthenticatedUser();
+
         return taskRepository.findTaskByCourseId(courseId).stream()
                 .map(task -> {
-//                    var submitted = false;
-////                    String studentAnswer = null;
-//                    var score = 0.0;
-//
-//                    var studentTaskOpt = studentTaskRepository.findByStudentAndTask(student, task);
-//                    if (studentTaskOpt.isPresent()) {
-//                        submitted = true;
-////                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
-//                        score = studentTaskOpt.get().getScore();
-//                    }
+                    var submitted = false;
+
+                    var studentTaskOpt = studentTaskRepository.existsByStudentAndTask(student, task);
+                    if (studentTaskOpt) {
+                        submitted = true;
+                    }
 
                     return new ResponseTaskDto(
                             task.getId(),
                             task.getQuestions(),
                             task.getOptions(),
-                            task.getCorrectAnswer()
+                            task.getCorrectAnswer(),
+                            submitted
                     );
                 })
                 .toList();
@@ -171,10 +172,8 @@ public class TaskServiceImpl implements TaskService {
         User student = authHelper.getAuthenticatedUser();
 
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
-        System.out.println("Tasklar gelmeli idi");
 
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
-        System.out.println(studentTasks.size());
 
         // Map: taskId -> studentTask
         Map<Long, StudentTask> studentTaskMap = studentTasks.stream()

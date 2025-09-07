@@ -19,4 +19,5 @@ public class ResponseTaskDto {
 
     private String correctAnswer;
 
+    private boolean submitted;
 }
