@@ -37,6 +37,7 @@ public class TaskController {
         return taskServiceImpl.checkAnswer(courseId, taskId, answerDto);
     }
 
+
     @GetMapping(path = "/courses/{courseId}")
     public List<ResponseTaskDto> getTasks(@PathVariable String courseId) {
         return taskServiceImpl.getTasks(courseId);
