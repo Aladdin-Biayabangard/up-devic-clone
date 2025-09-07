@@ -126,7 +126,8 @@ public class TaskServiceImpl implements TaskService {
                 taskScore,
                 aiResult.getFeedback(),
                 aiResult.getCorrectAnswer(),
-                answerDto.getAnswer()
+                answerDto.getAnswer(),
+                true
         );
     }
 
@@ -138,13 +139,13 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findTaskByCourseId(courseId).stream()
                 .map(task -> {
                     var submitted = false;
-                    String studentAnswer = null;
+//                    String studentAnswer = null;
                     var score = 0.0;
 
                     var studentTaskOpt = studentTaskRepository.findByStudentAndTask(student, task);
                     if (studentTaskOpt.isPresent()) {
                         submitted = true;
-                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
+//                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
                         score = studentTaskOpt.get().getScore();
                     }
 
@@ -154,7 +155,6 @@ public class TaskServiceImpl implements TaskService {
                             submitted,
                             task.getOptions(),
                             task.getCorrectAnswer(),
-                            studentAnswer,
                             score
                     );
                 })

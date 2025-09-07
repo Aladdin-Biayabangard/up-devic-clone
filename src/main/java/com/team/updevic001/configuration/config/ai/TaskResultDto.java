@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskResultDto {
-    private boolean isCorrect;
+
+    private boolean correct ;
     private double score;
     private String feedback;
     private String correctAnswer;
     private String studentAnswer;
+    private boolean submitted =false;
 
 }

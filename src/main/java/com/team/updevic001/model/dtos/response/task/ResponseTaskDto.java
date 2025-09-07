@@ -21,7 +21,5 @@ public class ResponseTaskDto {
 
     private String correctAnswer;
 
-    private String studentAnswer;
-
     private double score;
 }
