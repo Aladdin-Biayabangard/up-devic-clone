@@ -171,7 +171,7 @@ public class TaskServiceImpl implements TaskService {
         System.out.println(student.getId());
         // 1 dəfə bütün task-ları gətiririk
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
-
+        System.out.println("Tasklar gelmeli idi");
         tasks.forEach(System.out::println);
         // 1 dəfə bütün student task-ları gətiririk
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
