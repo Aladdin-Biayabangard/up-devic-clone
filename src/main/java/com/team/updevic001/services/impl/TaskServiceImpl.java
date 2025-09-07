@@ -168,10 +168,11 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<ResponseSubmission> getSubmissionTasks(String courseId) {
         User student = authHelper.getAuthenticatedUser();
-
+        System.out.println(student.getId());
         // 1 dəfə bütün task-ları gətiririk
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
 
+        tasks.forEach(System.out::println);
         // 1 dəfə bütün student task-ları gətiririk
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
         System.out.println(studentTasks.size());
