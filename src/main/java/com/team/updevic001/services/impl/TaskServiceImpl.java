@@ -18,6 +18,7 @@ import com.team.updevic001.dao.repositories.UserLessonStatusRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.request.AnswerDto;
 import com.team.updevic001.model.dtos.request.TaskDto;
+import com.team.updevic001.model.dtos.response.task.ResponseSubmission;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;
 import com.team.updevic001.services.interfaces.TaskService;
 import com.team.updevic001.utility.AuthHelper;
@@ -28,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
 import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
@@ -98,7 +102,6 @@ public class TaskServiceImpl implements TaskService {
 
         double taskScore = aiResult.getScore(); // <-- AI-dan gələn bal
 
-        // TestResult yeniləmə
         TestResult result = testResultRepository
                 .findTestResultByStudentAndCourse(student, course)
                 .orElseGet(() -> {
@@ -116,9 +119,12 @@ public class TaskServiceImpl implements TaskService {
         StudentTask studentTask = new StudentTask();
         studentTask.setCompleted(true);
         studentTask.setStudent(student);
+        studentTask.setStudentAnswer(answerDto.getAnswer());
+        studentTask.setFeedback(aiResult.getFeedback());
         studentTask.setTask(task);
-        studentTask.setAnswer(answerDto.getAnswer());
+        studentTask.setCorrectAnswer(answerDto.getAnswer());
         studentTask.setScore(taskScore);
+        studentTask.setSubmitted(true);
         studentTaskRepository.save(studentTask);
 
         return new TaskResultDto(
@@ -135,31 +141,65 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
-        User student = authHelper.getAuthenticatedUser();
         return taskRepository.findTaskByCourseId(courseId).stream()
                 .map(task -> {
-                    var submitted = false;
-//                    String studentAnswer = null;
-                    var score = 0.0;
-
-                    var studentTaskOpt = studentTaskRepository.findByStudentAndTask(student, task);
-                    if (studentTaskOpt.isPresent()) {
-                        submitted = true;
-//                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
-                        score = studentTaskOpt.get().getScore();
-                    }
+//                    var submitted = false;
+////                    String studentAnswer = null;
+//                    var score = 0.0;
+//
+//                    var studentTaskOpt = studentTaskRepository.findByStudentAndTask(student, task);
+//                    if (studentTaskOpt.isPresent()) {
+//                        submitted = true;
+////                        studentAnswer = studentTaskOpt.get().getAnswer(); // studentTask entity-də cavab saxlanmalıdır
+//                        score = studentTaskOpt.get().getScore();
+//                    }
 
                     return new ResponseTaskDto(
                             task.getId(),
                             task.getQuestions(),
-                            submitted,
                             task.getOptions(),
-                            task.getCorrectAnswer(),
-                            score
+                            task.getCorrectAnswer()
                     );
                 })
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResponseSubmission> getSubmissionTasks(String courseId) {
+        User student = authHelper.getAuthenticatedUser();
+
+        // 1 dəfə bütün task-ları gətiririk
+        List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
+
+        // 1 dəfə bütün student task-ları gətiririk
+        List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
+
+        // Map: taskId -> studentTask
+        Map<Long, StudentTask> studentTaskMap = studentTasks.stream()
+                .collect(Collectors.toMap(st -> st.getTask().getId(), st -> st));
+
+        return tasks.stream()
+                .map(task -> {
+                    StudentTask st = studentTaskMap.get(task.getId());
+                    if (st != null) {
+                        return new ResponseSubmission(
+                                st.getScore(),
+                                st.getFeedback(),
+                                st.getCorrectAnswer(),
+                                st.getStudentAnswer(),
+                                st.isCorrect(),
+                                st.isSubmitted()
+                        );
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+
 
     public void deleteTask(Long taskId) {
         taskRepository.deleteById(taskId);

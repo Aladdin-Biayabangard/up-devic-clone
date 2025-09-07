@@ -3,6 +3,7 @@ package com.team.updevic001.controllers;
 import com.team.updevic001.configuration.config.ai.TaskResultDto;
 import com.team.updevic001.model.dtos.request.AnswerDto;
 import com.team.updevic001.model.dtos.request.TaskDto;
+import com.team.updevic001.model.dtos.response.task.ResponseSubmission;
 import com.team.updevic001.model.dtos.response.task.ResponseTaskDto;
 import com.team.updevic001.services.interfaces.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,11 @@ public class TaskController {
     @GetMapping(path = "/courses/{courseId}")
     public List<ResponseTaskDto> getTasks(@PathVariable String courseId) {
         return taskServiceImpl.getTasks(courseId);
+    }
+
+    @GetMapping("/{courseId}/submissions")
+    public List<ResponseSubmission> getSubmissionTasks(@PathVariable String courseId) {
+        return taskServiceImpl.getSubmissionTasks(courseId);
     }
 
     @DeleteMapping(path = "/{taskId}")

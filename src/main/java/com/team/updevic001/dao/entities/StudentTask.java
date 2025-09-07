@@ -26,9 +26,16 @@ public class StudentTask {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    private String answer;
+    private String correctAnswer;
+
+    private String studentAnswer;
+
+    private String feedback;
 
     private Boolean completed;
+    private boolean correct;
+
+    private boolean submitted;
 
     private double score;
 }

@@ -15,11 +15,8 @@ public class ResponseTaskDto {
 
     private String questions;
 
-    private boolean submitted =false;
-
     private List<String> options;
 
     private String correctAnswer;
 
-    private double score;
 }
