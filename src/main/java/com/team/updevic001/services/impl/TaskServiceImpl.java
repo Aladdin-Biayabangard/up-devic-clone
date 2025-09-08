@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
@@ -64,10 +64,17 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = new Task();
         task.setQuestions(taskDto.getQuestions());
-        task.setOptions(taskDto.getOptions());
+        if (taskDto.getOptions() != null) {
+            task.setOptions(taskDto.getOptions());
+        }
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
         task.setCourse(course);
-        taskRepository.save(task);
+
+        if (course.getTasks() == null) {
+            course.setTasks(new ArrayList<>());
+        }
+        course.getTasks().add(task);
+        courseRepository.save(course);
     }
 
     @Override
@@ -136,19 +143,24 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
         User student = authHelper.getAuthenticatedUser();
-        List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
 
-        Set<Long> submittedTaskIds = studentTaskRepository
-                .findSubmittedTaskIdsByStudentAndTaskIn(student, tasks);
+        return taskRepository.findTaskByCourseId(courseId).stream()
+                .map(task -> {
+                    var submitted = false;
 
-        return tasks.stream()
-                .map(task -> new ResponseTaskDto(
-                        task.getId(),
-                        task.getQuestions(),
-                        task.getOptions(),
-                        task.getCorrectAnswer(),
-                        submittedTaskIds.contains(task.getId())
-                ))
+                    var studentTaskOpt = studentTaskRepository.existsByStudentAndTask(student, task);
+                    if (studentTaskOpt) {
+                        submitted = true;
+                    }
+
+                    return new ResponseTaskDto(
+                            task.getId(),
+                            task.getQuestions(),
+                            task.getOptions(),
+                            task.getCorrectAnswer(),
+                            submitted
+                    );
+                })
                 .toList();
     }
 
@@ -160,6 +172,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = taskRepository.findTaskByCourseId(courseId);
 
         List<StudentTask> studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
+
         // Map: taskId -> studentTask
         Map<Long, StudentTask> studentTaskMap = studentTasks.stream()
                 .collect(Collectors.toMap(st -> st.getTask().getId(), st -> st));

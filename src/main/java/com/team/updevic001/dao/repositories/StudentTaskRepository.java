@@ -22,4 +22,5 @@ public interface StudentTaskRepository extends JpaRepository<StudentTask, Long> 
 
     Set<Long> findSubmittedTaskIdsByStudentAndTaskIn(User student, List<Task> tasks);
 
+    boolean existsByStudentAndTask(User student, Task task);
 }
