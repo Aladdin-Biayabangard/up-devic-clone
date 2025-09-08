@@ -7,18 +7,18 @@ import static com.team.updevic001.configuration.enums.ApiSecurityLevel.*;
 public enum ApiEndpoint {
 
     // --- Public (Permit All) ---
-    AUTH_PUBLIC("/v1/auth/**",null, PUBLIC),
-    SWAGGER_V2("/v2/api-docs",null ,PUBLIC),
-    SWAGGER_V3_ALL("/v3/api-docs/**", null,PUBLIC),
-    SWAGGER_V3("/v3/api-docs",null, PUBLIC),
-    SWAGGER_RESOURCES("/swagger-resources",null, PUBLIC),
-    SWAGGER_RESOURCES_ALL("/swagger-resources/**",null, PUBLIC),
-    SWAGGER_UI_CONFIG("/configuration/ui",null, PUBLIC),
-    SWAGGER_UI("/swagger-ui/**",null, PUBLIC),
-    ERROR_ENDPOINT("/error",null, PUBLIC),
-    SWAGGER_UI_HTML("/swagger-ui.html",null, PUBLIC),
+    AUTH_PUBLIC("/v1/auth/**", null, PUBLIC),
+    SWAGGER_V2("/v2/api-docs", null, PUBLIC),
+    SWAGGER_V3_ALL("/v3/api-docs/**", null, PUBLIC),
+    SWAGGER_V3("/v3/api-docs", null, PUBLIC),
+    SWAGGER_RESOURCES("/swagger-resources", null, PUBLIC),
+    SWAGGER_RESOURCES_ALL("/swagger-resources/**", null, PUBLIC),
+    SWAGGER_UI_CONFIG("/configuration/ui", null, PUBLIC),
+    SWAGGER_UI("/swagger-ui/**", null, PUBLIC),
+    ERROR_ENDPOINT("/error", null, PUBLIC),
+    SWAGGER_UI_HTML("/swagger-ui.html", null, PUBLIC),
 
-// --- Admin Controller ---
+    // --- Admin Controller ---
     ADMIN_ASSIGN_TEACHER("/api/v1/admins/assign/*", HttpMethod.POST, ADMIN),
     ADMIN_ACTIVATE_USER("/api/v1/admins/users/*/activate", HttpMethod.PUT, ADMIN),
     ADMIN_DEACTIVATE_USER("/api/v1/admins/users/*/deactivate", HttpMethod.PUT, ADMIN),
@@ -40,7 +40,16 @@ public enum ApiEndpoint {
     AUTH_REFRESH_TOKEN("/api/v1/auth/refresh-token", HttpMethod.POST, PUBLIC),
 
     // Certificate Controller
-        CERTIFICATE_DOWNLOAD("/api/certificate/download", HttpMethod.GET, STUDENT),
+// Certificate Controller
+    CERTIFICATE_SEARCH("/api/v1/certificates/search", HttpMethod.GET, ADMIN),
+    CERTIFICATE_VIEWS("/api/v1/certificates/views", HttpMethod.GET, ADMIN),
+    CERTIFICATE_GET_BY_ID("/api/v1/certificates/{id}", HttpMethod.GET, PUBLIC),
+    CERTIFICATE_CREATE("/api/v1/certificates", HttpMethod.POST, ADMIN),
+    CERTIFICATE_UPDATE("/api/v1/certificates/{id}", HttpMethod.PUT, ADMIN),
+    CERTIFICATE_DELETE("/api/v1/certificates/{id}", HttpMethod.DELETE, ADMIN),
+    CERTIFICATE_PREVIEW("/api/v1/certificates/{id}/preview", HttpMethod.POST, ADMIN),
+    CERTIFICATE_PUBLISH("/api/v1/certificates/{id}/publish", HttpMethod.POST, ADMIN),
+    CERTIFICATE_VIEWS_SUMMARY("/api/v1/certificates/views/summary", HttpMethod.GET, ADMIN),
 
     // Comment Controller
     COMMENT_ADD_TO_COURSE("/api/v1/comments/courses/*", HttpMethod.POST, STUDENT),
