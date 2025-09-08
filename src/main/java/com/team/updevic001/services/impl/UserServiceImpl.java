@@ -48,6 +48,14 @@ public class UserServiceImpl implements UserService {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         UserProfile userProfile = userProfileRepository.findByUser(authenticatedUser);
         UserProfile updatedUserProfile = userProfileMapper.toEntity(userProfile, userProfileDto);
+
+        if (userProfileDto.getLastName() != null && !userProfileDto.getLastName().isEmpty()) {
+            authenticatedUser.setLastName(userProfileDto.getLastName());
+        }
+        if (userProfileDto.getFirstName() != null && !userProfileDto.getFirstName().isEmpty()) {
+            authenticatedUser.setFirstName(userProfileDto.getFirstName());
+        }
+        userRepository.save(authenticatedUser);
         userProfileRepository.save(updatedUserProfile);
     }
 

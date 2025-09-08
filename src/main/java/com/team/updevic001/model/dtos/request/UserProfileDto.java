@@ -15,6 +15,10 @@ public class UserProfileDto {
 
     private String bio;
 
+    private String firstName;
+
+    private String lastName;
+
     private Set<String> socialLink;
 
     private Set<String> skill;
