@@ -248,7 +248,6 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void deleteCourse(String courseId) {
         var teacher = authHelper.getAuthenticatedUser();
-
         validateAccess(courseId, teacher);
         var allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
         deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, teacher);
