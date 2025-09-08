@@ -22,6 +22,12 @@ public class UserProfileMapper {
         if (userProfileDto.getBio() != null && !userProfileDto.getBio().isEmpty()) {
             userProfile.setBio(userProfileDto.getBio());
         }
+        if (userProfileDto.getSpeciality() != null) {
+            userProfile.setSpeciality(userProfileDto.getSpeciality());
+        }
+        if (userProfileDto.getExperienceYears() != null) {
+            userProfile.setExperienceYears(userProfileDto.getExperienceYears());
+        }
         return userProfile;
     }
 

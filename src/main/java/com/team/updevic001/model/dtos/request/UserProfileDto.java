@@ -1,5 +1,6 @@
 package com.team.updevic001.model.dtos.request;
 
+import com.team.updevic001.model.enums.Specialty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,4 +23,8 @@ public class UserProfileDto {
     private Set<String> socialLink;
 
     private Set<String> skill;
+
+    private Integer experienceYears;
+
+    private String speciality;
 }

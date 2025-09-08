@@ -46,8 +46,7 @@ public class UserProfile {
     @Column(name = "skill")
     private Set<String> skills = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
-    private Specialty speciality;
+    private String speciality;
 
     @Column(name = "experience_years")
     private Integer experienceYears;
