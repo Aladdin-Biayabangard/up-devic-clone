@@ -14,7 +14,6 @@ import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
 import com.team.updevic001.model.mappers.CertificateMapper;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.utility.screenshot.ByteArrayMultipartFile;
-import com.team.updevic001.utility.screenshot.ScreenshotService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -46,7 +45,7 @@ public class CertificateService {
     private final CertificateMapper certificateMapper;
     private final CertificateViewService certificateViewService;
     private final ScreenshotConfigRepository screenshotConfigRepository;
-    private final ScreenshotService screenshotService;
+//    private final ScreenshotService screenshotService;
     private final FileLoadService fileLoadService;
 
     public CertificateDto getCertificate(String id, Platform platform, Authentication authentication) {
@@ -116,26 +115,26 @@ public class CertificateService {
         return certificateMapper.toDto(certificate);
     }
 
-    public CertificatePreviewUrls addPreviewUrl(String id) throws IOException {
-        CertificateEntity certificate = fetchCertificateIfExist(id);
-        ScreenshotConfigEntity screenshotConfigEntityH = screenshotConfigRepository.findById("cert-screen-horizontal").orElseThrow();
-        String hUrl = generateCertificateUrl(screenshotConfigEntityH.getUrl(), id);
-        screenshotConfigEntityH.setUrl(hUrl);
-        String horizontalPreviewUrl = takeScreenshot(screenshotConfigEntityH, id);
-        certificate.setPreviewUrlHorizontal(horizontalPreviewUrl);
-        certificateRepository.save(certificate);
-
-        ScreenshotConfigEntity screenshotConfigEntityV = screenshotConfigRepository.findById("cert-screen-vertical").orElseThrow();
-        String vUrl = generateCertificateUrl(screenshotConfigEntityV.getUrl(), id);
-        screenshotConfigEntityV.setUrl(vUrl);
-        String verticalPreviewUrl = takeScreenshot(screenshotConfigEntityV, id);
-        certificate.setPreviewUrlVertical(verticalPreviewUrl);
-        certificateRepository.save(certificate);
-        return CertificatePreviewUrls.builder()
-                .horizontal(horizontalPreviewUrl)
-                .vertical(verticalPreviewUrl)
-                .build();
-    }
+//    public CertificatePreviewUrls addPreviewUrl(String id) throws IOException {
+//        CertificateEntity certificate = fetchCertificateIfExist(id);
+//        ScreenshotConfigEntity screenshotConfigEntityH = screenshotConfigRepository.findById("cert-screen-horizontal").orElseThrow();
+//        String hUrl = generateCertificateUrl(screenshotConfigEntityH.getUrl(), id);
+//        screenshotConfigEntityH.setUrl(hUrl);
+//        String horizontalPreviewUrl = takeScreenshot(screenshotConfigEntityH, id);
+//        certificate.setPreviewUrlHorizontal(horizontalPreviewUrl);
+//        certificateRepository.save(certificate);
+//
+//        ScreenshotConfigEntity screenshotConfigEntityV = screenshotConfigRepository.findById("cert-screen-vertical").orElseThrow();
+//        String vUrl = generateCertificateUrl(screenshotConfigEntityV.getUrl(), id);
+//        screenshotConfigEntityV.setUrl(vUrl);
+//        String verticalPreviewUrl = takeScreenshot(screenshotConfigEntityV, id);
+//        certificate.setPreviewUrlVertical(verticalPreviewUrl);
+//        certificateRepository.save(certificate);
+//        return CertificatePreviewUrls.builder()
+//                .horizontal(horizontalPreviewUrl)
+//                .vertical(verticalPreviewUrl)
+//                .build();
+//    }
 
 
     public void deleteCertificate(String id) {
@@ -182,16 +181,16 @@ public class CertificateService {
 //                || ROLE_STAFF.name().equals(a.getAuthority()));
         return true;
     }
-
-    private String takeScreenshot(ScreenshotConfigEntity screenshotConfigEntity, String id) throws IOException {
-        byte[] captured = screenshotService.capture(screenshotConfigEntity);
-        MultipartFile multipartFile = new ByteArrayMultipartFile(captured, id + ".png", id + ".png", MediaType.IMAGE_PNG.getType());
-        if (multipartFile != null) {
-            FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, id, "");
-            return fileUploadResponse.getUrl();
-        }
-        return null;
-    }
+//
+//    private String takeScreenshot(ScreenshotConfigEntity screenshotConfigEntity, String id) throws IOException {
+////        byte[] captured = screenshotService.capture(screenshotConfigEntity);
+//        MultipartFile multipartFile = new ByteArrayMultipartFile(captured, id + ".png", id + ".png", MediaType.IMAGE_PNG.getType());
+//        if (multipartFile != null) {
+//            FileUploadResponse fileUploadResponse = fileLoadService.uploadFile(multipartFile, id, "");
+//            return fileUploadResponse.getUrl();
+//        }
+//        return null;
+//    }
 
     public String generateCertificateUrl(String url, String id) {
         return url.replace("{id}", id);

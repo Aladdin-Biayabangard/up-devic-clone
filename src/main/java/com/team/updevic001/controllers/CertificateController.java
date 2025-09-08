@@ -81,11 +81,11 @@ public class CertificateController {
     public CertificateDto updateCertificate(@PathVariable String id, @RequestBody CertificateDto certificateDto) {
         return certificateService.updateCertificate(id, certificateDto);
     }
-
-    @PostMapping(path = "{id}/preview")
-    public CertificatePreviewUrls addPreviewUrl(@PathVariable String id) throws IOException {
-        return certificateService.addPreviewUrl(id);
-    }
+//
+//    @PostMapping(path = "{id}/preview")
+//    public CertificatePreviewUrls addPreviewUrl(@PathVariable String id) throws IOException {
+//        return certificateService.addPreviewUrl(id);
+//    }
 
     @PostMapping("/{id}/publish")
     @ResponseStatus(NO_CONTENT)
