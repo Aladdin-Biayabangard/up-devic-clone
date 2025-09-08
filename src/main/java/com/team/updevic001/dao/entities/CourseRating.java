@@ -24,7 +24,7 @@ public class CourseRating {
     @ManyToOne
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Course course;
 
     private int rating;
