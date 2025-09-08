@@ -136,19 +136,21 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public void updateRatingCourse(String courseId, int rating) {
-        var user = authHelper.getAuthenticatedUser();
-        var course = findCourseById(courseId);
-        var courseRating = courseRatingRepository.findCourseRatingByCourseAndUser(course, user)
-                .orElseGet(() ->
-                        CourseRating.builder()
-                                .course(course)
-                                .user(user)
-                                .build());
+        User user = authHelper.getAuthenticatedUser();
+        Course course = findCourseById(courseId);
+
+        CourseRating courseRating = courseRatingRepository
+                .findCourseRatingByCourseAndUser(course, user)
+                .orElseGet(() -> CourseRating.builder()
+                        .course(course)
+                        .user(user)
+                        .build());
+
         courseRating.setRating(rating);
         courseRatingRepository.save(courseRating);
         course.setRating(getAverageRating(course));
-        courseRepository.save(course);
     }
 
     @Override
@@ -248,7 +250,6 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void deleteCourse(String courseId) {
         var teacher = authHelper.getAuthenticatedUser();
-
         validateAccess(courseId, teacher);
         var allLessonIdsByCourseId = lessonRepository.findAllLessonIdsByCourseId(courseId);
         deleteService.deleteCourseAndReferencedData(courseId, allLessonIdsByCourseId, teacher);

@@ -32,7 +32,7 @@ public class DeleteService {
         commentRepository.deleteCommentsByLessonsId(lessonIds);
         commentRepository.deleteCommentsByCourseId(courseId);
         lessonRepository.deleteAllById(lessonIds);
-        certificateRepository.deleteCertificateByCourseId(courseId);
+//        certificateRepository.deleteCertificateByCourseId(courseId);
         courseRatingRepository.deleteRatingByCourseId(courseId);
         studentCourseRepository.deleteStudentCourseByCourseId(courseId);
         taskRepository.deleteTaskByCourseId(courseId);

@@ -1,15 +1,29 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Certificate;
-import org.springframework.data.jpa.repository.Modifying;
+
+import com.team.updevic001.dao.entities.CertificateEntity;
+import com.team.updevic001.model.dtos.certificate.CertificateStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.repository.query.Param;
 
-public interface CertificateRepository extends CrudRepository<Certificate,Long> {
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Certificate c WHERE c.course.id = :id")
-    void deleteCertificateByCourseId(String id);
+public interface CertificateRepository extends JpaRepository<CertificateEntity, String> {
+
+    @Query(value = """
+            SELECT * FROM certificates c
+            WHERE (LOWER(c.person_first_name) LIKE LOWER(CONCAT('%', :query, '%'))
+               OR LOWER(c.person_last_name) LIKE LOWER(CONCAT('%', :query, '%')))
+                        AND c.status = :status
+            ORDER BY c.person_first_name ASC
+            """,
+            nativeQuery = true)
+    Page<CertificateEntity> searchByNameAndStatus(@Param("query") String query,
+                                                  @Param("status") String status,
+                                                  Pageable pageable);
+
+    Page<CertificateEntity> findByStatus(CertificateStatus status, Pageable pageable);
+
 }

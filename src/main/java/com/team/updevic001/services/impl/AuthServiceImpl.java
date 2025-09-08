@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
         User user = authenticateUser(authRequest);
         UserRole userRole = createOrFetchRole(Role.ADMIN);
         if (!user.getRoles().contains(userRole)) {
+            user.setRoles(new ArrayList<>());
             user.getRoles().add(userRole);
             userRepository.save(user);
         }

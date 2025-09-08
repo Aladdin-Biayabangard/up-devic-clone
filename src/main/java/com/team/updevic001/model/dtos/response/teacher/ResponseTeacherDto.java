@@ -19,7 +19,7 @@ public class ResponseTeacherDto {
 
     private String email;
 
-    private Specialty speciality;
+    private String speciality;
 
     private Integer experienceYears;
 
