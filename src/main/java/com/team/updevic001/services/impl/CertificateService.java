@@ -5,6 +5,7 @@ import com.team.updevic001.dao.entities.Task;
 import com.team.updevic001.dao.entities.TestResult;
 import com.team.updevic001.dao.repositories.CertificateRepository;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
+import com.team.updevic001.dao.repositories.TaskRepository;
 import com.team.updevic001.dao.repositories.TestResultRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.NotFoundException;
@@ -43,6 +44,7 @@ public class CertificateService {
     private final StudentTaskRepository studentTaskRepository;
     private final TestResultRepository testResultRepository;
     private final AuthHelper authHelper;
+    private final TaskRepository taskRepository;
 
     public CertificateResponse getCertificate(String credentialId) {
         var certificate = fetchCertificateIfExist(credentialId);
@@ -75,7 +77,7 @@ public class CertificateService {
         var issuedFor = "has completed the %s course, with a score of %s";
         var user = authHelper.getAuthenticatedUser();
         var course = courseServiceImpl.findCourseById(courseId);
-      //  double score = checkEligibilityForCertification(user.getId(), courseId);
+        //  double score = checkEligibilityForCertification(user.getId(), courseId);
         var certificate = CertificateEntity.builder()
                 .credentialId(credentialId)
                 .firstName(user.getFirstName())
@@ -171,7 +173,6 @@ public class CertificateService {
         return sb.toString();
     }
 
-    @Transactional
     public double checkEligibilityForCertification(Long userId, String courseId) {
         var user = userServiceImpl.fetchUserById(userId);
         var course = courseServiceImpl.findCourseById(courseId);
@@ -179,8 +180,8 @@ public class CertificateService {
                 .findTestResultByStudentAndCourse(user, course)
                 .orElseThrow(() -> new IllegalArgumentException("This student is not enrolled in this course."));
 
-        long taskCount = course.getTasks().size();
-        List<Long> taskIds = course.getTasks().stream().map(Task::getId).toList();
+        long taskCount = taskRepository.countByCourseId(courseId);
+        List<Long> taskIds = taskRepository.findIdsByCourseId(courseId);
         long countOfQuestionsAnswered = studentTaskRepository.countAllByTaskIdIn(taskIds);
         if (taskCount != countOfQuestionsAnswered) {
             throw new IllegalArgumentException("All questions must be answered to receive the certificate.");

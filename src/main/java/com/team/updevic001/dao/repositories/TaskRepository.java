@@ -19,4 +19,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("DELETE FROM Task t WHERE t.course.id = :id")
     void deleteTaskByCourseId(String id);
 
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.course.id = :courseId")
+    long countByCourseId(@Param("courseId") String courseId);
+
+    @Query("SELECT t.id FROM Task t WHERE t.course.id = :courseId")
+    List<Long> findIdsByCourseId(@Param("courseId") String courseId);
 }
