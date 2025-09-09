@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 
 public interface CertificateRepository extends JpaRepository<CertificateEntity, String> {
 
@@ -26,5 +28,8 @@ public interface CertificateRepository extends JpaRepository<CertificateEntity, 
 
     Page<CertificateEntity> findByStatus(CertificateStatus status, Pageable pageable);
 
-    boolean existsByUserIdAndCourseId(Long userId, String courseId);
+    @Query("SELECT c.credentialId FROM CertificateEntity c WHERE c.userId = :userId AND c.courseId = :courseId")
+    Optional<String> findCredentialIdByUserIdAndCourseId(@Param("userId") Long userId,
+                                                         @Param("courseId") String courseId);
+
 }

@@ -25,6 +25,7 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.CERTIFICATE_EXISTS;
 import static com.team.updevic001.model.enums.ExceptionConstants.CERTIFICATE_NOT_FOUND;
@@ -109,14 +110,15 @@ public class CertificateService {
     }
 
     public CertificateResponse createCertificate(String courseId) {
-        var credentialId = generate("ABM");
         var issuedFor = "has completed the %s course, with a score of %s";
         var user = authHelper.getAuthenticatedUser();
         var course = courseServiceImpl.findCourseById(courseId);
-        if (certificateRepository.existsByUserIdAndCourseId(user.getId(), courseId)) {
+        Optional<String> optionalCertificate = certificateRepository.findCredentialIdByUserIdAndCourseId(user.getId(), courseId);
+        if (optionalCertificate.isPresent()) {
             throw new AlreadyExistsException(CERTIFICATE_EXISTS.getCode(),
-                    CERTIFICATE_EXISTS.getMessage().formatted(credentialId));
+                    CERTIFICATE_EXISTS.getMessage().formatted(optionalCertificate.get()));
         }
+        var credentialId = generate("ABM");
         double score = checkEligibilityForCertification(user.getId(), courseId);
         var certificate = CertificateEntity.builder()
                 .credentialId(credentialId)
