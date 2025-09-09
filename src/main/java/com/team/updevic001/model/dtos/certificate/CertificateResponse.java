@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -15,20 +13,17 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
-public class CertificateDto {
-    String email;
+public class CertificateResponse {
+
     String credentialId;
-    PersonDto person;
-    LocalDate issueDate;
-    LocalDate expireDate;
+
+    String fullName;
+
+    String issueDate;
+
     String issuedFor;
-    String description;
-    CertificatePreviewUrls previewUrls;
-    List<String> skills;
+
     String issuingOrganization;
-    CertificateStatus status;
-    LocalDateTime createdAt;
-    String postMessage;
-    String emailMessage;
+
     CertificateType type;
 }

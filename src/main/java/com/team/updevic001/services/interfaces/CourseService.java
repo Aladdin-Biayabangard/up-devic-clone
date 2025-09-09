@@ -1,6 +1,7 @@
 package com.team.updevic001.services.interfaces;
 
 import com.team.updevic001.criteria.CourseSearchCriteria;
+import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.request.CourseDto;
@@ -39,4 +40,5 @@ public interface CourseService {
 
     void deleteCourse(String courseId);
 
+    Course findCourseById(String courseId);
 }

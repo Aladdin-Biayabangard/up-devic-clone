@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -62,12 +63,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
-        var pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
+    public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest request) {
+        int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
+        int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
+        Pageable pageable = PageRequest.of(page, size);
 
         Specification<User> filter = null;
         if (userCriteria.getFirstName() != null ||
-                userCriteria.getLastName() != null ||
                 userCriteria.getEmail() != null ||
                 userCriteria.getStatus() != null ||
                 (userCriteria.getRoles() != null && !userCriteria.getRoles().isEmpty())) {

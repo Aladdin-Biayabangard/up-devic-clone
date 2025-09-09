@@ -44,19 +44,14 @@ public class CertificateEntity {
     @Column(name = "credential_id", unique = true)
     String credentialId;
 
-    @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "firstName", column = @Column(name = "person_first_name")),
-            @AttributeOverride(name = "lastName", column = @Column(name = "person_last_name")),
-            @AttributeOverride(name = "emailAddress", column = @Column(name = "person_email_address"))})
-    PersonDto person;
+    String firstName;
+
+    String lastName;
 
     String email;
 
     @Column(name = "issue_date")
     LocalDate issueDate;
-
-    @Column(name = "expire_date")
-    LocalDate expireDate;
 
     String issuedFor;
 
@@ -67,24 +62,16 @@ public class CertificateEntity {
 
     String previewUrlVertical;
 
-    @ElementCollection(fetch = EAGER)
-    @CollectionTable(name = "certificate_skills",
-            joinColumns = @JoinColumn(name = "certificate_credential_id"))
-    private List<String> skills;
-
     @Column(name = "issuing_organization")
     String issuingOrganization;
 
     @Enumerated(STRING)
     CertificateStatus status;
 
-    @CreationTimestamp
-    LocalDateTime createdAt;
-
-    String postMessage;
-    String emailMessage;
-
     @Enumerated(STRING)
     CertificateType type;
+
+    @CreationTimestamp
+    LocalDateTime createdAt;
 
 }

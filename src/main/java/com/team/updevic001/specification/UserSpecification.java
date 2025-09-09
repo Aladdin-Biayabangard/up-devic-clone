@@ -17,12 +17,6 @@ public class UserSpecification {
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + firstName.toLowerCase() + "%");
     }
 
-    public static Specification<User> hasLastName(String lastName) {
-        return (root, query, criteriaBuilder) ->
-                lastName == null ? null :
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + lastName.toLowerCase() + "%");
-    }
-
     public static Specification<User> hasEmail(String email) {
         return (root, query, criteriaBuilder) ->
                 email == null ? null :
@@ -48,7 +42,6 @@ public class UserSpecification {
 
     public static Specification<User> filter(UserCriteria user) {
         return Specification.where(hasFirstName(user.getFirstName()))
-                .and(hasLastName(user.getLastName()))
                 .and(hasEmail(user.getEmail()))
                 .and(hasStatus(user.getStatus()))
                 .and(hasRoles(user.getRoles()));

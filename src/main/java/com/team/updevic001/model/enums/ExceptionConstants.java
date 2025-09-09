@@ -23,6 +23,8 @@ public enum ExceptionConstants {
     NOT_FOUND("NOT_FOUND", "%s"),
 
 
+    CERTIFICATE_EXISTS("CERTIFICATE_EXISTS","Your certificate already exists with credentialId: %s"),
+
     UNAUTHORIZED_EXCEPTION("UNAUTHORIZED_EXCEPTION", "No authenticated user found with id: %s"),
     FORBIDDEN_EXCEPTION("FORBIDDEN_EXCEPTION", "Not allowed with id: %s"),
 

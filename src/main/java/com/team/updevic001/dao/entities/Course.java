@@ -11,7 +11,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
@@ -62,6 +64,9 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> searchKeys = new HashSet<>();
 
     @ManyToOne
     @JsonBackReference

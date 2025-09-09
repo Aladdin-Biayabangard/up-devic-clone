@@ -18,17 +18,9 @@ import static lombok.AccessLevel.PRIVATE;
 @Builder
 @FieldDefaults(level = PRIVATE)
 public class CertificateRequestDto {
-    PersonDto person;
+
+    String firstName;
+    String lastName;
     String email;
-    LocalDate issueDate;
-    LocalDate expireDate;
-    String issuedFor;
-    @Size(max = 1000, message = "Description must be at most 1000 characters long")
-    String description;
-    List<String> skills;
-    String issuingOrganization;
-    CertificateStatus status;
-    String postMessage;
-    String emailMessage;
     CertificateType type;
 }
