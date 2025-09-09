@@ -1,34 +1,25 @@
 package com.team.updevic001.services.impl;
 
 import com.team.updevic001.dao.entities.CertificateEntity;
-import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.Task;
 import com.team.updevic001.dao.entities.TestResult;
-import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.CertificateRepository;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
 import com.team.updevic001.dao.repositories.TestResultRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.certificate.CertificateResponse;
-import com.team.updevic001.model.dtos.certificate.CertificatePreviewUrls;
-import com.team.updevic001.model.dtos.certificate.CertificateRequestDto;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.certificate.CertificateType;
-import com.team.updevic001.model.dtos.certificate.Platform;
-//import com.team.updevic001.model.mappers.CertificateMapper;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -47,7 +38,6 @@ public class CertificateService {
 
     private final CertificateRepository certificateRepository;
     //    private final CertificateMapper certificateMapper;
-    private final CertificateViewService certificateViewService;
     private final UserService userServiceImpl;
     private final CourseService courseServiceImpl;
     private final StudentTaskRepository studentTaskRepository;
@@ -181,7 +171,8 @@ public class CertificateService {
         return sb.toString();
     }
 
-    private double checkEligibilityForCertification(Long userId, String courseId) {
+    @Transactional
+    public double checkEligibilityForCertification(Long userId, String courseId) {
         var user = userServiceImpl.fetchUserById(userId);
         var course = courseServiceImpl.findCourseById(courseId);
         TestResult testResult = testResultRepository
