@@ -74,7 +74,9 @@ public class CertificateEntity {
     @CreationTimestamp
     LocalDateTime createdAt;
 
+    @Column(name = "course_id")
     String courseId;
 
+    @Column(name = "user_id")
     Long userId;
 }
