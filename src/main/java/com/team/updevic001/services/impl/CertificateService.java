@@ -87,6 +87,8 @@ public class CertificateService {
                 .issuedFor(issuedFor.formatted(course.getTitle(), 90 + "%"))
                 .issuingOrganization("UP-DEVIC ONLINE COURSES PLATFORM")
                 .status(CertificateStatus.ACTIVE)
+                .userId(user.getId())
+                .courseId(courseId)
                 .build();
         if (90 >= 91) {
             certificate.setType(CertificateType.HONOURS);
@@ -108,13 +110,13 @@ public class CertificateService {
 
     public CertificateResponse createCertificate(String courseId) {
         var credentialId = generate("ABM");
-        if (certificateRepository.existsById(credentialId)) {
-            throw new AlreadyExistsException(CERTIFICATE_EXISTS.getCode(),
-                    CERTIFICATE_EXISTS.getMessage().formatted(credentialId));
-        }
         var issuedFor = "has completed the %s course, with a score of %s";
         var user = authHelper.getAuthenticatedUser();
         var course = courseServiceImpl.findCourseById(courseId);
+        if (certificateRepository.existsByUserIdAndCourseId(user.getId(), courseId)) {
+            throw new AlreadyExistsException(CERTIFICATE_EXISTS.getCode(),
+                    CERTIFICATE_EXISTS.getMessage().formatted(credentialId));
+        }
         double score = checkEligibilityForCertification(user.getId(), courseId);
         var certificate = CertificateEntity.builder()
                 .credentialId(credentialId)
@@ -125,6 +127,8 @@ public class CertificateService {
                 .issuedFor(issuedFor.formatted(course.getTitle(), score + "%"))
                 .issuingOrganization("UP-DEVIC ONLINE COURSES PLATFORM")
                 .status(CertificateStatus.ACTIVE)
+                .userId(user.getId())
+                .courseId(courseId)
                 .build();
         if (score >= 91) {
             certificate.setType(CertificateType.HONOURS);

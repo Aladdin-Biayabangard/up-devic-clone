@@ -74,4 +74,7 @@ public class CertificateEntity {
     @CreationTimestamp
     LocalDateTime createdAt;
 
+    String courseId;
+
+    Long userId;
 }

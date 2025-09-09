@@ -58,10 +58,6 @@ public class Course {
     @Column(name = "photo_key")
     private String photoKey;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "certificate_id", referencedColumnName = "id")
-    private Certificate certificate;
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 

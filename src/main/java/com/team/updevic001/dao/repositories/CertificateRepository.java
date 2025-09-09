@@ -26,4 +26,5 @@ public interface CertificateRepository extends JpaRepository<CertificateEntity, 
 
     Page<CertificateEntity> findByStatus(CertificateStatus status, Pageable pageable);
 
+    boolean existsByUserIdAndCourseId(Long userId, String courseId);
 }
