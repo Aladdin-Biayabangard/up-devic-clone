@@ -112,7 +112,15 @@ public class TaskServiceImpl implements TaskService {
                     return newResult;
                 });
 
-        result.setScore(result.getScore() + taskScore);
+        long totalTasks = taskRepository.countByCourseId(courseId);
+        long completedTasks = studentTaskRepository.countByStudentAndTaskCourse(student, course);
+
+        double scorePercentage = 0;
+        if (totalTasks > 0) {
+            scorePercentage = ((double) completedTasks / totalTasks) * 100;
+        }
+
+        result.setScore(scorePercentage);
         testResultRepository.save(result);
 
         // Task tamamlandı kimi qeyd et
