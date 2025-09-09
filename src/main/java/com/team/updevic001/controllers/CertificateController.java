@@ -8,7 +8,6 @@ import com.team.updevic001.model.dtos.certificate.CertificateViewPageResponse;
 import com.team.updevic001.model.dtos.certificate.Platform;
 import com.team.updevic001.model.dtos.certificate.PlatformStatsDto;
 import com.team.updevic001.services.impl.CertificateService;
-import com.team.updevic001.services.impl.CertificateViewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class CertificateController {
 
     private final CertificateService certificateService;
-    private final CertificateViewService certificateViewService;
+//    private final CertificateViewService certificateViewService;
 
 
     @GetMapping("/{credentialId}")
@@ -50,20 +49,20 @@ public class CertificateController {
 //        return certificateService.getAllCertificatesByStatusOrSearchByQuery(query, status, pageable);
 //    }
 
-    @GetMapping("/{id}/views")
-    public List<CertificateViewDto> getCertificateViews(@PathVariable String id) {
-        return certificateViewService.getViewsByCertificate(id);
-    }
-
-    @GetMapping("/views")
-    public CertificateViewPageResponse getCertificateViewsByQuery(Pageable pageable) {
-        return certificateViewService.getAllViews(pageable);
-    }
-
-    @GetMapping("/views/summary")
-    public List<PlatformStatsDto> getCertificateViewsSummary() {
-        return certificateViewService.getTotalViewsByPlatform();
-    }
+//    @GetMapping("/{id}/views")
+//    public List<CertificateViewDto> getCertificateViews(@PathVariable String id) {
+//        return certificateViewService.getViewsByCertificate(id);
+//    }
+//
+//    @GetMapping("/views")
+//    public CertificateViewPageResponse getCertificateViewsByQuery(Pageable pageable) {
+//        return certificateViewService.getAllViews(pageable);
+//    }
+//
+//    @GetMapping("/views/summary")
+//    public List<PlatformStatsDto> getCertificateViewsSummary() {
+//        return certificateViewService.getTotalViewsByPlatform();
+//    }
 
     @PostMapping("/{courseId}")
     @ResponseStatus(CREATED)
