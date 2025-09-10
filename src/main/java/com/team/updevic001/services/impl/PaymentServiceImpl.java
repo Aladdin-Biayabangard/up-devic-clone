@@ -69,7 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(frontEndUrl2 + "/courses/" + request.getCourseId())
+                .setSuccessUrl(frontEndUrl2 + "/success/" + request.getCourseId())
                 .setCancelUrl(frontEndUrl2 + "/cancel/" + request.getCourseId())
                 .addLineItem(lineItem)
                 .build();

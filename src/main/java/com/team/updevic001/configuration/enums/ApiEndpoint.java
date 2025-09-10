@@ -102,7 +102,7 @@ public enum ApiEndpoint {
     TASK_GET_TASKS("/api/v1/tasks/courses/*", HttpMethod.GET, STUDENT),
 
     // --- Teacher Controller ---
-    TEACHER_GET_COURSES("/api/teacher/courses", HttpMethod.GET, TEACHER),
+    TEACHER_GET_COURSES("/api/teacher/courses", HttpMethod.GET, STUDENT),
     TEACHER_GET_MAIN_INFO("/api/teacher/info", HttpMethod.GET, PUBLIC),
     TEACHER_GET_PROFILE("/api/teacher/*/profile", HttpMethod.GET, STUDENT),
     TEACHER_GET_SHORT_INFO("/api/teacher/*/info", HttpMethod.GET, STUDENT),
