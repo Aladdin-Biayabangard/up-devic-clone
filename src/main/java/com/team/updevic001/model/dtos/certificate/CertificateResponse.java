@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -22,6 +21,8 @@ public class CertificateResponse {
     String issueDate;
 
     String issuedFor;
+
+    String trainingName;
 
     String issuingOrganization;
 

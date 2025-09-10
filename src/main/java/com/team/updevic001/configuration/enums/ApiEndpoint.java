@@ -43,10 +43,9 @@ public enum ApiEndpoint {
 // Certificate Controller
     CERTIFICATE_SEARCH("/api/v1/certificates/search", HttpMethod.GET, ADMIN),
     CERTIFICATE_VIEWS("/api/v1/certificates/views", HttpMethod.GET, ADMIN),
-    CERTIFICATE_GET_BY_ID("/api/v1/certificates/{id}", HttpMethod.GET, PUBLIC),
+    CERTIFICATE_GET_BY_ID("/api/v1/certificates/{credentialId}", HttpMethod.GET, PUBLIC),
     CERTIFICATE_CREATE("/api/v1/certificates/{courseId}", HttpMethod.POST, STUDENT),
     CERTIFICATE_CREATE_MOCK("/api/v1/certificates/mock/{courseId}", HttpMethod.POST, STUDENT),
-    CERTIFICATE_UPDATE("/api/v1/certificates/{id}", HttpMethod.PUT, ADMIN),
     CERTIFICATE_DELETE("/api/v1/certificates/{id}", HttpMethod.DELETE, ADMIN),
     CERTIFICATE_PREVIEW("/api/v1/certificates/{id}/preview", HttpMethod.POST, ADMIN),
     CERTIFICATE_PUBLISH("/api/v1/certificates/{id}/publish", HttpMethod.POST, ADMIN),

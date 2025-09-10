@@ -93,7 +93,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<ResponseLessonShortInfoDto> getShortLessonsByCourse(String courseId) {
-        var lessons = lessonRepository.findLessonByCourseId(courseId);
+        var lessons = lessonRepository.findByCourseIdOrderByCreatedAtAsc(courseId);
         return lessons.isEmpty() ? List.of() : lessonMapper.toShortLesson(lessons);
     }
 

@@ -1,7 +1,6 @@
 package com.team.updevic001.services.impl;
 
 import com.team.updevic001.dao.entities.CertificateEntity;
-import com.team.updevic001.dao.entities.Task;
 import com.team.updevic001.dao.entities.TestResult;
 import com.team.updevic001.dao.repositories.CertificateRepository;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
@@ -17,7 +16,6 @@ import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -39,7 +37,6 @@ public class CertificateService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final CertificateRepository certificateRepository;
-    //    private final CertificateMapper certificateMapper;
     private final UserService userServiceImpl;
     private final CourseService courseServiceImpl;
     private final StudentTaskRepository studentTaskRepository;
@@ -55,6 +52,7 @@ public class CertificateService {
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,
                 certificate.getIssuedFor(),
+                certificate.getTrainingName(),
                 certificate.getIssuingOrganization(),
                 certificate.getType()
         );
@@ -69,45 +67,7 @@ public class CertificateService {
 //        return certificates.map(certificateMapper::toDto);
 //    }
 
-    public CertificateResponse createMockCertificate(String courseId) {
-        var credentialId = generate("ABM");
-//        if (certificateRepository.existsById(credentialId)) {
-//            throw new AlreadyExistsException(CERTIFICATE_EXISTS.getCode(),
-//                    CERTIFICATE_EXISTS.getMessage().formatted(credentialId));
-//        }
-        var issuedFor = "has completed the %s course, with a score of %s";
-        var user = authHelper.getAuthenticatedUser();
-        var course = courseServiceImpl.findCourseById(courseId);
-        //  double score = checkEligibilityForCertification(user.getId(), courseId);
-        var certificate = CertificateEntity.builder()
-                .credentialId(credentialId)
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .issueDate(LocalDate.now())
-                .issuedFor(issuedFor.formatted(course.getTitle(), 90 + "%"))
-                .issuingOrganization("UP-DEVIC ONLINE COURSES PLATFORM")
-                .status(CertificateStatus.ACTIVE)
-                .userId(user.getId())
-                .courseId(courseId)
-                .build();
-        if (90 >= 91) {
-            certificate.setType(CertificateType.HONOURS);
-        } else {
-            certificate.setType(CertificateType.NORMAL);
-        }
-        certificate = certificateRepository.save(certificate);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d',' yyyy", Locale.ENGLISH);
-        String formattedDate = certificate.getIssueDate().format(formatter);
-        var response = new CertificateResponse(certificate.getCredentialId(),
-                certificate.getFirstName() + " " + certificate.getLastName(),
-                formattedDate,
-                certificate.getIssuedFor(),
-                certificate.getIssuingOrganization(),
-                certificate.getType()
-        );
-        return response;
-    }
+
 
     public CertificateResponse createCertificate(String courseId) {
         var issuedFor = "has completed the %s course, with a score of %s";
@@ -127,6 +87,7 @@ public class CertificateService {
                 .email(user.getEmail())
                 .issueDate(LocalDate.now())
                 .issuedFor(issuedFor.formatted(course.getTitle(), score + "%"))
+                .trainingName(course.getTitle())
                 .issuingOrganization("UP-DEVIC ONLINE COURSES PLATFORM")
                 .status(CertificateStatus.ACTIVE)
                 .userId(user.getId())
@@ -144,6 +105,7 @@ public class CertificateService {
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,
                 certificate.getIssuedFor(),
+                course.getTitle(),
                 certificate.getIssuingOrganization(),
                 certificate.getType()
         );

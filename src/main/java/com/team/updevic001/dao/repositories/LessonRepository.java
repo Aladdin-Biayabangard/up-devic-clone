@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface LessonRepository extends JpaRepository<Lesson, String> {
 
-    List<Lesson> findLessonByCourseId(String courseId);
+    List<Lesson> findByCourseIdOrderByCreatedAtAsc(String courseId);
 
     @Query("SELECT l.id FROM Lesson l WHERE l.course.id=:courseId")
     List<String> findLessonIdsByCourseId(String courseId);

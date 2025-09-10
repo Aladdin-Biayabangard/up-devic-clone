@@ -72,7 +72,7 @@ public class CourseMapper {
     }
 
     private int lessonCount(Course course) {
-        return lessonRepository.findLessonByCourseId(course.getId()).size();
+        return lessonRepository.findByCourseIdOrderByCreatedAtAsc(course.getId()).size();
     }
 
     private int studentCount(Course course) {

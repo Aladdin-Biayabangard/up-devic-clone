@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 
 @EqualsAndHashCode(of = "id")
@@ -54,5 +58,11 @@ public class Lesson {
     @JoinColumn(name = "teacher_id")
     @JsonIgnore
     private User teacher;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updateAt;
 
 }
