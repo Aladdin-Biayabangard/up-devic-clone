@@ -140,8 +140,7 @@ public class CertificateService {
         }
         return sb.toString();
     }
-
-    public double checkEligibilityForCertification(Long userId, String courseId) {
+    public int checkEligibilityForCertification(Long userId, String courseId) {
         var user = userServiceImpl.fetchUserById(userId);
         var course = courseServiceImpl.findCourseById(courseId);
         TestResult testResult = testResultRepository
@@ -159,7 +158,8 @@ public class CertificateService {
         if (score < 60) {
             throw new IllegalArgumentException("Your score is not high enough to get a certificate.");
         }
-        return score;
+
+        return (int) Math.round(score);
     }
 
 }
