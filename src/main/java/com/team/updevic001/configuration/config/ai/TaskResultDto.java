@@ -14,6 +14,4 @@ public class TaskResultDto {
     private String feedback;
     private String correctAnswer;
     private String studentAnswer;
-    private boolean submitted =false;
-
 }

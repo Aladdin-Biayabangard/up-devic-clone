@@ -33,6 +33,7 @@ public class StudentTask {
     private String feedback;
 
     private Boolean completed;
+
     private boolean correct;
 
     private boolean submitted;

@@ -14,9 +14,6 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
 
     List<Lesson> findByCourseIdOrderByCreatedAtAsc(String courseId);
 
-    @Query("SELECT l.id FROM Lesson l WHERE l.course.id=:courseId")
-    List<String> findLessonIdsByCourseId(String courseId);
-
     @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END " +
            "FROM Lesson l WHERE l.teacher = :teacher AND l = :lesson")
     boolean existsLessonByTeacherAndLesson(@Param("teacher") User teacher,
@@ -30,5 +27,7 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
     @Query("SELECt l.id FROM Lesson l WHERE l.course.id=:id")
     List<String> findAllLessonIdsByCourseId(String id);
 
+
+    long countByCourseId(String id);
 
 }

@@ -27,22 +27,22 @@ public class AiGradingService {
 
     public AiGradeResult check(String question, String correctAnswer, String studentAnswer) {
         String prompt = """
-        Sual: %s
-        Müəllimin düzgün cavabı: %s
-        Tələbənin cavabı: %s
-
-        Tapşırıq:
-        1. Tələbənin cavabını düzgün cavabla müqayisə et və feeadback zamani Sanki birbasa telebe ile danisirsan kimi cavab ver. Sizin deyerek başla.
-        2. Cavabın düzgünlüyünü müəyyən et.
-        3. 0-dan 100-ə qədər bal ver. Tam uyğun cavab = 100, qismən uyğun cavab = 1–99, uyğun olmayan cavab = 0.
-        4. JSON formatında cavab ver:
-        {
-          "correct": true/false,
-          "score": 0–100,
-          "feedback": "qısa izah",
-          "correctAnswer": "düzgün cavab"
-        }
-        """.formatted(question, correctAnswer, studentAnswer);
+                Sual: %s
+                Müəllimin düzgün cavabı: %s
+                Tələbənin cavabı: %s
+                
+                Tapşırıq:
+                1. Tələbənin cavabını düzgün cavabla müqayisə et və feeadback zamani Sanki birbasa telebe ile danisirsan kimi cavab ver. Sizin deyerek başla.
+                2. Cavabın düzgünlüyünü müəyyən et.
+                3. 0-dan 100-ə qədər bal ver. Tam uyğun cavab = 100, qismən uyğun cavab = 1–99, uyğun olmayan cavab = 0.
+                4. JSON formatında cavab ver:
+                {
+                  "correct": true/false,
+                  "score": 0–100,
+                  "feedback": "qısa izah",
+                  "correctAnswer": "düzgün cavab"
+                }
+                """.formatted(question, correctAnswer, studentAnswer);
 
         try {
             // OpenAI üçün düzgün JSON qurmaq (Jackson ilə təhlükəsiz)
@@ -99,8 +99,9 @@ public class AiGradingService {
             return mapper.readValue(content, AiGradeResult.class);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Tam stack trace göstərmək üçün
             throw new RuntimeException("AI cavabını əldə etmək mümkün olmadı: " + e.getMessage(), e);
         }
     }
+
+
 }
