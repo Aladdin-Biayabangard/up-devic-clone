@@ -59,13 +59,10 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
 
     @Override
     public CustomPage<TeacherApplicationResponseDto> listApplications(ApplicationSearchDto searchDto,
-                                                                      CustomPageRequest pageRequest) {
-        Pageable pageable;
-        if (pageRequest != null) {
-            pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize());
-        } else {
-            pageable = Pageable.unpaged();
-        }
+                                                                      CustomPageRequest request) {
+        int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
+        int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
+        Pageable pageable = PageRequest.of(page, size);
 
         boolean hasFilters = searchDto != null && (
                 searchDto.getEmail() != null ||
