@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -26,7 +25,6 @@ public class AiGradingService {
     @Value("${openai.model:gpt-4o-mini}")
     private String model;
 
-    @Async
     public AiGradeResult check(String question, String correctAnswer, String studentAnswer) {
         String prompt = """
                 Sual: %s
@@ -101,8 +99,9 @@ public class AiGradingService {
             return mapper.readValue(content, AiGradeResult.class);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Tam stack trace göstərmək üçün
             throw new RuntimeException("AI cavabını əldə etmək mümkün olmadı: " + e.getMessage(), e);
         }
     }
+
+
 }

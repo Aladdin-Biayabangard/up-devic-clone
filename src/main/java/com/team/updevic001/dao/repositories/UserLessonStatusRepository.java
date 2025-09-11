@@ -18,11 +18,6 @@ public interface UserLessonStatusRepository extends JpaRepository<UserLessonStat
     @Query("DELETE FROM UserLessonStatus ul WHERE ul.lesson.id IN :ids")
     void deleteUserLessonStatusByLessonsId(List<String> ids);
 
-    @Query("SELECT CASE WHEN COUNT(uls) > 0 THEN TRUE ELSE FALSE END " +
-           "FROM UserLessonStatus uls " +
-           "WHERE uls.user = :user AND uls.lesson.id = :lessonId AND uls.isWatched = TRUE")
-    boolean existsWatchedByUserAndLesson(User user, String lessonId);
-
     @Query("""
         SELECT COUNT(uls)
         FROM UserLessonStatus uls

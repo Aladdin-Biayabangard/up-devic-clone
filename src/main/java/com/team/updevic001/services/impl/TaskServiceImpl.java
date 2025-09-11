@@ -1,7 +1,5 @@
 package com.team.updevic001.services.impl;
-
-import com.team.updevic001.configuration.config.ai.AiGradeResult;
-import com.team.updevic001.configuration.config.ai.AiGradingService;
+import com.team.updevic001.configuration.config.ai.AiUtilForTask;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.StudentTask;
 import com.team.updevic001.dao.entities.Task;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
@@ -50,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final UserLessonStatusRepository userLessonStatusRepository;
     private final LessonRepository lessonRepository;
-    private final AiGradingService aiGradingService;
+    private final AiUtilForTask aiUtilForTask;
 
     @Override
     @Transactional
@@ -102,38 +99,18 @@ public class TaskServiceImpl implements TaskService {
                     return newResult;
                 });
 
-        AiGradeResult aiResult = aiGradingService.check(
-                task.getQuestions(),
-                task.getCorrectAnswer(),
-                answerDto.getAnswer()
-        );
-
-        double taskScore = aiResult.getScore(); // <-- AI-dan gələn bal
-
-
         // Task tamamlandı kimi qeyd et
         StudentTask studentTask = new StudentTask();
         studentTask.setCompleted(true);
         studentTask.setStudent(student);
         studentTask.setStudentAnswer(answerDto.getAnswer());
-        studentTask.setFeedback(aiResult.getFeedback());
         studentTask.setTask(task);
         studentTask.setCorrectAnswer(task.getCorrectAnswer());
-        studentTask.setScore(taskScore);
         studentTask.setSubmitted(true);
-        studentTask.setCorrect(aiResult.getCorrect());
-        studentTaskRepository.save(studentTask);
 
         long totalTasks = taskRepository.countByCourseId(courseId);
         long completedTasks = studentTaskRepository.countByStudentAndTaskCourse(student, course);
-
-        double scorePercentage = 0;
-        if (totalTasks > 0) {
-            scorePercentage = ((double) completedTasks / totalTasks) * 100;
-        }
-        testResult.setScore(scorePercentage);
-        testResultRepository.save(testResult);
-
+        aiUtilForTask.saveTaskRelations(task, answerDto.getAnswer(), studentTask, testResult, totalTasks, completedTasks);
     }
 
     @Override
