@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface TeacherService {
 
+    List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses(Long teacherId);
+
     List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses();
 
     List<ResponseTeacherDto> searchTeacher(String keyword);

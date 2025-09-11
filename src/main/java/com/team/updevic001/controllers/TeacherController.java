@@ -22,6 +22,11 @@ public class TeacherController {
         return teacherServiceImpl.getTeacherAndRelatedCourses();
     }
 
+    @GetMapping(path = "/{teacherId}/courses")
+    public List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses(@PathVariable Long teacherId) {
+        return teacherServiceImpl.getTeacherAndRelatedCourses(teacherId);
+    }
+
     @Operation(summary = "Muellimin profiline baxmaq")
     @GetMapping(path = "/{teacherId}/profile")
     public ResponseTeacherDto getProfile(@PathVariable Long teacherId) {

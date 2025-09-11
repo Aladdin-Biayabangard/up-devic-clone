@@ -21,6 +21,8 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
 
     List<Course> findCourseByTeacher(User teacher);
 
+    List<Course> findCourseByTeacherId(Long teacherId);
+
     @EntityGraph(attributePaths = {"tasks", "teacher"})
     Optional<Course> findCourseById(String id);
 

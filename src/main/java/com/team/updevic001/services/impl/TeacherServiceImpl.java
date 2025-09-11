@@ -46,10 +46,17 @@ public class TeacherServiceImpl implements TeacherService {
         return courses.stream().map(courseMapper::toCourseResponse).toList();
     }
 
-      public ResponseTeacherDto getTeacherProfile(Long userId) {
+    @Override
+    public List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses(Long teacherId) {
+        List<Course> courses = courseRepository.findCourseByTeacherId(teacherId);
+        return courses.stream().map(courseMapper::toCourseResponse).toList();
+    }
+
+    public ResponseTeacherDto getTeacherProfile(Long userId) {
         User user = userService.fetchUserById(userId);
         if (!userService.existsByUserAndRole(user, Role.TEACHER)) {
-            throw new NotFoundException(TEACHER_NOT_FOUND.getCode(), TEACHER_NOT_FOUND.getMessage().formatted(userId));
+            throw new NotFoundException(TEACHER_NOT_FOUND.getCode(),
+                    TEACHER_NOT_FOUND.getMessage().formatted(userId));
         }
         UserProfile teacherProfile = userProfileRepository.findTeacherWithRelations(user);
         return teacherMapper.toTeacherDto(user, teacherProfile);
