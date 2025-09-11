@@ -68,8 +68,8 @@ public class AdminController {
     }
 
     @GetMapping(path = "/certificates")
-    public CustomPage<CertificateResponseForAdmin> getAllCertificates(@RequestParam CertificateCriteria criteria,
-                                                                      @RequestParam CustomPageRequest request) {
+    public CustomPage<CertificateResponseForAdmin> getAllCertificates(CertificateCriteria criteria,
+                                                                      CustomPageRequest request) {
 
         return certificateService.getAllCertificates(criteria, request);
     }
