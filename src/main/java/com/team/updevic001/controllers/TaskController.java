@@ -1,6 +1,5 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.configuration.config.ai.TaskResultDto;
 import com.team.updevic001.model.dtos.request.AnswerDto;
 import com.team.updevic001.model.dtos.request.TaskDto;
 import com.team.updevic001.model.dtos.response.task.ResponseSubmission;
@@ -31,10 +30,10 @@ public class TaskController {
     }
 
     @PostMapping(path = "/{taskId}/courses/{courseId}")
-    public TaskResultDto checkAnswer(@PathVariable String courseId,
-                                     @PathVariable Long taskId,
-                                     @RequestBody AnswerDto answerDto) {
-        return taskServiceImpl.checkAnswer(courseId, taskId, answerDto);
+    public void checkAnswer(@PathVariable String courseId,
+                            @PathVariable Long taskId,
+                            @RequestBody AnswerDto answerDto) {
+        taskServiceImpl.checkAnswer(courseId, taskId, answerDto);
     }
 
 

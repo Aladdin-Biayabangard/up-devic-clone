@@ -2,7 +2,6 @@ package com.team.updevic001.services.impl;
 
 import com.team.updevic001.configuration.config.ai.AiGradeResult;
 import com.team.updevic001.configuration.config.ai.AiGradingService;
-import com.team.updevic001.configuration.config.ai.TaskResultDto;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.StudentTask;
 import com.team.updevic001.dao.entities.Task;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
@@ -68,20 +68,18 @@ public class TaskServiceImpl implements TaskService {
             task.setOptions(taskDto.getOptions());
         }
         task.setCorrectAnswer(taskDto.getCorrectAnswer());
-        task.setCourse(course);
-
         if (course.getTasks() == null) {
             course.setTasks(new ArrayList<>());
         }
-        course.getTasks().add(task);
-        courseRepository.save(course);
+        task.setCourse(course);
+        taskRepository.save(task);
     }
 
     @Override
     @Transactional
-    public TaskResultDto checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
-        User student = authHelper.getAuthenticatedUser();
-        Course course = courseServiceImpl.findCourseById(courseId);
+    public void checkAnswer(String courseId, Long taskId, AnswerDto answerDto) {
+        var student = authHelper.getAuthenticatedUser();
+        var course = courseServiceImpl.findCourseById(courseId);
 
         if (!userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(course, student)) {
             throw new IllegalArgumentException("You are not enrolled in this course.");
@@ -94,15 +92,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = findTaskById(taskId);
         ensureTaskNotCompleted(student, task);
 
-        AiGradeResult aiResult = aiGradingService.check(
-                task.getQuestions(),
-                task.getCorrectAnswer(),
-                answerDto.getAnswer()
-        );
-
-        double taskScore = aiResult.getScore(); // <-- AI-dan gələn bal
-
-        TestResult result = testResultRepository
+        var testResult = testResultRepository
                 .findTestResultByStudentAndCourse(student, course)
                 .orElseGet(() -> {
                     TestResult newResult = new TestResult();
@@ -112,16 +102,14 @@ public class TaskServiceImpl implements TaskService {
                     return newResult;
                 });
 
-        long totalTasks = taskRepository.countByCourseId(courseId);
-        long completedTasks = studentTaskRepository.countByStudentAndTaskCourse(student, course);
+        AiGradeResult aiResult = aiGradingService.check(
+                task.getQuestions(),
+                task.getCorrectAnswer(),
+                answerDto.getAnswer()
+        );
 
-        double scorePercentage = 0;
-        if (totalTasks > 0) {
-            scorePercentage = ((double) completedTasks / totalTasks) * 100;
-        }
+        double taskScore = aiResult.getScore(); // <-- AI-dan gələn bal
 
-        result.setScore(scorePercentage);
-        testResultRepository.save(result);
 
         // Task tamamlandı kimi qeyd et
         StudentTask studentTask = new StudentTask();
@@ -136,39 +124,35 @@ public class TaskServiceImpl implements TaskService {
         studentTask.setCorrect(aiResult.getCorrect());
         studentTaskRepository.save(studentTask);
 
-        return new TaskResultDto(
-                aiResult.getCorrect(),
-                taskScore,
-                aiResult.getFeedback(),
-                aiResult.getCorrectAnswer(),
-                answerDto.getAnswer(),
-                true
-        );
-    }
+        long totalTasks = taskRepository.countByCourseId(courseId);
+        long completedTasks = studentTaskRepository.countByStudentAndTaskCourse(student, course);
 
+        double scorePercentage = 0;
+        if (totalTasks > 0) {
+            scorePercentage = ((double) completedTasks / totalTasks) * 100;
+        }
+        testResult.setScore(scorePercentage);
+        testResultRepository.save(testResult);
+
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<ResponseTaskDto> getTasks(String courseId) {
-        User student = authHelper.getAuthenticatedUser();
+        var student = authHelper.getAuthenticatedUser();
+        var tasks = taskRepository.findTaskByCourseId(courseId);
+        var studentTasks = studentTaskRepository.findByStudentAndTaskIn(student, tasks);
+        Map<Long, StudentTask> taskMap = studentTasks.stream()
+                .collect(Collectors.toMap(st -> st.getTask().getId(), st -> st));
 
-        return taskRepository.findTaskByCourseId(courseId).stream()
-                .map(task -> {
-                    var submitted = false;
-
-                    var studentTaskOpt = studentTaskRepository.existsByStudentAndTask(student, task);
-                    if (studentTaskOpt) {
-                        submitted = true;
-                    }
-
-                    return new ResponseTaskDto(
-                            task.getId(),
-                            task.getQuestions(),
-                            task.getOptions(),
-                            task.getCorrectAnswer(),
-                            submitted
-                    );
-                })
+        return tasks.stream()
+                .map(task -> new ResponseTaskDto(
+                        task.getId(),
+                        task.getQuestions(),
+                        task.getOptions(),
+                        task.getCorrectAnswer(),
+                        taskMap.containsKey(task.getId())
+                ))
                 .toList();
     }
 
@@ -205,15 +189,14 @@ public class TaskServiceImpl implements TaskService {
                 .toList();
     }
 
-
     public void deleteTask(Long taskId) {
         taskRepository.deleteById(taskId);
     }
 
     private boolean areAllLessonsWatched(User user, Course course) {
-        List<String> lessonIds = lessonRepository.findLessonIdsByCourseId(course.getId());
-        return lessonIds.stream()
-                .allMatch(lessonId -> userLessonStatusRepository.existsWatchedByUserAndLesson(user, lessonId));
+        long totalLessons = lessonRepository.countByCourseId(course.getId());
+        long watchedLessons = userLessonStatusRepository.countWatchedByUserAndCourse(user.getId(), course.getId());
+        return totalLessons == watchedLessons;
     }
 
     private void ensureTaskNotCompleted(User student, Task task) {
