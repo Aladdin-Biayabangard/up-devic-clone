@@ -16,7 +16,7 @@ public interface AuthService {
 
     void register(RegisterRequest request);
 
-    AuthResponseDto login(AuthRequestDto authRequestDto, HttpServletRequest request);
+    AuthResponseDto login(AuthRequestDto authRequestDto);
 
     AuthResponseDto verifyOtpAndGenerateToken(OtpRequest request);
 

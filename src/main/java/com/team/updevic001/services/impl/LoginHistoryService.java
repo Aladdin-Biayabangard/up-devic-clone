@@ -25,8 +25,12 @@ public class LoginHistoryService {
 
     private final LoginHistoryRepository loginHistoryRepository;
     private final GeoService geoService;
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
-    public void saveLoginHistory(User user, HttpServletRequest request) {
+    public void saveLoginHistory(User user) {
+        RequestContextHolder.setRequestAttributes(attributes); // burada pass edirik
+        HttpServletRequest request = attributes.getRequest();
+
         String userAgent = request.getHeader("User-Agent");
         String ip = request.getRemoteAddr();
 

@@ -85,12 +85,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDto login(AuthRequestDto authRequest, HttpServletRequest request) {
+    public AuthResponseDto login(AuthRequestDto authRequest ) {
         User user = findActiveUserByEmail(authRequest.getEmail());
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        loginHistoryService.saveLoginHistory(user,request);
+  //      loginHistoryService.saveLoginHistory(user);
         return buildAuthResponse(user);
     }
 

@@ -49,10 +49,9 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     public AuthResponseDto login(
-            @RequestBody AuthRequestDto authRequest,
-            HttpServletRequest request
+            @RequestBody AuthRequestDto authRequest
     ) {
-       return authService.login(authRequest, request);
+       return authService.login(authRequest);
     }
 
     @PostMapping("/forgot-password")
