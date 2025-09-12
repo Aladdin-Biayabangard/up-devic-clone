@@ -5,6 +5,7 @@ import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.enums.Role;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 public interface AuthService {
@@ -15,7 +16,7 @@ public interface AuthService {
 
     void register(RegisterRequest request);
 
-    AuthResponseDto login(AuthRequestDto authRequestDto);
+    AuthResponseDto login(AuthRequestDto authRequestDto, HttpServletRequest request);
 
     AuthResponseDto verifyOtpAndGenerateToken(OtpRequest request);
 

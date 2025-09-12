@@ -29,6 +29,7 @@ import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.OtpService;
 import com.team.updevic001.utility.AuthHelper;
 import com.team.updevic001.utility.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -84,12 +85,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDto login(AuthRequestDto authRequest) {
+    public AuthResponseDto login(AuthRequestDto authRequest, HttpServletRequest request) {
         User user = findActiveUserByEmail(authRequest.getEmail());
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        loginHistoryService.saveLoginHistory(user);
+        loginHistoryService.saveLoginHistory(user,request);
         return buildAuthResponse(user);
     }
 

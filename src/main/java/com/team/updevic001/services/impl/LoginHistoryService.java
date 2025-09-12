@@ -27,10 +27,7 @@ public class LoginHistoryService {
     private final GeoService geoService;
 
     @Async
-    public void saveLoginHistory(User user) {
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                        .getRequest();
+    public void saveLoginHistory(User user, HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String ip = request.getRemoteAddr();
 
