@@ -1,5 +1,6 @@
 package com.team.updevic001.services.impl;
 
+import com.team.updevic001.criteria.CertificateCriteria;
 import com.team.updevic001.dao.entities.CertificateEntity;
 import com.team.updevic001.dao.entities.TestResult;
 import com.team.updevic001.dao.repositories.CertificateRepository;
@@ -11,10 +12,17 @@ import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.certificate.CertificateResponse;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.certificate.CertificateType;
+import com.team.updevic001.model.dtos.page.CustomPage;
+import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.admin_dasboard.CertificateResponseForAdmin;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.UserService;
+import com.team.updevic001.specification.CertificateSpecification;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -67,6 +75,41 @@ public class CertificateService {
 //        return certificates.map(certificateMapper::toDto);
 //    }
 
+    public CustomPage<CertificateResponseForAdmin> getAllCertificates(CertificateCriteria criteria, CustomPageRequest request) {
+        int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
+        int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<CertificateEntity> filter = null;
+
+        if (criteria.getEmail() != null ||
+                criteria.getTrainingName() != null ||
+                criteria.getStatus() != null ||
+                criteria.getType() != null ||
+                criteria.getDateFrom() != null ||
+                criteria.getToDate() != null) {
+
+            filter = CertificateSpecification.filter(criteria);
+        }
+
+        var certificates = (filter == null)
+                ? certificateRepository.findAll(pageable)
+                : certificateRepository.findAll(filter, pageable);
+
+        return new CustomPage<>(
+                certificates.getContent().stream().map(certificateEntity -> new CertificateResponseForAdmin(
+                        certificateEntity.getFirstName() + " " + certificateEntity.getLastName(),
+                        certificateEntity.getTrainingName(),
+                        certificateEntity.getCreatedAt(),
+                        certificateEntity.getIssueDate(),
+                        null,
+                        null
+
+                )).toList(),
+                certificates.getNumber(),
+                certificates.getSize());
+
+    }
 
 
     public CertificateResponse createCertificate(String courseId) {

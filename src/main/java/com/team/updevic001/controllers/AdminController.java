@@ -1,10 +1,13 @@
 package com.team.updevic001.controllers;
 
+import com.team.updevic001.criteria.CertificateCriteria;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
+import com.team.updevic001.model.dtos.response.admin_dasboard.CertificateResponseForAdmin;
 import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
+import com.team.updevic001.services.impl.CertificateService;
 import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.specification.UserCriteria;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +31,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class AdminController {
 
     private final AdminService adminServiceImpl;
+    private final CertificateService certificateService;
 
     @Operation(summary = "Adding a teacher profile to a student")
     @PostMapping(path = "/assign/{email}")
@@ -59,6 +63,13 @@ public class AdminController {
     @GetMapping("/search")
     public CustomPage<UserResponseForAdmin> getAllUsers(UserCriteria userCriteria, CustomPageRequest pageRequest) {
         return adminServiceImpl.getAllUsers(userCriteria, pageRequest);
+    }
+
+    @GetMapping(path = "/certificates")
+    public CustomPage<CertificateResponseForAdmin> getAllCertificates(CertificateCriteria criteria,
+                                                                      CustomPageRequest request) {
+
+        return certificateService.getAllCertificates(criteria, request);
     }
 
     @Operation(summary = "Shows the number of users")

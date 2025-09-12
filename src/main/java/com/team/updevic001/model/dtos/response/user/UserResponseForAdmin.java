@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,4 +21,8 @@ public class UserResponseForAdmin {
     private List<String> roles;
 
     private Status status;
+
+    private LocalDateTime lastLogin;
+
+    private LocalDateTime dateCreated;
 }

@@ -1,18 +1,30 @@
 package com.team.updevic001.services.impl;
 
+import com.team.updevic001.dao.entities.PasswordResetToken;
+import com.team.updevic001.dao.entities.RefreshToken;
+import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.UserProfile;
+import com.team.updevic001.dao.entities.UserRole;
+import com.team.updevic001.dao.repositories.PasswordResetTokenRepository;
+import com.team.updevic001.dao.repositories.RefreshTokenRepository;
+import com.team.updevic001.dao.repositories.UserProfileRepository;
+import com.team.updevic001.dao.repositories.UserRepository;
+import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
-import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.mappers.UserMapper;
-import com.team.updevic001.dao.entities.*;
-import com.team.updevic001.dao.repositories.*;
 import com.team.updevic001.exceptions.ExpiredRefreshTokenException;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.mail.EmailTemplate;
-import com.team.updevic001.model.dtos.request.security.*;
+import com.team.updevic001.model.dtos.request.security.AuthRequestDto;
+import com.team.updevic001.model.dtos.request.security.OtpRequest;
+import com.team.updevic001.model.dtos.request.security.RecoveryPassword;
+import com.team.updevic001.model.dtos.request.security.RefreshTokenRequest;
+import com.team.updevic001.model.dtos.request.security.RegisterRequest;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
+import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.OtpService;
 import com.team.updevic001.utility.AuthHelper;
@@ -74,6 +86,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDto login(AuthRequestDto authRequest) {
         User user = findActiveUserByEmail(authRequest.getEmail());
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         loginHistoryService.saveLoginHistory(user);
         return buildAuthResponse(user);
