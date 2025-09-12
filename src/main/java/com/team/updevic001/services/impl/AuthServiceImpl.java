@@ -58,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final long REFRESH_TOKEN_EXPIRATION_DAYS = 7;
     private static final long PASSWORD_RESET_EXPIRATION_MIN = 15;
+    private final LoginHistoryService loginHistoryService;
 
     @Transactional
     @Override
@@ -74,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDto login(AuthRequestDto authRequest) {
         User user = findActiveUserByEmail(authRequest.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+        loginHistoryService.saveLoginHistory(user);
         return buildAuthResponse(user);
     }
 
