@@ -26,7 +26,6 @@ public class LoginHistoryService {
     private final LoginHistoryRepository loginHistoryRepository;
     private final GeoService geoService;
 
-    @Async
     public void saveLoginHistory(User user, HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String ip = request.getRemoteAddr();
