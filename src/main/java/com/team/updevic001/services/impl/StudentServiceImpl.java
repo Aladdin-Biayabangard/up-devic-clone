@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.COURSE_NOT_FOUND;
 
 @Slf4j
 @Service

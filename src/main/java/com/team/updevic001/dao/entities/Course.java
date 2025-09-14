@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
 import com.team.updevic001.model.enums.CourseStatus;
-import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,6 +49,8 @@ public class Course {
 
     @Column(name = "price")
     private Double price;
+
+    private BigDecimal priceWithoutInterest;
 
     @Column(name = "created_at")
     @CreationTimestamp

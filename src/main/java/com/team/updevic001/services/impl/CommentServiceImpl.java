@@ -25,8 +25,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.COMMENT_NOT_FOUND;
-import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.COMMENT_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.FORBIDDEN_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor

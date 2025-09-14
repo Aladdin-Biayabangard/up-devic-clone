@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/v1/payment")
@@ -23,10 +22,10 @@ public class PaymentController {
     private final PaymentService paymentServiceImpl;
 
 
-    @Operation(summary = "Kursa qeydiyyat ucun odenis edilir")
+    @Operation(summary = "Ugurlu qeydiyyat")
     @GetMapping(path = "success/{courseId}")
     public ResponseEntity<String> success(@PathVariable String courseId) {
-        paymentServiceImpl.paymentStatus(courseId);
+        paymentServiceImpl.paymentSuccess(courseId);
         return ResponseEntity.ok("Payment successfully!");
     }
 
@@ -43,10 +42,10 @@ public class PaymentController {
         return ResponseEntity.ok(stripeResponse);
     }
 
-    @Operation(summary = "Muellimin balansini gosterir")
-    @GetMapping(path = "balance")
-    public ResponseEntity<BigDecimal> teacherBalance() {
-        BigDecimal teacherBalance = paymentServiceImpl.teacherBalance();
-        return ResponseEntity.ok(teacherBalance);
-    }
+//    @Operation(summary = "Muellimin balansini gosterir")
+//    @GetMapping(path = "balance")
+//    public ResponseEntity<BigDecimal> teacherBalance() {
+//        BigDecimal teacherBalance = paymentServiceImpl.teacherBalance();
+//        return ResponseEntity.ok(teacherBalance);
+//    }
 }

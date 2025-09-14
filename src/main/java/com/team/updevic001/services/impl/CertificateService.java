@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.CERTIFICATE_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.CERTIFICATE_NOT_FOUND;
 
 
 @Service

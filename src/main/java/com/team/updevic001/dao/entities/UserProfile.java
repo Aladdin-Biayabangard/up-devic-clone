@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,8 +48,6 @@ public class UserProfile {
 
     @Column(name = "experience_years")
     private Integer experienceYears;
-
-    private BigDecimal balance;
 
     @CreationTimestamp
     @Column(name = "hire_date")

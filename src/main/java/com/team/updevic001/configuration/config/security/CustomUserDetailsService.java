@@ -2,14 +2,13 @@ package com.team.updevic001.configuration.config.security;
 
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.enums.ExceptionConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.USER_NOT_FOUND;
 
 
 @Service

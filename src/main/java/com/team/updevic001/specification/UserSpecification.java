@@ -3,6 +3,7 @@ package com.team.updevic001.specification;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
 import com.team.updevic001.model.enums.Status;
+import com.team.updevic001.specification.criteria.UserCriteria;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;

@@ -39,12 +39,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
-import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.COURSE_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.FORBIDDEN_EXCEPTION;
 import static com.team.updevic001.utility.IDGenerator.normalizeString;
+import static com.team.updevic001.utility.PercentageCalculation.calculatePercentage;
 
 @Slf4j
 @Service
@@ -63,6 +65,7 @@ public class CourseServiceImpl implements CourseService {
     private final DeleteService deleteService;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final TeacherService teacherService;
+    private final BigDecimal percentage = BigDecimal.valueOf(5);
 
     @Override
     @Transactional
@@ -72,6 +75,8 @@ public class CourseServiceImpl implements CourseService {
         var teacher = authHelper.getAuthenticatedUser();
 
         var course = modelMapper.map(courseDto, Course.class);
+        course.setPrice(calculatePercentage(BigDecimal.valueOf(courseDto.getPrice()), percentage).doubleValue());
+        course.setPriceWithoutInterest(BigDecimal.valueOf(courseDto.getPrice()));
         course.setId(normalizeString(course.getTitle()));
         course.setCourseCategoryType(courseCategoryType);
         course.setTeacher(teacher);

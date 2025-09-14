@@ -2,6 +2,7 @@ package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse;
+import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
@@ -44,6 +45,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             """)
     UserStatsResponse getDashboard();
 
+    @Query("""
+            SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo( 
+                        t.id,  CONCAT(t.firstName,' ', t.lastName ),t.email) 
+                        FROM User t  WHERE t =:user 
+            """)
+    TeacherMainInfo getTeacherMainInfoById(User user);
 
     @Query("""
                 SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END

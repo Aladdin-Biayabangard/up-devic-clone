@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.TEACHER_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.TEACHER_NOT_FOUND;
 
 @Slf4j
 @Service

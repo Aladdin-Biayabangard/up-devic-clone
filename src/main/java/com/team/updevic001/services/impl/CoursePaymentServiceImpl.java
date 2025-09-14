@@ -7,9 +7,8 @@ import com.stripe.param.checkout.SessionCreateParams;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserCourseFee;
-import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
-import com.team.updevic001.dao.repositories.UserProfileRepository;
+import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.model.dtos.request.PaymentRequest;
 import com.team.updevic001.model.dtos.response.payment.StripeResponse;
@@ -21,19 +20,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
-import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentServiceImpl implements PaymentService {
+public class CoursePaymentServiceImpl implements PaymentService {
 
     private final AuthHelper authHelper;
     private final CourseServiceImpl courseServiceImpl;
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final StudentService studentServiceImpl;
-    private final UserProfileRepository userProfileRepository;
+    private final TeachersPaymentTransactionService paymentsOfTeacherService;
+    private final UserRepository userRepository;
 
     @Value("${stripe.secret.key}")
     private String secretKey;
@@ -93,7 +91,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void paymentStatus(String courseId) {
+    public void paymentSuccess(String courseId) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         Course course = courseServiceImpl.findCourseById(courseId);
         UserCourseFee userCourseFee = UserCourseFee.builder()
@@ -102,23 +100,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .payment(true)
                 .build();
         userCourseFeeRepository.save(userCourseFee);
+
         studentServiceImpl.enrollInCourse(courseId, authenticatedUser);
-        UserProfile userProfile = userProfileRepository.findByUser(authenticatedUser);
-        BigDecimal balance = userProfile.getBalance();
-        if (balance != null) {
-            balance = balance.add(BigDecimal.valueOf(course.getPrice()));
-        } else {
-            balance = BigDecimal.valueOf(course.getPrice());
-        }
-        userProfile.setBalance(balance);
-        userProfileRepository.save(userProfile);
+        paymentsOfTeacherService.createTeacherPaymentTransaction(userRepository.getTeacherMainInfoById(
+                        course.getTeacher()),
+                courseId,
+                course.getPriceWithoutInterest());
     }
-
-
-    @Override
-    public BigDecimal teacherBalance() {
-        UserProfile userProfile = userProfileRepository.findByUser(authHelper.getAuthenticatedUser());
-        return userProfile.getBalance() == null ? BigDecimal.ZERO : userProfile.getBalance();
-    }
-
 }

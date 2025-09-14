@@ -1,4 +1,4 @@
-package com.team.updevic001.model.enums;
+package com.team.updevic001.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +20,8 @@ public enum ExceptionConstants {
     OTP_NOT_FOUND("OTP_NOT_FOUND", "Otp not found with id: %s"),
     TASK_NOT_FOUND("TASK_NOT_FOUND", "Task not found with id: %s"),
     APPLICATION_NOT_FOUND("APPLICATION_NOT_FOUND", "Application not found with id: %s"),
+    TEACHER_PAYMENT_NOT_FOUND("TEACHER_PAYMENT_NOT_FOUND", "Payment of teacher not found with id: %s"),
+    TEACHER_BALANCE_NOT_FOUND("TEACHER_BALANCE_NOT_FOUND", "Teacher balance not found with teacher id: %s"),
     NOT_FOUND("NOT_FOUND", "%s"),
 
 
@@ -31,6 +33,6 @@ public enum ExceptionConstants {
     ALREADY_EXISTS_EXCEPTION("ALREADY_EXISTS_EXCEPTION", "Resource already exists with value: %s"),
     EXPIRED_REFRESH_TOKEN_EXCEPTION("EXPIRED_REFRESH_TOKEN_EXCEPTION", "Refresh token expired at: %s");
 
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 }

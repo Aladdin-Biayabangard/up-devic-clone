@@ -6,7 +6,7 @@ import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
-import com.team.updevic001.specification.UserCriteria;
+import com.team.updevic001.specification.criteria.UserCriteria;
 
 public interface AdminService {
 

@@ -29,7 +29,6 @@ import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.OtpService;
 import com.team.updevic001.utility.AuthHelper;
 import com.team.updevic001.utility.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
-import static com.team.updevic001.model.enums.ExceptionConstants.EXPIRED_REFRESH_TOKEN_EXCEPTION;
-import static com.team.updevic001.model.enums.ExceptionConstants.NOT_FOUND;
-import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.EXPIRED_REFRESH_TOKEN_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.USER_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -71,7 +70,6 @@ public class AuthServiceImpl implements AuthService {
 
     private static final long REFRESH_TOKEN_EXPIRATION_DAYS = 7;
     private static final long PASSWORD_RESET_EXPIRATION_MIN = 15;
-    private final LoginHistoryService loginHistoryService;
 
     @Transactional
     @Override

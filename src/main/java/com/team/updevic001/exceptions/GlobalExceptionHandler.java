@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.UNEXPECTED_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.UNEXPECTED_EXCEPTION;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;

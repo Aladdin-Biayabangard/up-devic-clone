@@ -29,7 +29,7 @@ import java.util.UUID;
 import static com.team.updevic001.mail.EmailTemplate.APPLICATION_APPROVED;
 import static com.team.updevic001.mail.EmailTemplate.APPLICATION_CANCELLED;
 import static com.team.updevic001.mail.EmailTemplate.APPLICATION_FORM_INFO_ENG;
-import static com.team.updevic001.model.enums.ExceptionConstants.APPLICATION_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.APPLICATION_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

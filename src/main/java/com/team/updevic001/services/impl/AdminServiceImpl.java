@@ -21,7 +21,7 @@ import com.team.updevic001.model.mappers.UserMapper;
 import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.services.interfaces.AuthService;
 import com.team.updevic001.services.interfaces.UserService;
-import com.team.updevic001.specification.UserCriteria;
+import com.team.updevic001.specification.criteria.UserCriteria;
 import com.team.updevic001.specification.UserSpecification;
 import com.team.updevic001.utility.AuthHelper;
 import jakarta.transaction.Transactional;
@@ -35,9 +35,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.FORBIDDEN_EXCEPTION;
-import static com.team.updevic001.model.enums.ExceptionConstants.ROLE_NOT_FOUND;
-import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.FORBIDDEN_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.ROLE_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.USER_NOT_FOUND;
 
 @Slf4j
 @Service

@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class TeacherMainInfo {
 
-    int totalCourseCount;
-    int totalStudentCount;
- //   BigDecimal balance;
-
+    private Long teacherId;
+    private String teacherName;
+    private String email;
 }

@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.COURSE_NOT_FOUND;
-import static com.team.updevic001.model.enums.ExceptionConstants.TASK_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.COURSE_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.TASK_NOT_FOUND;
 
 @Slf4j
 @Service

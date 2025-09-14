@@ -4,7 +4,6 @@ import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.exceptions.UnauthorizedException;
-import com.team.updevic001.model.enums.ExceptionConstants;
 import com.team.updevic001.model.enums.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Component;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.UNAUTHORIZED_EXCEPTION;
-import static com.team.updevic001.model.enums.ExceptionConstants.USER_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.UNAUTHORIZED_EXCEPTION;
+import static com.team.updevic001.exceptions.ExceptionConstants.USER_NOT_FOUND;
 
 @Component
 @Slf4j

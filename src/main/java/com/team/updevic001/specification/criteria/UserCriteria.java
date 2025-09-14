@@ -1,4 +1,4 @@
-package com.team.updevic001.specification;
+package com.team.updevic001.specification.criteria;
 
 import com.team.updevic001.model.enums.Status;
 import lombok.AllArgsConstructor;

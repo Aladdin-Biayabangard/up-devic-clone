@@ -1,9 +1,11 @@
 package com.team.updevic001.configuration.enums;
 
+import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
 import static com.team.updevic001.configuration.enums.ApiSecurityLevel.*;
 
+@Getter
 public enum ApiEndpoint {
 
     // --- Public (Permit All) ---
@@ -27,6 +29,8 @@ public enum ApiEndpoint {
     ADMIN_GET_USERS_COUNT("/api/v1/admins/users/count", HttpMethod.GET, ADMIN),
     ADMIN_REMOVE_ROLE("/api/v1/admins/users/*/role", HttpMethod.PUT, ADMIN),
     ADMIN_DELETE_USER("/api/v1/admins/users/*", HttpMethod.DELETE, ADMIN),
+    ADMIN_GET_TEACHER_PAYMENT_TRANSACTION("/api/v1/admins/teacher-payments", HttpMethod.GET, ADMIN),
+    ADMIN_UPDATE_TEACHER_PAYMENT_TRANSACTION("/api/v1/admins/teacher-payments/{id}", HttpMethod.PUT, ADMIN),
     ADMIN_DASHBOARD("/api/v1/admins/dashboard", HttpMethod.DELETE, ADMIN),
     // Auth Controller
 
@@ -135,15 +139,4 @@ public enum ApiEndpoint {
         this.securityLevel = securityLevel;
     }
 
-    public String getPathPattern() {
-        return pathPattern;
-    }
-
-    public HttpMethod getHttpMethod() {
-        return httpMethod;
-    }
-
-    public ApiSecurityLevel getSecurityLevel() {
-        return securityLevel;
-    }
 }

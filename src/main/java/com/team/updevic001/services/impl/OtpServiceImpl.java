@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.OTP_NOT_FOUND;
+import static com.team.updevic001.exceptions.ExceptionConstants.OTP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

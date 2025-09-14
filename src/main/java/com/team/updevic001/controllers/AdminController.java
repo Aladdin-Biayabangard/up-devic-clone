@@ -9,7 +9,7 @@ import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.impl.CertificateService;
 import com.team.updevic001.services.interfaces.AdminService;
-import com.team.updevic001.specification.UserCriteria;
+import com.team.updevic001.specification.criteria.UserCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
