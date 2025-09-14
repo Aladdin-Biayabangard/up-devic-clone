@@ -1,7 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
@@ -35,12 +34,14 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("UPDATE User u SET u.status=:status WHERE u.id=:id")
     void updateUserStatus(Long id, Status status);
 
-    @Query(value = """
-    SELECT 
-        (SELECT COUNT(*) FROM users u WHERE NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as totalUsers,
-        (SELECT COUNT(*) FROM users u WHERE u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as activeUsers,
-        (SELECT COUNT(*) FROM users u WHERE u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as pendingUsers
-    """, nativeQuery = true)
+    @Query("""
+    SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse(
+        SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END)
+    )
+    FROM User u
+""")
     UserStatsResponse getDashboard();
 
 
