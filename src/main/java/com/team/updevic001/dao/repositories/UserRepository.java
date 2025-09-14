@@ -35,13 +35,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     void updateUserStatus(Long id, Status status);
 
     @Query("""
-    SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse(
-        SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END),
-        SUM(CASE WHEN u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END),
-        SUM(CASE WHEN u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM u.roles r) THEN 1 ELSE 0 END)
-    )
-    FROM User u
-""")
+                SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse(
+                    COUNT(u), 
+                                SUM(CASE WHEN u.status = 'ACTIVE' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN u.status = 'PENDING' THEN 1 ELSE 0 END)
+                )
+                FROM User u
+            """)
     UserStatsResponse getDashboard();
 
 
