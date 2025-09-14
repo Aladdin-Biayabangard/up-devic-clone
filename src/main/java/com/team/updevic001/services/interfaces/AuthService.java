@@ -5,6 +5,7 @@ import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.enums.Role;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 public interface AuthService {

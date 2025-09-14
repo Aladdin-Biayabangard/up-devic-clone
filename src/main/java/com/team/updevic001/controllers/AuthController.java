@@ -4,6 +4,7 @@ import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.services.interfaces.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -47,8 +48,10 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
-    public AuthResponseDto login(@Valid @RequestBody AuthRequestDto authRequest) {
-        return authService.login(authRequest);
+    public AuthResponseDto login(
+            @RequestBody AuthRequestDto authRequest
+    ) {
+       return authService.login(authRequest);
     }
 
     @PostMapping("/forgot-password")
