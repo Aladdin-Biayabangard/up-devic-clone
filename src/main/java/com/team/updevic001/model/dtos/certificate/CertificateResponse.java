@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-
 import static lombok.AccessLevel.PRIVATE;
 
 @Data
@@ -23,6 +22,8 @@ public class CertificateResponse {
     String issuedFor;
 
     String trainingName;
+
+    String teacherName;
 
     String issuingOrganization;
 

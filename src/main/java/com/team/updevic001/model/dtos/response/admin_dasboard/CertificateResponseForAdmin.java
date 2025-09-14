@@ -16,6 +16,8 @@ public class CertificateResponseForAdmin {
 
     private String trainingName;
 
+    private String teacherName;
+
     private LocalDateTime createdAt;
 
     private LocalDate issueDate;

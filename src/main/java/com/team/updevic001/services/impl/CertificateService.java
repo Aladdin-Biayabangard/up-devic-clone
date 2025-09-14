@@ -7,7 +7,7 @@ import com.team.updevic001.dao.repositories.CertificateRepository;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
 import com.team.updevic001.dao.repositories.TaskRepository;
 import com.team.updevic001.dao.repositories.TestResultRepository;
-import com.team.updevic001.exceptions.AlreadyExistsException;
+import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.certificate.CertificateResponse;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -31,9 +32,7 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
-import static com.team.updevic001.model.enums.ExceptionConstants.CERTIFICATE_EXISTS;
 import static com.team.updevic001.model.enums.ExceptionConstants.CERTIFICATE_NOT_FOUND;
 
 
@@ -51,29 +50,22 @@ public class CertificateService {
     private final TestResultRepository testResultRepository;
     private final AuthHelper authHelper;
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     public CertificateResponse getCertificate(String credentialId) {
         var certificate = fetchCertificateIfExist(credentialId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d',' yyyy", Locale.ENGLISH);
         String formattedDate = certificate.getIssueDate().format(formatter);
-        var response = new CertificateResponse(certificate.getCredentialId(),
+        return new CertificateResponse(certificate.getCredentialId(),
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,
                 certificate.getIssuedFor(),
                 certificate.getTrainingName(),
+                certificate.getTeacherName(),
                 certificate.getIssuingOrganization(),
                 certificate.getType()
         );
-        return response;
     }
-
-//    public Page<CertificateResponse> getAllCertificatesByStatusOrSearchByQuery(String query, CertificateStatus status, Pageable pageable) {
-//        Page<CertificateEntity> certificates = StringUtils.isNotBlank(query)
-//                ? certificateRepository.searchByNameAndStatus(query, status.name(), pageable)
-//                : certificateRepository.findByStatus(status, pageable);
-//
-//        return certificates.map(certificateMapper::toDto);
-//    }
 
     public CustomPage<CertificateResponseForAdmin> getAllCertificates(CertificateCriteria criteria, CustomPageRequest request) {
         int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
@@ -100,6 +92,7 @@ public class CertificateService {
                 certificates.getContent().stream().map(certificateEntity -> new CertificateResponseForAdmin(
                         certificateEntity.getFirstName() + " " + certificateEntity.getLastName(),
                         certificateEntity.getTrainingName(),
+                        certificateEntity.getTeacherName(),
                         certificateEntity.getCreatedAt(),
                         certificateEntity.getIssueDate(),
                         null,
@@ -111,17 +104,28 @@ public class CertificateService {
 
     }
 
-
+    @Transactional
     public CertificateResponse createCertificate(String courseId) {
         var issuedFor = "has completed the %s course, with a score of %s";
+        var formatter = DateTimeFormatter.ofPattern("MMMM d',' yyyy", Locale.ENGLISH);
         var user = authHelper.getAuthenticatedUser();
         var course = courseServiceImpl.findCourseById(courseId);
-        Optional<String> optionalCertificate = certificateRepository.findCredentialIdByUserIdAndCourseId(user.getId(), courseId);
+
+        var optionalCertificate = certificateRepository.findCertificateEntityByCourseIdAndUserId(courseId, user.getId());
         if (optionalCertificate.isPresent()) {
-            throw new AlreadyExistsException(CERTIFICATE_EXISTS.getCode(),
-                    CERTIFICATE_EXISTS.getMessage().formatted(optionalCertificate.get()));
+            CertificateEntity certificate = optionalCertificate.get();
+            String formattedDate = certificate.getIssueDate().format(formatter);
+            return new CertificateResponse(certificate.getCredentialId(),
+                    certificate.getFirstName() + " " + certificate.getLastName(),
+                    formattedDate,
+                    certificate.getIssuedFor(),
+                    course.getTitle(),
+                    certificate.getTeacherName(),
+                    certificate.getIssuingOrganization(),
+                    certificate.getType());
+
         }
-        var credentialId = generate("ABM");
+        var credentialId = generate();
         double score = checkEligibilityForCertification(user.getId(), courseId);
         var certificate = CertificateEntity.builder()
                 .credentialId(credentialId)
@@ -131,6 +135,7 @@ public class CertificateService {
                 .issueDate(LocalDate.now())
                 .issuedFor(issuedFor.formatted(course.getTitle(), score + "%"))
                 .trainingName(course.getTitle())
+                .teacherName(userRepository.getTeacherFullName(course.getTeacher().getId()))
                 .issuingOrganization("UP-DEVIC ONLINE COURSES PLATFORM")
                 .status(CertificateStatus.ACTIVE)
                 .userId(user.getId())
@@ -142,34 +147,27 @@ public class CertificateService {
             certificate.setType(CertificateType.NORMAL);
         }
         certificate = certificateRepository.save(certificate);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d',' yyyy", Locale.ENGLISH);
         String formattedDate = certificate.getIssueDate().format(formatter);
-        var response = new CertificateResponse(certificate.getCredentialId(),
+        return new CertificateResponse(certificate.getCredentialId(),
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,
                 certificate.getIssuedFor(),
                 course.getTitle(),
+                certificate.getTeacherName(),
                 certificate.getIssuingOrganization(),
                 certificate.getType()
         );
-        return response;
     }
 
     public void deleteCertificate(String id) {
         certificateRepository.deleteById(id);
     }
 
-    private CertificateEntity fetchCertificateIfExist(String id) {
-        return certificateRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(CERTIFICATE_NOT_FOUND.getCode(),
-                        CERTIFICATE_NOT_FOUND.getMessage().formatted(id)));
-    }
-
-    private static String generate(String prefix) {
+    private static String generate() {
         String yearPart = String.format("%02d", Year.now().getValue() % 100);
         String randomPart = randomAlphanumeric();
         return String.format("%s-%s-%s",
-                prefix.toUpperCase(),
+                "ABM",
                 yearPart,
                 randomPart
         );
@@ -183,6 +181,7 @@ public class CertificateService {
         }
         return sb.toString();
     }
+
     public int checkEligibilityForCertification(Long userId, String courseId) {
         var user = userServiceImpl.fetchUserById(userId);
         var course = courseServiceImpl.findCourseById(courseId);
@@ -205,14 +204,11 @@ public class CertificateService {
         return (int) Math.round(score);
     }
 
-}
+    private CertificateEntity fetchCertificateIfExist(String id) {
+        return certificateRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(CERTIFICATE_NOT_FOUND.getCode(),
+                        CERTIFICATE_NOT_FOUND.getMessage().formatted(id)));
+    }
 
-//    public CertificateDto updateCertificate(String id, CertificateDto certificateDto) {
-//        CertificateEntity certificate = fetchCertificateIfExist(id);
-//        certificate.setPreviewUrlHorizontal(certificateDto.getPreviewUrls().getHorizontal());
-//        certificate.setPreviewUrlVertical(certificateDto.getPreviewUrls().getVertical());
-//        certificateMapper.updateEntityFromDto(certificateDto, certificate);
-//        certificate.setCredentialId(id);
-//        certificate = certificateRepository.save(certificate);
-//        return certificateMapper.toDto(certificate);
-//    }
+
+}

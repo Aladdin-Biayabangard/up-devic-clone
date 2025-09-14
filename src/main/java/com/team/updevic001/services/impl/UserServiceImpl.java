@@ -1,18 +1,18 @@
 package com.team.updevic001.services.impl;
 
-import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.model.enums.Role;
-import com.team.updevic001.model.mappers.UserMapper;
-import com.team.updevic001.model.mappers.UserProfileMapper;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserProfile;
 import com.team.updevic001.dao.repositories.UserProfileRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
+import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.request.UserProfileDto;
 import com.team.updevic001.model.dtos.request.security.ChangePasswordDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserProfileDto;
 import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
+import com.team.updevic001.model.enums.Role;
+import com.team.updevic001.model.mappers.UserMapper;
+import com.team.updevic001.model.mappers.UserProfileMapper;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserProfileInfo(UserProfileDto userProfileDto) {
-        User authenticatedUser = authHelper.getAuthenticatedUser();
-        UserProfile userProfile = userProfileRepository.findByUser(authenticatedUser);
-        UserProfile updatedUserProfile = userProfileMapper.toEntity(userProfile, userProfileDto);
+        var authenticatedUser = authHelper.getAuthenticatedUser();
+        var userProfile = userProfileRepository.findByUser(authenticatedUser);
+        var updatedUserProfile = userProfileMapper.toEntity(userProfile, userProfileDto);
 
         if (userProfileDto.getLastName() != null && !userProfileDto.getLastName().isEmpty()) {
             authenticatedUser.setLastName(userProfileDto.getLastName());
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserPassword(ChangePasswordDto passwordDto) {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         if (!passwordEncoder.matches(passwordDto.getCurrentPassword(), authenticatedUser.getPassword()) ||
-            !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
+                !passwordDto.getNewPassword().equals(passwordDto.getRetryPassword())) {
             throw new IllegalArgumentException("Password incorrect!");
         }
         authenticatedUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));

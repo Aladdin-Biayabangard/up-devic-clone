@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -25,28 +26,6 @@ public class CertificateController {
     public CertificateResponse getCertificate(@PathVariable String credentialId) {
         return certificateService.getCertificate(credentialId);
     }
-//
-//    @GetMapping("/search")
-//    public Page<CertificateResponse> getAllCertificatesOrSearchByQuery(@RequestParam(required = false) String query,
-//                                                                       @RequestParam CertificateStatus status,
-//                                                                       Pageable pageable) {
-//        return certificateService.getAllCertificatesByStatusOrSearchByQuery(query, status, pageable);
-//    }
-
-//    @GetMapping("/{id}/views")
-//    public List<CertificateViewDto> getCertificateViews(@PathVariable String id) {
-//        return certificateViewService.getViewsByCertificate(id);
-//    }
-//
-//    @GetMapping("/views")
-//    public CertificateViewPageResponse getCertificateViewsByQuery(Pageable pageable) {
-//        return certificateViewService.getAllViews(pageable);
-//    }
-//
-//    @GetMapping("/views/summary")
-//    public List<PlatformStatsDto> getCertificateViewsSummary() {
-//        return certificateViewService.getTotalViewsByPlatform();
-//    }
 
     @PostMapping("/{courseId}")
     @ResponseStatus(CREATED)
@@ -54,16 +33,6 @@ public class CertificateController {
         return certificateService.createCertificate(courseId);
     }
 
-//    @PostMapping(path = "{id}/preview")
-//    public CertificatePreviewUrls addPreviewUrl(@PathVariable String id) throws IOException {
-//        return certificateService.addPreviewUrl(id);
-//    }
-
-//    @PostMapping("/{id}/publish")
-//    @ResponseStatus(NO_CONTENT)
-//    public void publishCertificate(@PathVariable String id) {
-//        certificateService.publishCertificate(id);
-//    }
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteCertificate(@PathVariable String id) {

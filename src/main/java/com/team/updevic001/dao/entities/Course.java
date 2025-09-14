@@ -4,6 +4,8 @@ package com.team.updevic001.dao.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
+import com.team.updevic001.model.enums.CourseStatus;
+import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
@@ -63,6 +65,8 @@ public class Course {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> searchKeys = new HashSet<>();
+
+    private CourseStatus status;
 
     @ManyToOne
     @JsonBackReference

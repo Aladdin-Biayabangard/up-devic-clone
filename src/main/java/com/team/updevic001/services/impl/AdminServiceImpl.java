@@ -2,15 +2,19 @@ package com.team.updevic001.services.impl;
 
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.dao.entities.UserRole;
+import com.team.updevic001.dao.repositories.CertificateRepository;
+import com.team.updevic001.dao.repositories.CourseRepository;
 import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.ForbiddenException;
 import com.team.updevic001.exceptions.NotFoundException;
+import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
+import com.team.updevic001.model.enums.CourseStatus;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.model.mappers.UserMapper;
@@ -48,6 +52,8 @@ public class AdminServiceImpl implements AdminService {
     private final AuthHelper authHelper;
     private final AuthService authService;
     private final TeacherApplicationsRepository teacherApplicationsRepository;
+    private final CourseRepository courseRepository;
+    private final CertificateRepository certificateRepository;
 
     @Override
     public void assignTeacherProfile(String email) {
@@ -83,7 +89,6 @@ public class AdminServiceImpl implements AdminService {
                 allUsers.getNumber(),
                 allUsers.getSize());
     }
-
 
     @Override
     @CacheEvict(value = "users", allEntries = true)
@@ -139,14 +144,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public DashboardResponse getDashboard() {
-        Object[] userCounts = userRepository.countUserStats();
-        Long pendingApplications = teacherApplicationsRepository.countPendingApplications();
-        DashboardResponse response = new DashboardResponse();
-        response.setTotalUsers(((Number) userCounts[0]).longValue());
-        response.setActiveUsers(((Number) userCounts[1]).longValue());
-        response.setPendingUsers(((Number) userCounts[2]).longValue());
-        response.setPendingApplicationsForTeaching(pendingApplications);
-        return response;
+        var userStats = userRepository.getDashboard();
+        var countPendingApplications = teacherApplicationsRepository.countPendingApplications();
+        var activeCourses = courseRepository.countCourseByStatus(CourseStatus.ACTIVE);
+        var activeCertificates = certificateRepository.countCertificateEntityByStatus(CertificateStatus.ACTIVE);
+        return new DashboardResponse(userStats, activeCourses, activeCertificates, countPendingApplications);
     }
 
     private void saveUser(User user) {

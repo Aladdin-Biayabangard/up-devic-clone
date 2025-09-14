@@ -33,4 +33,9 @@ public interface CertificateRepository extends JpaRepository<CertificateEntity, 
     Optional<String> findCredentialIdByUserIdAndCourseId(@Param("userId") Long userId,
                                                          @Param("courseId") String courseId);
 
+    Optional<CertificateEntity> findCertificateEntityByCourseIdAndUserId(String courseId, Long userId);
+
+    long countCertificateEntityByStatus(CertificateStatus status);
+
+
 }

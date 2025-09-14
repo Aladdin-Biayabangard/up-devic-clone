@@ -94,6 +94,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponseDto verifyOtpAndGenerateToken(OtpRequest request) {
+
         User user = userRepository.findByEmailAndStatus(request.getEmail(), Status.PENDING)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(),
                         USER_NOT_FOUND.getMessage().formatted(request.getEmail())));

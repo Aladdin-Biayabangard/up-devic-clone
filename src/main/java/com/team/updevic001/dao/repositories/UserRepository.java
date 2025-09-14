@@ -1,6 +1,8 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
+import com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
@@ -33,14 +35,14 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("UPDATE User u SET u.status=:status WHERE u.id=:id")
     void updateUserStatus(Long id, Status status);
 
-    @Query("""
+    @Query(value = """
     SELECT 
-        SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END),
-        SUM(CASE WHEN u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END),
-        SUM(CASE WHEN u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM u.roles r WHERE r.name = 'ADMIN') THEN 1 ELSE 0 END)
-    FROM User u
-""")
-    Object[] countUserStats();
+        (SELECT COUNT(*) FROM users u WHERE NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as totalUsers,
+        (SELECT COUNT(*) FROM users u WHERE u.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as activeUsers,
+        (SELECT COUNT(*) FROM users u WHERE u.status = 'PENDING' AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_name = 'ADMIN')) as pendingUsers
+    """, nativeQuery = true)
+    UserStatsResponse getDashboard();
+
 
     @Query("""
                 SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END
@@ -55,5 +57,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
            "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
            "WHERE u = :user")
     TeacherNameDto findTeacherNameByUser(User user);
+
+    @Query("SELECT CONCAT(t.firstName, ' ', t.lastName) FROM User t WHERE t.id = :id")
+    String getTeacherFullName(@Param("id") Long id);
 
 }

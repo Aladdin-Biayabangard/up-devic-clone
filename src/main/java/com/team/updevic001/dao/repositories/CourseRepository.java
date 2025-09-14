@@ -3,6 +3,7 @@ package com.team.updevic001.dao.repositories;
 import com.team.updevic001.dao.entities.Course;
 import com.team.updevic001.dao.entities.User;
 import com.team.updevic001.model.enums.CourseCategoryType;
+import com.team.updevic001.model.enums.CourseStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ public interface CourseRepository extends JpaRepository<Course, String>, JpaSpec
     List<Course> findCourseByTeacher(User teacher);
 
     List<Course> findCourseByTeacherId(Long teacherId);
+
+    long countCourseByStatus(CourseStatus status);
 
     @EntityGraph(attributePaths = {"tasks", "teacher"})
     Optional<Course> findCourseById(String id);

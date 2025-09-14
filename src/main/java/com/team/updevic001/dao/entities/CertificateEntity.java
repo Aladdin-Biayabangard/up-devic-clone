@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -46,6 +47,8 @@ public class CertificateEntity {
     String issuedFor;
 
     String trainingName;
+
+    String teacherName;
 
     @Column(columnDefinition = "TEXT")
     String description;

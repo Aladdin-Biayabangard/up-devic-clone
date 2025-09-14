@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardResponse {
-    UserStatsResponse userStats;
-    long activeCourseCount;
-    long activeCertificateCount;
-    long pendingApplicationsForTeaching;
+@Data
+public class UserStatsResponse {
+    Long totalUsers;
+    Long activeUsers;
+    Long pendingUsers;
 }
