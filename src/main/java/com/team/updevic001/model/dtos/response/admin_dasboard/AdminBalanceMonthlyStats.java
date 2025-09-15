@@ -5,14 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class AdminBalanceMonthlyStats {
 
-    LocalDate month;
+    LocalDateTime month;
     BigDecimal monthlyTotalBalance;
     BigDecimal monthlyIncome;
     BigDecimal monthlyExpenditure;
