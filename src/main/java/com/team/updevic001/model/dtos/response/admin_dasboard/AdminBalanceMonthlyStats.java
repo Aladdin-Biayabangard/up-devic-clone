@@ -27,5 +27,13 @@ public class AdminBalanceMonthlyStats {
         this.monthlyExpenditure = monthlyExpenditure;
     }
 
-
+    public AdminBalanceMonthlyStats(java.time.LocalDateTime month,
+                                    BigDecimal monthlyTotalBalance,
+                                    BigDecimal monthlyIncome,
+                                    BigDecimal monthlyExpenditure) {
+        this.month = month.toLocalDate();
+        this.monthlyTotalBalance = monthlyTotalBalance;
+        this.monthlyIncome = monthlyIncome;
+        this.monthlyExpenditure = monthlyExpenditure;
+    }
 }
