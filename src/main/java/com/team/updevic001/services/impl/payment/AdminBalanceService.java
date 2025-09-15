@@ -2,12 +2,15 @@ package com.team.updevic001.services.impl.payment;
 
 import com.team.updevic001.dao.entities.payment.AdminBalance;
 import com.team.updevic001.dao.repositories.AdminBalanceRepository;
+import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceMonthlyStats;
 import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,15 @@ public class AdminBalanceService {
     public AdminBalanceStats adminBalanceStats() {
         LocalDateTime fromDate = LocalDateTime.now().minusMonths(6);
         var totalStats = adminBalanceRepository.getTotalStats();
-        totalStats.setMonthlyStats(adminBalanceRepository.getLastMonthsStats(fromDate));
+        List<AdminBalanceMonthlyStats> stats = adminBalanceRepository.getLastMonthsStats(fromDate).stream()
+                .map(row -> new AdminBalanceMonthlyStats(
+                        ((Timestamp) row[0]).toLocalDateTime().toLocalDate(),
+                        (BigDecimal) row[1],
+                        (BigDecimal) row[2],
+                        (BigDecimal) row[3]
+                ))
+                .toList();
+        totalStats.setMonthlyStats(stats);
         return totalStats;
     }
 

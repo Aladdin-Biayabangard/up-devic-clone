@@ -35,22 +35,18 @@ public interface AdminBalanceRepository extends JpaRepository<AdminBalance, Long
     AdminBalanceStats getTotalStats();
 
 
-    @Query("""
-        SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceMonthlyStats(
-            FUNCTION('DATE_TRUNC', 'month', t.paymentDate),
-            COALESCE(SUM(CASE WHEN t.status = com.team.updevic001.model.enums.PaymentStatus.PAID THEN t.amount ELSE 0 END), 0),
-            COALESCE(SUM(CASE WHEN t.transactionType = com.team.updevic001.model.enums.TransactionType.INCOME 
-                               AND t.status = com.team.updevic001.model.enums.PaymentStatus.PAID 
-                               THEN t.amount ELSE 0 END), 0),
-            COALESCE(SUM(CASE WHEN t.transactionType = com.team.updevic001.model.enums.TransactionType.OUTCOME 
-                               AND t.status = com.team.updevic001.model.enums.PaymentStatus.PAID 
-                               THEN t.amount ELSE 0 END), 0)
-        )
-        FROM AdminPaymentTransaction t
-        WHERE t.paymentDate >= :fromDate
-        GROUP BY FUNCTION('DATE_TRUNC', 'month', t.paymentDate)
-        ORDER BY FUNCTION('DATE_TRUNC', 'month', t.paymentDate)
-    """)
-    List<AdminBalanceMonthlyStats> getLastMonthsStats(@Param("fromDate") LocalDateTime fromDate);
+    @Query(value = """
+    SELECT 
+        DATE_TRUNC('month', t.payment_date) AS month,
+        SUM(CASE WHEN t.status='PAID' THEN t.amount ELSE 0 END) AS total,
+        SUM(CASE WHEN t.transaction_type='INCOME' AND t.status='PAID' THEN t.amount ELSE 0 END) AS income,
+        SUM(CASE WHEN t.transaction_type='OUTCOME' AND t.status='PAID' THEN t.amount ELSE 0 END) AS expenditure
+    FROM admin_payment_transaction t
+    WHERE t.payment_date >= :fromDate
+    GROUP BY DATE_TRUNC('month', t.payment_date)
+    ORDER BY DATE_TRUNC('month', t.payment_date)
+""", nativeQuery = true)
+    List<Object[]> getLastMonthsStats(@Param("fromDate") LocalDateTime fromDate);
+
 }
 
