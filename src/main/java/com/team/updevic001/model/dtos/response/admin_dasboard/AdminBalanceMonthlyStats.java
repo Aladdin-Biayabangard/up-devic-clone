@@ -5,15 +5,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class AdminBalanceMonthlyStats {
 
-    LocalDateTime month;
+
+    LocalDate month;
     BigDecimal monthlyTotalBalance;
     BigDecimal monthlyIncome;
     BigDecimal monthlyExpenditure;
+
+    public AdminBalanceMonthlyStats(java.sql.Timestamp month,
+                                    BigDecimal monthlyTotalBalance,
+                                    BigDecimal monthlyIncome,
+                                    BigDecimal monthlyExpenditure) {
+        this.month = month.toLocalDateTime().toLocalDate(); // Timestamp → LocalDate
+        this.monthlyTotalBalance = monthlyTotalBalance;
+        this.monthlyIncome = monthlyIncome;
+        this.monthlyExpenditure = monthlyExpenditure;
+    }
+
+
 }
