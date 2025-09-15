@@ -1,8 +1,8 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.StudentCourse;
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,9 +17,6 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
     List<Course> findCourseByStudent(@Param("student") User student);
 
     boolean existsByStudentAndCourse(User student, Course course);
-
-    @Query("SELECT COUNT(DISTINCT uc.student.id) FROM StudentCourse uc WHERE uc.course.id IN :courseIds")
-    int countAllStudentsByCourseIds(@Param("courseIds") List<String> courseIds);
 
     boolean existsByCourseAndStudent(Course course, User student);
 

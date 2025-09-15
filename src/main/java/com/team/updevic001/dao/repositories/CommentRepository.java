@@ -1,7 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Comment;
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.course.Comment;
+import com.team.updevic001.dao.entities.auth.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

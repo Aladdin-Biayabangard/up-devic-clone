@@ -1,7 +1,7 @@
 package com.team.updevic001.configuration.config.ai;
 
 import com.team.updevic001.dao.entities.StudentTask;
-import com.team.updevic001.dao.entities.Task;
+import com.team.updevic001.dao.entities.course.Task;
 import com.team.updevic001.dao.entities.TestResult;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
 import com.team.updevic001.dao.repositories.TestResultRepository;

@@ -1,15 +1,14 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.StudentTask;
-import com.team.updevic001.dao.entities.Task;
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.course.Task;
+import com.team.updevic001.dao.entities.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Set;
 
 public interface StudentTaskRepository extends JpaRepository<StudentTask, Long> {
 
@@ -21,10 +20,7 @@ public interface StudentTaskRepository extends JpaRepository<StudentTask, Long> 
     List<StudentTask> findByStudentAndTaskIn(@Param("student") User student,
                                              @Param("tasks") List<Task> tasks);
 
-//    Set<Long> findSubmittedTaskIdsByStudentAndTaskIn(User student, List<Task> tasks);
-
     @Query("SELECT COUNT(st) FROM StudentTask st WHERE st.student = :student AND st.task.course = :course")
     long countByStudentAndTaskCourse(@Param("student") User student, @Param("course") Course course);
 
-    boolean existsByStudentAndTask(User student, Task task);
 }

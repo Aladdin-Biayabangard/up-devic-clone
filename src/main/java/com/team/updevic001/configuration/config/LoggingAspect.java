@@ -1,6 +1,6 @@
 package com.team.updevic001.configuration.config;
 
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;

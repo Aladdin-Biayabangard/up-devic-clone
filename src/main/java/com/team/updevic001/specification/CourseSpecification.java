@@ -1,8 +1,8 @@
 package com.team.updevic001.specification;
 
-import com.team.updevic001.criteria.CourseSearchCriteria;
-import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.Course.Fields;
+import com.team.updevic001.specification.criteria.CourseSearchCriteria;
+import com.team.updevic001.dao.entities.course.Course;
+import com.team.updevic001.dao.entities.course.Course.Fields;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseLevel;
 import org.springframework.data.jpa.domain.Specification;

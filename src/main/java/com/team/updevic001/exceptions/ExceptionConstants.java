@@ -22,6 +22,7 @@ public enum ExceptionConstants {
     APPLICATION_NOT_FOUND("APPLICATION_NOT_FOUND", "Application not found with id: %s"),
     TEACHER_PAYMENT_NOT_FOUND("TEACHER_PAYMENT_NOT_FOUND", "Payment of teacher not found with id: %s"),
     TEACHER_BALANCE_NOT_FOUND("TEACHER_BALANCE_NOT_FOUND", "Teacher balance not found with teacher id: %s"),
+    ADMIN_TRANSACTION_NOT_FOUND("ADMIN_TRANSACTION_NOT_FOUND", "Admin transaction not found with transaction id: %s"),
     NOT_FOUND("NOT_FOUND", "%s"),
 
 

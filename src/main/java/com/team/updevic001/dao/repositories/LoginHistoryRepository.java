@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.LoginHistory;
+import com.team.updevic001.dao.entities.auth.LoginHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

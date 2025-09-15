@@ -1,13 +1,13 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.criteria.CertificateCriteria;
+import com.team.updevic001.specification.criteria.CertificateCriteria;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.admin_dasboard.CertificateResponseForAdmin;
 import com.team.updevic001.model.dtos.response.admin_dasboard.DashboardResponse;
 import com.team.updevic001.model.dtos.response.user.UserResponseForAdmin;
 import com.team.updevic001.model.enums.Role;
-import com.team.updevic001.services.impl.CertificateService;
+import com.team.updevic001.services.impl.course.CertificateService;
 import com.team.updevic001.services.interfaces.AdminService;
 import com.team.updevic001.specification.criteria.UserCriteria;
 import io.swagger.v3.oas.annotations.Operation;

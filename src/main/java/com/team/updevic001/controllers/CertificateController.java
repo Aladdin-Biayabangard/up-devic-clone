@@ -1,7 +1,7 @@
 package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.certificate.CertificateResponse;
-import com.team.updevic001.services.impl.CertificateService;
+import com.team.updevic001.services.impl.course.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

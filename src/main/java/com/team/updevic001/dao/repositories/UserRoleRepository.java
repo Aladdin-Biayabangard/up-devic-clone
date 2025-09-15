@@ -1,7 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.entities.UserRole;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.auth.UserRole;
 import com.team.updevic001.model.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

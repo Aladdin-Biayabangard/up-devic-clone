@@ -1,6 +1,8 @@
 package com.team.updevic001.dao.entities;
 
  
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.course.Lesson;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,6 +32,7 @@ public class UserLessonStatus {
     private Lesson lesson;
 
     @Column(name = "is_watched")
+    @Builder.Default
     private boolean isWatched = false;
 
     @CreationTimestamp

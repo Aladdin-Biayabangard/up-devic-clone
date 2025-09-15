@@ -1,7 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.entities.UserProfile;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.auth.UserProfile;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

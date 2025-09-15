@@ -1,7 +1,7 @@
 package com.team.updevic001.model.mappers;
 
-import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.entities.UserProfile;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.auth.UserProfile;
 import com.team.updevic001.model.dtos.response.teacher.ResponseTeacherDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

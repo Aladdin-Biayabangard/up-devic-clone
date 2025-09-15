@@ -1,6 +1,6 @@
 package com.team.updevic001.model.mappers;
 
-import com.team.updevic001.dao.entities.TeacherPaymentTransaction;
+import com.team.updevic001.dao.entities.payment.TeacherPaymentTransaction;
 import com.team.updevic001.model.dtos.response.payment.TeacherPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

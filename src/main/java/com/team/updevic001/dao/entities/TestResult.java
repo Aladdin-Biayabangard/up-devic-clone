@@ -1,6 +1,8 @@
 package com.team.updevic001.dao.entities;
 
  
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.course.Course;
 import jakarta.persistence.*;
 import lombok.*;
 

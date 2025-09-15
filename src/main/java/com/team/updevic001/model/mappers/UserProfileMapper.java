@@ -1,6 +1,6 @@
 package com.team.updevic001.model.mappers;
 
-import com.team.updevic001.dao.entities.UserProfile;
+import com.team.updevic001.dao.entities.auth.UserProfile;
 import com.team.updevic001.model.dtos.request.UserProfileDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

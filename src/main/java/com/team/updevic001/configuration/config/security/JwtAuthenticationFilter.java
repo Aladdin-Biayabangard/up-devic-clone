@@ -1,6 +1,6 @@
     package com.team.updevic001.configuration.config.security;
 
-    import com.team.updevic001.dao.entities.User;
+    import com.team.updevic001.dao.entities.auth.User;
     import com.team.updevic001.utility.JwtUtil;
     import jakarta.servlet.FilterChain;
     import jakarta.servlet.ServletException;

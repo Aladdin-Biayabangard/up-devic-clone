@@ -1,6 +1,6 @@
 package com.team.updevic001.utility;
 
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

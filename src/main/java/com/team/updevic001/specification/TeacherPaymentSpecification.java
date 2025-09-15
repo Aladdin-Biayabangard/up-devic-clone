@@ -1,6 +1,6 @@
 package com.team.updevic001.specification;
 
-import com.team.updevic001.dao.entities.TeacherPaymentTransaction;
+import com.team.updevic001.dao.entities.payment.TeacherPaymentTransaction;
 import com.team.updevic001.model.enums.PaymentStatus;
 import com.team.updevic001.specification.criteria.TeacherPaymentCriteria;
 import org.springframework.data.jpa.domain.Specification;

@@ -14,6 +14,7 @@ import java.util.List;
 public class AuthResponseDto {
     String firstName;
     String lastName;
+    @Builder.Default
     List<String> role = new ArrayList<>();
     String accessToken;
     Long refreshToken;

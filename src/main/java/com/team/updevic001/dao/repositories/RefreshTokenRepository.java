@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.RefreshToken;
+import com.team.updevic001.dao.entities.auth.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

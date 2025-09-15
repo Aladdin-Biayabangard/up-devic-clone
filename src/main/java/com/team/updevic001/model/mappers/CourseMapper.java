@@ -1,6 +1,6 @@
 package com.team.updevic001.model.mappers;
 
-import com.team.updevic001.dao.entities.Course;
+import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.repositories.LessonRepository;
 import com.team.updevic001.dao.repositories.StudentCourseRepository;
 import com.team.updevic001.model.dtos.response.course.ResponseCourseDto;

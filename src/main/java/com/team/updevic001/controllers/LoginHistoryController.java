@@ -1,7 +1,7 @@
 package com.team.updevic001.controllers;
 
 import com.team.updevic001.model.dtos.response.DeviceInfoDto;
-import com.team.updevic001.services.impl.LoginHistoryService;
+import com.team.updevic001.services.impl.common.LoginHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

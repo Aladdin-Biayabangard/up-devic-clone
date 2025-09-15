@@ -1,7 +1,7 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.course.Course;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.enums.CourseStatus;
 import jakarta.transaction.Transactional;

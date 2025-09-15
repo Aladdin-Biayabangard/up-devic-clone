@@ -1,7 +1,7 @@
 package com.team.updevic001.specification;
 
-import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.entities.UserRole;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.auth.UserRole;
 import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.specification.criteria.UserCriteria;
 import jakarta.persistence.criteria.Join;

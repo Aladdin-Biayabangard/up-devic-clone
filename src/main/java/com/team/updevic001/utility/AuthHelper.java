@@ -1,6 +1,6 @@
 package com.team.updevic001.utility;
 
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.exceptions.UnauthorizedException;

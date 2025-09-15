@@ -1,6 +1,6 @@
 package com.team.updevic001.model.mappers;
 
-import com.team.updevic001.dao.entities.Comment;
+import com.team.updevic001.dao.entities.course.Comment;
 import com.team.updevic001.model.dtos.response.comment.ResponseCommentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

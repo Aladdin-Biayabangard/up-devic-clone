@@ -1,7 +1,7 @@
 package com.team.updevic001.specification;
 
-import com.team.updevic001.criteria.CertificateCriteria;
-import com.team.updevic001.dao.entities.CertificateEntity;
+import com.team.updevic001.specification.criteria.CertificateCriteria;
+import com.team.updevic001.dao.entities.course.CertificateEntity;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.certificate.CertificateType;
 import org.springframework.data.jpa.domain.Specification;

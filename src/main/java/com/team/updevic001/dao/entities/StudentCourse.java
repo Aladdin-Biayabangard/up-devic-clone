@@ -1,6 +1,8 @@
 package com.team.updevic001.dao.entities;
 
  
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +33,7 @@ public class StudentCourse {
     private Course course;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Status status = Status.PENDING;
 
 

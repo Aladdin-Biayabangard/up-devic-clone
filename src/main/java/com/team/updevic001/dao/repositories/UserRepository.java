@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;

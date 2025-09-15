@@ -1,0 +1,36 @@
+package com.team.updevic001.dao.entities.payment;
+
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.course.Course;
+import jakarta.persistence.*;
+import lombok.*;
+
+@EqualsAndHashCode(of = "id")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "course_id"})
+        }
+)
+public class UserCourseFee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
+
+    private boolean payment;
+
+}

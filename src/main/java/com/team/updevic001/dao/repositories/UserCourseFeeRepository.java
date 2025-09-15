@@ -1,8 +1,8 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Course;
-import com.team.updevic001.dao.entities.User;
-import com.team.updevic001.dao.entities.UserCourseFee;
+import com.team.updevic001.dao.entities.course.Course;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.payment.UserCourseFee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

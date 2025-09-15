@@ -1,6 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.Task;
+import com.team.updevic001.dao.entities.course.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

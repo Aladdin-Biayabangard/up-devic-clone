@@ -2,7 +2,7 @@ package com.team.updevic001.utility;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import com.team.updevic001.dao.entities.User;
+import com.team.updevic001.dao.entities.auth.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;

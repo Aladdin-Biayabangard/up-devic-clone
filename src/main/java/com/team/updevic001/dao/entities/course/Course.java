@@ -1,0 +1,80 @@
+package com.team.updevic001.dao.entities.course;
+
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.model.enums.CourseCategoryType;
+import com.team.updevic001.model.enums.CourseLevel;
+import com.team.updevic001.model.enums.CourseStatus;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@EqualsAndHashCode(of = "id")
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldNameConstants
+@Builder
+@Getter
+@Setter
+@Entity
+@Table(name = "courses")
+public class Course {
+
+    @Id
+    private String id;
+
+    @Enumerated(EnumType.STRING)
+    private CourseCategoryType courseCategoryType;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "description", length = 1000)
+    private String description;
+
+    @Column(name = "course_level")
+    @Enumerated(EnumType.STRING)
+    private CourseLevel level;
+
+    @Column(name = "rating")
+    @Builder.Default
+    private double rating = 0;
+
+    @Column(name = "price")
+    private Double price;
+
+    private BigDecimal priceWithoutInterest;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "photo_url", columnDefinition = "TEXT")
+    private String photo_url;
+
+    @Column(name = "photo_key")
+    private String photoKey;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Task> tasks = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<String> searchKeys = new HashSet<>();
+
+    private CourseStatus status;
+
+    @ManyToOne
+    @JsonBackReference
+    private User teacher;
+}
