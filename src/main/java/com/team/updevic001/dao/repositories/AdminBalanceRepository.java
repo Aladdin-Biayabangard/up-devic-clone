@@ -20,18 +20,14 @@ public interface AdminBalanceRepository extends JpaRepository<AdminBalance, Long
 
 
     @Query("""
-        SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceStats(
-            COALESCE(SUM(CASE WHEN t.status = com.team.updevic001.model.enums.PaymentStatus.PAID THEN t.amount ELSE 0 END), 0),
-            COALESCE(SUM(CASE WHEN t.transactionType = com.team.updevic001.model.enums.TransactionType.INCOME 
-                               AND t.status = com.team.updevic001.model.enums.PaymentStatus.PAID 
-                               THEN t.amount ELSE 0 END), 0),
-            COALESCE(SUM(CASE WHEN t.transactionType = com.team.updevic001.model.enums.TransactionType.OUTCOME 
-                               AND t.status = com.team.updevic001.model.enums.PaymentStatus.PAID 
-                               THEN t.amount ELSE 0 END), 0),
-            null
-        )
-        FROM AdminPaymentTransaction t
-    """)
+                SELECT new com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceStats(
+                a.totalBalance,
+                a.income,
+                a.expenditure,
+                    null
+                )
+                FROM AdminBalance a
+            """)
     AdminBalanceStats getTotalStats();
 
 

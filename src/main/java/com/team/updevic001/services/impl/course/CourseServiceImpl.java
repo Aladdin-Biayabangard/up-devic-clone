@@ -76,7 +76,7 @@ public class CourseServiceImpl implements CourseService {
         var teacher = authHelper.getAuthenticatedUser();
 
         var course = modelMapper.map(courseDto, Course.class);
-        course.setPrice(calculatePercentage(BigDecimal.valueOf(courseDto.getPrice()), percentage).doubleValue());
+        course.setPrice(courseDto.getPrice() + calculatePercentage(BigDecimal.valueOf(courseDto.getPrice()), percentage).doubleValue());
         course.setPriceWithoutInterest(BigDecimal.valueOf(courseDto.getPrice()));
         course.setId(normalizeString(course.getTitle()));
         course.setCourseCategoryType(courseCategoryType);
