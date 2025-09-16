@@ -71,7 +71,7 @@ public class AdminTransactionService {
             teachersBalance.setBalance(teachersBalance.getBalance().add(amount));
             teachersBalanceRepository.save(teachersBalance);
             adminBalanceService.calculateExpenditure(amount);
-            createTransaction(OUTCOME, amount, "teacher: " + teacherId);
+            createTransaction(OUTCOME, amount, "The teacher was paid: " + teacherId);
         }
     }
 

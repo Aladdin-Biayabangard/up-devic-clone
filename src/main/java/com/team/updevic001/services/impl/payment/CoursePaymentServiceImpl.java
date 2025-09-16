@@ -113,11 +113,11 @@ public class CoursePaymentServiceImpl implements PaymentService {
         studentServiceImpl.enrollInCourse(courseId, authenticatedUser);
         adminBalanceService.calculateIncome(course.getPriceWithoutInterest());
         adminTransactionService.balanceIncrease(
-                course.getPriceWithoutInterest(),
+               BigDecimal.valueOf(course.getPrice()),
                 "The student (" + authenticatedUser.getEmail() + ") paid for the course (" + courseId + ")");
         paymentsOfTeacherService.createTeacherPaymentTransaction(
                 userRepository.getTeacherMainInfoById(course.getTeacher()),
                 courseId,
-                BigDecimal.valueOf(course.getPrice()));
+                course.getPriceWithoutInterest());
     }
 }
