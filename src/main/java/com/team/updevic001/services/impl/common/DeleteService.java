@@ -24,6 +24,7 @@ public class DeleteService {
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final StudentCourseRepository studentCourseRepository;
     private final FileLoadServiceImpl fileLoadService;
+    private final StudentTaskRepository studentTaskRepository;
 
     public void deleteCourseAndReferencedData(String courseId, List<String> lessonIds, User user) {
         wishListRepository.deleteWishListByCourseIdAndUser(courseId, user);
@@ -33,6 +34,8 @@ public class DeleteService {
         lessonRepository.deleteAllById(lessonIds);
         courseRatingRepository.deleteRatingByCourseId(courseId);
         studentCourseRepository.deleteStudentCourseByCourseId(courseId);
+        studentTaskRepository.deleteByTaskCourseId(courseId);
+
         taskRepository.deleteTaskByCourseId(courseId);
         userCourseFeeRepository.deleteCourseFeeByCourseId(courseId);
         testResultRepository.deleteAllByCourseId(courseId);

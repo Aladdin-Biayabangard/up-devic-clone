@@ -4,7 +4,9 @@ import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.StudentTask;
 import com.team.updevic001.dao.entities.course.Task;
 import com.team.updevic001.dao.entities.auth.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,4 +25,8 @@ public interface StudentTaskRepository extends JpaRepository<StudentTask, Long> 
     @Query("SELECT COUNT(st) FROM StudentTask st WHERE st.student = :student AND st.task.course = :course")
     long countByStudentAndTaskCourse(@Param("student") User student, @Param("course") Course course);
 
+    @Modifying
+    @Query("DELETE FROM StudentTask st WHERE st.task.course.id = :courseId")
+    @Transactional
+    void deleteByTaskCourseId(@Param("courseId") String courseId);
 }

@@ -1,7 +1,6 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.payment.AdminBalance;
-import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceMonthlyStats;
 import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceStats;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
