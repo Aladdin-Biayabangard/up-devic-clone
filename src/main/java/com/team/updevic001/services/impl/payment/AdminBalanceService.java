@@ -36,14 +36,14 @@ public class AdminBalanceService {
     public void calculateIncome(BigDecimal amount) {
         AdminBalance adminBalance = fetchAdminBalance();
         adminBalance.setIncome(adminBalance.getIncome().add(amount));
-        adminBalance.setTotalBalance(adminBalance.getTotalBalance().add(adminBalance.getIncome()));
+        adminBalance.setTotalBalance(adminBalance.getTotalBalance().add(amount));
         adminBalanceRepository.save(adminBalance);
     }
 
     public void calculateExpenditure(BigDecimal amount) {
         AdminBalance adminBalance = fetchAdminBalance();
-        adminBalance.setExpenditure(adminBalance.getExpenditure().subtract(amount));
-        adminBalance.setTotalBalance(adminBalance.getTotalBalance().subtract(adminBalance.getExpenditure()));
+        adminBalance.setExpenditure(adminBalance.getExpenditure().add(amount));
+        adminBalance.setTotalBalance(adminBalance.getTotalBalance().subtract(amount));
         adminBalanceRepository.save(adminBalance);
     }
 
