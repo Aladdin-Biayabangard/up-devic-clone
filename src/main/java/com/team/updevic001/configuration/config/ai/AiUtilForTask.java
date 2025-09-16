@@ -32,7 +32,7 @@ public class AiUtilForTask {
 
         double scorePercentage = 0;
         if (totalTasks > 0) {
-            scorePercentage = ((double) completedTasks / totalTasks) * 100;
+            scorePercentage = ((double) (completedTasks+1) / totalTasks) * 100;
         }
         testResult.setScore(scorePercentage);
         testResultRepository.save(testResult);

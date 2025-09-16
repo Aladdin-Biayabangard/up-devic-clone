@@ -125,6 +125,8 @@ public class CourseServiceImpl implements CourseService {
                         COURSE_NOT_FOUND.getMessage().formatted(courseId)));
 
         modelMapper.map(courseDto, findCourse);
+        findCourse.setPrice(courseDto.getPrice() + calculatePercentage(BigDecimal.valueOf(courseDto.getPrice()), percentage).doubleValue());
+        findCourse.setPriceWithoutInterest(BigDecimal.valueOf(courseDto.getPrice()));
         courseRepository.save(findCourse);
     }
 
@@ -160,7 +162,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
+//    @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
         var course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
                 COURSE_NOT_FOUND.getMessage().formatted(courseId)));
