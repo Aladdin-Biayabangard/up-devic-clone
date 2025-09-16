@@ -41,6 +41,7 @@ public class AdminPaymentTransaction {
     @Enumerated(STRING)
     TransactionType transactionType;
 
+    @Enumerated(STRING)
     PaymentStatus status;
 
     LocalDateTime paymentDate;
