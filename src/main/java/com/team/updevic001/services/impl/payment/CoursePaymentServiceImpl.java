@@ -7,11 +7,13 @@ import com.stripe.param.checkout.SessionCreateParams;
 import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.entities.payment.UserCourseFee;
+import com.team.updevic001.dao.repositories.AdminBalanceRepository;
 import com.team.updevic001.dao.repositories.UserCourseFeeRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.model.dtos.request.PaymentRequest;
 import com.team.updevic001.model.dtos.response.payment.StripeResponse;
+import com.team.updevic001.model.enums.TransactionType;
 import com.team.updevic001.services.impl.course.CourseServiceImpl;
 import com.team.updevic001.services.interfaces.PaymentService;
 import com.team.updevic001.services.interfaces.StudentService;
@@ -21,7 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 import static com.team.updevic001.exceptions.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
+import static com.team.updevic001.model.enums.TransactionType.INCOME;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,9 @@ public class CoursePaymentServiceImpl implements PaymentService {
     private final StudentService studentServiceImpl;
     private final TeachersPaymentTransactionService paymentsOfTeacherService;
     private final UserRepository userRepository;
+    private final AdminBalanceRepository adminBalanceRepository;
+    private final AdminBalanceService adminBalanceService;
+    private final AdminTransactionService adminTransactionService;
 
     @Value("${stripe.secret.key}")
     private String secretKey;
@@ -103,9 +111,13 @@ public class CoursePaymentServiceImpl implements PaymentService {
         userCourseFeeRepository.save(userCourseFee);
 
         studentServiceImpl.enrollInCourse(courseId, authenticatedUser);
-        paymentsOfTeacherService.createTeacherPaymentTransaction(userRepository.getTeacherMainInfoById(
-                        course.getTeacher()),
+        adminBalanceService.calculateIncome(course.getPriceWithoutInterest());
+        adminTransactionService.balanceIncrease(
+                course.getPriceWithoutInterest(),
+                "The student (" + authenticatedUser.getEmail() + ") paid for the course (" + courseId + ")");
+        paymentsOfTeacherService.createTeacherPaymentTransaction(
+                userRepository.getTeacherMainInfoById(course.getTeacher()),
                 courseId,
-                course.getPriceWithoutInterest());
+                BigDecimal.valueOf(course.getPrice()));
     }
 }

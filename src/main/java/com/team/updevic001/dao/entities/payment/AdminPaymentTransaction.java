@@ -5,6 +5,7 @@ import com.team.updevic001.model.enums.TransactionType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,9 @@ public class AdminPaymentTransaction {
     LocalDateTime paymentDate;
 
     String description;
+
+    @ManyToOne
+    private AdminBalance adminBalance;
 
     @PrePersist
     public void createTransactionId() {

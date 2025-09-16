@@ -75,9 +75,9 @@ public class AdminTransactionService {
         }
     }
 
-    public void balanceIncrease(BigDecimal amount) {
+    public void balanceIncrease(BigDecimal amount, String description) {
         adminBalanceService.calculateIncome(amount);
-        createTransaction(INCOME, amount, null);
+        createTransaction(INCOME, amount, description);
     }
 
     public void createTransaction(TransactionType type, BigDecimal amount, String description) {
@@ -86,6 +86,7 @@ public class AdminTransactionService {
                 .description(description)
                 .paymentDate(LocalDateTime.now())
                 .status(PaymentStatus.PAID)
+                .adminBalance(adminBalanceService.fetchAdminBalance())
                 .amount(amount)
                 .build());
     }
