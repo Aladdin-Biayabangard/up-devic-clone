@@ -186,17 +186,27 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria criteria,
+    public CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria searchCriteria,
                                                          CustomPageRequest request) {
 
         int page = (request != null && request.getPage() >= 0) ? request.getPage() : 0;
         int size = (request != null && request.getSize() > 0) ? request.getSize() : 10;
         Pageable pageable = PageRequest.of(page, size);
 
+        boolean hasFilters = searchCriteria != null && (
+                searchCriteria.getName() != null ||
+                searchCriteria.getLevel() != null ||
+                searchCriteria.getMinPrice() != null ||
+                searchCriteria.getMaxPrice() != null ||
+                searchCriteria.getCourseCategoryType() != null
+        );
+
         Page<Course> resultPage;
-        if (criteriaChecking(criteria)) {
+
+        if (hasFilters) {
             resultPage = courseRepository.findAll(
-                    CourseSpecification.buildSpecification(criteria), pageable
+                    CourseSpecification.buildSpecification(searchCriteria),
+                    pageable
             );
         } else {
             resultPage = courseRepository.findAllByOrderByCreatedAtDesc(pageable);
@@ -283,12 +293,4 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
-
-    private boolean criteriaChecking(CourseSearchCriteria criteria) {
-        return criteria.getName() != null && (
-                criteria.getLevel() != null ||
-                criteria.getMaxPrice() != null ||
-                criteria.getMinPrice() != null ||
-                criteria.getCourseCategoryType() != null);
-    }
 }

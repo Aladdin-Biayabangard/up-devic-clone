@@ -141,7 +141,6 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
@@ -181,7 +180,6 @@ public class AuthServiceImpl implements AuthService {
 
         return buildAuthResponse(refreshToken.getUser(), refreshToken.getId());
     }
-
 
     private User findActiveUserByEmail(String email) {
         return userRepository.findByEmailAndStatus(email, Status.ACTIVE)
@@ -236,7 +234,6 @@ public class AuthServiceImpl implements AuthService {
                 .role(extractRoleNames(user))
                 .build();
     }
-
 
     private RefreshToken createAndSaveRefreshToken(User user) {
         RefreshToken refreshToken = RefreshToken.builder()
