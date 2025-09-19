@@ -9,7 +9,7 @@ import static com.team.updevic001.configuration.enums.ApiSecurityLevel.*;
 public enum ApiEndpoint {
 
     // --- Public (Permit All) ---
-    AUTH_PUBLIC("/v1/auth/**", null, PUBLIC),
+//    AUTH_PUBLIC("/api/v1/auth/**", null, PUBLIC),
     SWAGGER_V2("/v2/api-docs", null, PUBLIC),
     SWAGGER_V3_ALL("/v3/api-docs/**", null, PUBLIC),
     SWAGGER_V3("/v3/api-docs", null, PUBLIC),
@@ -40,7 +40,7 @@ public enum ApiEndpoint {
     AUTH_VERIFY_OTP("/api/v1/auth/verify-otp", HttpMethod.POST, PUBLIC),
     AUTH_SIGN_IN("/api/v1/auth/sign-in", HttpMethod.POST, PUBLIC),
     AUTH_FORGOT_PASSWORD("/api/v1/auth/forgot-password", HttpMethod.POST, PUBLIC),
-    AUTH_RESET_PASSWORD("/api/v1/auth/reset-password", HttpMethod.PATCH, STUDENT),
+//    AUTH_RESET_PASSWORD("/api/v1/auth/reset-password", HttpMethod.PATCH, STUDENT),
     AUTH_REFRESH_TOKEN("/api/v1/auth/refresh-token", HttpMethod.POST, PUBLIC),
 
     // Certificate Controller
