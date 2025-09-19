@@ -40,7 +40,7 @@ public enum ApiEndpoint {
     AUTH_VERIFY_OTP("/api/v1/auth/verify-otp", HttpMethod.POST, PUBLIC),
     AUTH_SIGN_IN("/api/v1/auth/sign-in", HttpMethod.POST, PUBLIC),
     AUTH_FORGOT_PASSWORD("/api/v1/auth/forgot-password", HttpMethod.POST, PUBLIC),
-//    AUTH_RESET_PASSWORD("/api/v1/auth/reset-password", HttpMethod.PATCH, STUDENT),
+    AUTH_RESET_PASSWORD("/api/v1/auth/reset-password", HttpMethod.PATCH, PUBLIC),
     AUTH_REFRESH_TOKEN("/api/v1/auth/refresh-token", HttpMethod.POST, PUBLIC),
 
     // Certificate Controller
