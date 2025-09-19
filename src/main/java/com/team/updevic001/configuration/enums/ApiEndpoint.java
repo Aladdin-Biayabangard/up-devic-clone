@@ -9,7 +9,7 @@ import static com.team.updevic001.configuration.enums.ApiSecurityLevel.*;
 public enum ApiEndpoint {
 
     // --- Public (Permit All) ---
-//    AUTH_PUBLIC("/api/v1/auth/**", null, PUBLIC),
+    AUTH_PUBLIC("/api/v1/auth/**", null, PUBLIC),
     SWAGGER_V2("/v2/api-docs", null, PUBLIC),
     SWAGGER_V3_ALL("/v3/api-docs/**", null, PUBLIC),
     SWAGGER_V3("/v3/api-docs", null, PUBLIC),
