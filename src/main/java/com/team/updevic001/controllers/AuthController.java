@@ -3,8 +3,8 @@ package com.team.updevic001.controllers;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.dtos.response.user.VerifyCodeResponse;
 import com.team.updevic001.services.interfaces.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -51,7 +51,7 @@ public class AuthController {
     public AuthResponseDto login(
             @RequestBody AuthRequestDto authRequest
     ) {
-       return authService.login(authRequest);
+        return authService.login(authRequest);
     }
 
     @PostMapping("/forgot-password")
@@ -60,11 +60,29 @@ public class AuthController {
         authService.requestPasswordReset(email);
     }
 
+    @PostMapping("/verify-code")
+    public VerifyCodeResponse verifyCode(@Valid @RequestBody VerifyCodeRequest request) {
+        return authService.verifyCode(request);
+    }
+
     @PatchMapping("/reset-password")
     @ResponseStatus(NO_CONTENT)
-    public void resetPassword(@RequestParam @NotBlank String token, @Valid @RequestBody RecoveryPassword recoveryPassword) {
-        authService.resetPassword(token, recoveryPassword);
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        authService.resetPassword(resetPasswordRequest);
     }
+
+//    /**
+//     *  Şifrə reset endpoint
+//     */
+//    @PatchMapping("/reset-password")
+//    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+//        if (!request.getNewPassword().equals(request.getRetryPassword())) {
+//            return ResponseEntity.badRequest().build(); // Password mismatch
+//        }
+//
+//        authService.resetPassword(request.getEmail(), request.getNewPassword());
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("/refresh-token")
     public AuthResponseDto refreshToken(@RequestBody RefreshTokenRequest request) {

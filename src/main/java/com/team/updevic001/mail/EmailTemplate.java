@@ -17,8 +17,8 @@ public enum EmailTemplate {
     PASSWORD_RESET("You have requested to reset your password\n",
             """
                     Hi {userName},
-                    Use the link below to reset your password:
-                    {link}
+                    Use the code below to reset your password:
+                    {code}
                     Ignore this email if you do remember your password, or you have not made the request."""
     ),
 

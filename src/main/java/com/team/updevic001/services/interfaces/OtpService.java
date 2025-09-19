@@ -8,4 +8,6 @@ public interface OtpService {
     void sendOtp(User user);
 
     void verifyOtp(OtpRequest otpRequest);
+
+     String generateOtp(String email);
 }

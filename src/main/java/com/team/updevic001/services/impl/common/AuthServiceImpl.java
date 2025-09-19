@@ -17,11 +17,13 @@ import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.security.AuthRequestDto;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
-import com.team.updevic001.model.dtos.request.security.RecoveryPassword;
+import com.team.updevic001.model.dtos.request.security.ResetPasswordRequest;
 import com.team.updevic001.model.dtos.request.security.RefreshTokenRequest;
 import com.team.updevic001.model.dtos.request.security.RegisterRequest;
+import com.team.updevic001.model.dtos.request.security.VerifyCodeRequest;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.dtos.response.user.VerifyCodeResponse;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
 import com.team.updevic001.model.mappers.UserMapper;
@@ -83,12 +85,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDto login(AuthRequestDto authRequest ) {
+    public AuthResponseDto login(AuthRequestDto authRequest) {
         User user = findActiveUserByEmail(authRequest.getEmail());
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-  //      loginHistoryService.saveLoginHistory(user);
+        //      loginHistoryService.saveLoginHistory(user);
         return buildAuthResponse(user);
     }
 
@@ -144,31 +146,35 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void requestPasswordReset(String email) {
-        User user = findActiveUserByEmail(email);
-        String token = authHelper.generateToken();
+        var user = findActiveUserByEmail(email);
+        var code = otpService.generateOtp(email);
 
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
-                .token(token)
-                .user(user)
+                .code(code)
+                .email(email)
                 .expirationTime(LocalDateTime.now().plusMinutes(PASSWORD_RESET_EXPIRATION_MIN))
                 .build();
 
         passwordResetTokenRepository.save(passwordResetToken);
-
         emailServiceImpl.sendEmail(email, EmailTemplate.PASSWORD_RESET,
-                Map.of("userName", user.getFirstName(), "link", token));
+                Map.of("userName", user.getFirstName(), "code", code));
+    }
+
+    public VerifyCodeResponse verifyCode(VerifyCodeRequest request) {
+        var resetToken = passwordResetTokenRepository.findPasswordResetTokenByEmailAndCode(request.getEmail(),
+                        request.getCode())
+                .filter(t -> !t.getExpirationTime().isBefore(LocalDateTime.now()))
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND.getCode(), "Reset token is invalid or expired!"));
+        passwordResetTokenRepository.delete(resetToken);
+        return new VerifyCodeResponse(true);
     }
 
     @Override
     @Transactional
-    public void resetPassword(String token, RecoveryPassword recoveryPassword) {
-        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
-                .filter(t -> !t.getExpirationTime().isBefore(LocalDateTime.now()))
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND.getCode(), "Reset token is invalid or expired!"));
-
-        validatePasswordMatch(recoveryPassword.getNewPassword(), recoveryPassword.getRetryPassword());
-        updateUserPassword(resetToken.getUser(), recoveryPassword.getNewPassword());
-        passwordResetTokenRepository.delete(resetToken);
+    public void resetPassword(ResetPasswordRequest request) {
+        var user = findActiveUserByEmail(request.getEmail());
+        validatePasswordMatch(request.getNewPassword(), request.getRetryPassword());
+        updateUserPassword(user, request.getNewPassword());
     }
 
     @Override

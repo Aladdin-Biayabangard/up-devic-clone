@@ -77,7 +77,7 @@ public class OtpServiceImpl implements OtpService {
         otpRepository.save(otp);
     }
 
-    private String generateOtp(String email) {
+    public String generateOtp(String email) {
         SecureRandom random = new SecureRandom();
         int code = 100_000 + random.nextInt(900_000);
         Otp otp = Otp.builder()

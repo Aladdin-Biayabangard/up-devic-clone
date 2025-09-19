@@ -7,7 +7,9 @@ import lombok.Data;
 
 
 @Data
-public class RecoveryPassword {
+public class ResetPasswordRequest {
+    private String email;
+
     @NotNull(message = "new password can not be null")
     @Size(min = 6, max = 30)
     @Pattern(

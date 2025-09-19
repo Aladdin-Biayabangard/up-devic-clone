@@ -4,6 +4,7 @@ import com.team.updevic001.dao.entities.auth.UserRole;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
+import com.team.updevic001.model.dtos.response.user.VerifyCodeResponse;
 import com.team.updevic001.model.enums.Role;
 
 
@@ -19,9 +20,11 @@ public interface AuthService {
 
     AuthResponseDto verifyOtpAndGenerateToken(OtpRequest request);
 
+    VerifyCodeResponse verifyCode(VerifyCodeRequest request);
+
     void requestPasswordReset(String email);
 
-    void resetPassword(String token, RecoveryPassword recoveryPassword);
+    void resetPassword(ResetPasswordRequest resetPasswordRequest);
 
     AuthResponseDto refreshAccessToken(RefreshTokenRequest request);
 
