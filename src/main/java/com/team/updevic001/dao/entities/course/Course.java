@@ -72,6 +72,8 @@ public class Course {
     @Builder.Default
     private Set<String> searchKeys = new HashSet<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
     private Set<String> tags = new HashSet<>();
 
     private CourseStatus status;
