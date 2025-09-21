@@ -42,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.team.updevic001.exceptions.ExceptionConstants.COURSE_NOT_FOUND;
@@ -161,11 +162,13 @@ public class CourseServiceImpl implements CourseService {
         course.setRating(getAverageRating(course));
     }
 
+    @Transactional
     @Override
-//    @Cacheable(value = "courseSearchCache", key = "#courseId", unless = "#result==null", cacheManager = "cacheManager")
     public ResponseFullCourseDto getCourse(String courseId) {
-        var course = courseRepository.findCourseById(courseId).orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
-                COURSE_NOT_FOUND.getMessage().formatted(courseId)));
+        var course = courseRepository.findCourseById(courseId)
+                .orElseThrow(() -> new NotFoundException(COURSE_NOT_FOUND.getCode(),
+                        COURSE_NOT_FOUND.getMessage().formatted(courseId)));
+
         boolean paid = false;
         try {
             var user = authHelper.getAuthenticatedUser();
@@ -175,17 +178,23 @@ public class CourseServiceImpl implements CourseService {
             } else if (course.getTeacher().equals(user)) {
                 paid = true;
             }
-
-
         } catch (Exception ex) {
+            paid=false;
         }
+
         var teacherShortInfo = teacherService.getTeacherShortInfo(course.getTeacher());
+
+        // Burada artıq collections açıqdır
         var courseResponse = courseMapper.toFullResponse(course, teacherShortInfo);
-        courseResponse.setSearchKeys(course.getSearchKeys());
-        courseResponse.setTags(course.getTags());
+
+        // Collections-i yeni Set/List ilə kopyala ki, Hibernate proxy yox olsun
+        courseResponse.setSearchKeys(new HashSet<>(course.getSearchKeys()));
+        courseResponse.setTags(new HashSet<>(course.getTags()));
         courseResponse.setPaid(paid);
+
         return courseResponse;
     }
+
 
     @Override
     public CustomPage<ResponseCourseShortInfoDto> search(CourseSearchCriteria searchCriteria,
