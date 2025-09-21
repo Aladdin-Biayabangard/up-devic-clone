@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -38,4 +39,7 @@ public class ResponseFullCourseDto {
 
     private Boolean paid;
 
+    private Set<String> searchKeys;
+
+    private Set<String> tags;
 }

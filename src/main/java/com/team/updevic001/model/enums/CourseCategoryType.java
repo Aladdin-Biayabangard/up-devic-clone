@@ -5,29 +5,29 @@ public enum CourseCategoryType {
     BACKEND,
     FRONTEND,
     MOBILE,
-    SOFTWARE_DEVELOPMENT,     // Proqram inkişafı
-    NETWORK_SECURITY,         // Şəbəkə təhlükəsizliyi
-    DATABASE_MANAGEMENT,      // Məlumat bazası idarəetməsi
-    CLOUD_COMPUTING,          // Bulud hesablama
-    ARTIFICIAL_INTELLIGENCE,  // Süni intellekt
-    MACHINE_LEARNING,         // Maşın öyrənməsi
-    DATA_SCIENCE,             // Məlumat elmi
-    INTERNET_OF_THINGS,       // Əşyaların interneti
-    BLOCKCHAIN,               // Blokçeyn texnologiyaları
-    CYBER_SECURITY,           // Kiber təhlükəsizlik
-    SYSTEM_ADMINISTRATION,    // Sistem inzibatçılığı
-    GAME_DEVELOPMENT,         // Oyun inkişafı
-    MOBILE_DEVELOPMENT,       // Mobil tətbiq inkişafı
-    DEVOPS,                   // DevOps tətbiqləri
-    IT_SUPPORT,               // İT dəstək
-    NETWORK_ENGINEERING,      // Şəbəkə mühəndisliyi
-    EMBEDDED_SYSTEMS,         // Daxili sistemlər
-    SOFTWARE_TESTING,         // Proqram test etmə
-    UI_UX_DESIGN,             // İstifadəçi interfeysi və təcrübəsi dizaynı
-    COMPUTER_VISION,          // Kompüter görmə texnologiyaları
-    ROBOTICS,                 // Robot texnologiyaları
-    VIRTUALIZATION,           // Virtualizasiya texnologiyaları
-    BUSINESS_INTELLIGENCE,    // Biznes analitikası
-    DIGITAL_TRANSFORMATION,   // Rəqəmsal transformasiya
+    SOFTWARE_DEVELOPMENT,
+    NETWORK_SECURITY,
+    DATABASE_MANAGEMENT,
+    CLOUD_COMPUTING,
+    ARTIFICIAL_INTELLIGENCE,
+    MACHINE_LEARNING,
+    DATA_SCIENCE,
+    INTERNET_OF_THINGS,
+    BLOCKCHAIN,
+    CYBER_SECURITY,
+    SYSTEM_ADMINISTRATION,
+    GAME_DEVELOPMENT,
+    MOBILE_DEVELOPMENT,
+    DEVOPS,
+    IT_SUPPORT,
+    NETWORK_ENGINEERING,
+    EMBEDDED_SYSTEMS,
+    SOFTWARE_TESTING,
+    UI_UX_DESIGN,
+    COMPUTER_VISION,
+    ROBOTICS,
+    VIRTUALIZATION,
+    BUSINESS_INTELLIGENCE,
+    DIGITAL_TRANSFORMATION,
     IT_PROJECT_MANAGEMENT
 }

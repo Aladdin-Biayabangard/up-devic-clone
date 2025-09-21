@@ -32,6 +32,8 @@ public class CourseMapper {
                 .studentCount(studentCount(course))
                 .rating(course.getRating())
                 .price(course.getPrice())
+                .searchKeys(course.getSearchKeys())
+                .tags(course.getTags())
                 .build();
     }
 
