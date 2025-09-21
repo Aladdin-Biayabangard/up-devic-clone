@@ -181,6 +181,8 @@ public class CourseServiceImpl implements CourseService {
         }
         var teacherShortInfo = teacherService.getTeacherShortInfo(course.getTeacher());
         var courseResponse = courseMapper.toFullResponse(course, teacherShortInfo);
+        courseResponse.setSearchKeys(course.getSearchKeys());
+        courseResponse.setTags(course.getTags());
         courseResponse.setPaid(paid);
         return courseResponse;
     }
