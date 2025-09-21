@@ -14,6 +14,7 @@ import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.utility.AuthHelper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class TeacherServiceImpl implements TeacherService {
 
 
     @Override
+    @Transactional
     public List<ResponseCourseShortInfoDto> getTeacherAndRelatedCourses() {
         User authenticatedUser = authHelper.getAuthenticatedUser();
         List<Course> courses = courseRepository.findCourseByTeacher(authenticatedUser);

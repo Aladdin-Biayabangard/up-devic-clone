@@ -48,7 +48,8 @@ public class CourseMapper {
                 lessonCount(course),
                 studentCount(course),
                 course.getRating(),
-                course.getPrice());
+                course.getPrice(),
+                course.getTags());
     }
 
     public ResponseCourseDto courseDto(Course course) {
