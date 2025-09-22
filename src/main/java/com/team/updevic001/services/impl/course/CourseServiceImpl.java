@@ -20,7 +20,7 @@ import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.mappers.CourseMapper;
-import com.team.updevic001.services.impl.NotificationService;
+import com.team.updevic001.services.impl.common.NotificationService;
 import com.team.updevic001.services.impl.common.DeleteService;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.FileLoadService;

@@ -1,4 +1,4 @@
-package com.team.updevic001.services.impl;
+package com.team.updevic001.services.impl.common;
 
 import com.team.updevic001.dao.repositories.StudentCourseRepository;
 import com.team.updevic001.mail.EmailServiceImpl;
@@ -53,5 +53,11 @@ public class NotificationService {
         variables.put("courseLink", courseLink);
         emailServiceImpl.sendHtmlEmail(user.getEmail(), "payment-success.html", variables);
 
+    }
+
+    public void sendNotificationForReminder(UserEmailInfo user) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("userName", user.getFirstName() + " " + user.getLastName());
+        emailServiceImpl.sendHtmlEmail(user.getEmail(), "reminder.html", variables);
     }
 }

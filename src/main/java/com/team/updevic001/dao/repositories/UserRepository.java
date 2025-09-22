@@ -1,15 +1,21 @@
 package com.team.updevic001.dao.repositories;
 
 import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.response.admin_dasboard.UserStatsResponse;
 import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.dtos.response.teacher.TeacherNameDto;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.model.enums.Status;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Optional<User> findByEmailAndStatus(String email, Status status);
 
     @Query(value = "SELECT * FROM users u " +
-                   "WHERE MATCH(u.first_name, u.last_name) AGAINST (:keyword IN BOOLEAN MODE)",
+            "WHERE MATCH(u.first_name, u.last_name) AGAINST (:keyword IN BOOLEAN MODE)",
             nativeQuery = true)
     @EntityGraph(attributePaths = "roles")
     List<User> searchTeacher(@Param("keyword") String keyword);
@@ -61,12 +67,22 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     boolean existsByUserAndRole(@Param("user") User user, @Param("roleName") Role roleName);
 
     @Query("SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherNameDto" +
-           "(u.id, u.firstName, u.lastName, p.profilePhotoUrl) " +
-           "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
-           "WHERE u = :user")
+            "(u.id, u.firstName, u.lastName, p.profilePhotoUrl) " +
+            "FROM User u JOIN UserProfile p ON p.user.id = u.id " +
+            "WHERE u = :user")
     TeacherNameDto findTeacherNameByUser(User user);
 
     @Query("SELECT CONCAT(t.firstName, ' ', t.lastName) FROM User t WHERE t.id = :id")
     String getTeacherFullName(@Param("id") Long id);
+
+    @Query("""
+            SELECT DISTINCT new com.team.updevic001.model.dtos.notification.UserEmailInfo(
+                                        u.firstName,
+                                        u.lastName,
+                                        u.email) 
+                                        FROM User u WHERE u.lastLogin <= :oneMonthAgo
+            
+            """)
+    List<UserEmailInfo> findUsersInactiveSince(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 
 }
