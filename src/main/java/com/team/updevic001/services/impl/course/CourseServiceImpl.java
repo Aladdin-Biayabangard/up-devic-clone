@@ -1,9 +1,8 @@
 package com.team.updevic001.services.impl.course;
 
-import com.team.updevic001.specification.criteria.CourseSearchCriteria;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.course.CourseRating;
-import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.entities.course.WishList;
 import com.team.updevic001.dao.repositories.CourseRatingRepository;
 import com.team.updevic001.dao.repositories.CourseRepository;
@@ -21,11 +20,13 @@ import com.team.updevic001.model.dtos.response.course.ResponseCourseShortInfoDto
 import com.team.updevic001.model.dtos.response.course.ResponseFullCourseDto;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import com.team.updevic001.model.mappers.CourseMapper;
+import com.team.updevic001.services.impl.NotificationService;
 import com.team.updevic001.services.impl.common.DeleteService;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import com.team.updevic001.services.interfaces.TeacherService;
 import com.team.updevic001.specification.CourseSpecification;
+import com.team.updevic001.specification.criteria.CourseSearchCriteria;
 import com.team.updevic001.utility.AuthHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +69,8 @@ public class CourseServiceImpl implements CourseService {
     private final UserCourseFeeRepository userCourseFeeRepository;
     private final TeacherService teacherService;
     private final BigDecimal percentage = BigDecimal.valueOf(5);
+    private final NotificationService notificationService;
+    private static final String COURSE_LINK = "https://up-devic-001.lovable.app/courses/";
 
     @Override
     @Transactional
@@ -79,40 +82,14 @@ public class CourseServiceImpl implements CourseService {
         var course = modelMapper.map(courseDto, Course.class);
         course.setPrice(courseDto.getPrice() + calculatePercentage(BigDecimal.valueOf(courseDto.getPrice()), percentage).doubleValue());
         course.setPriceWithoutInterest(BigDecimal.valueOf(courseDto.getPrice()));
-        course.setId(normalizeString(course.getTitle()));
+        String courseId = normalizeString(course.getTitle());
+        course.setId(courseId);
         course.setCourseCategoryType(courseCategoryType);
         course.setTeacher(teacher);
         courseRepository.save(course);
+        notificationService.sendNotificationForCreationNewCourse(courseCategoryType, course.getTitle(), COURSE_LINK + courseId);
         return courseMapper.courseDto(course);
     }
-
-//    @Override
-//    @Transactional
-//    public void addTeacherToCourse(String courseId, Long userId) {
-//        Teacher authenticatedTeacher = teacherService.getAuthenticatedTeacher();
-//        Teacher teacherCourse = validateAccess(courseId, authenticatedTeacher);
-//
-//        if (!teacherCourse.getTeacherPrivilege().hasPermission(TeacherPermission.ADD_TEACHER)) {
-//            throw new ForbiddenException(FORBIDDEN_EXCEPTION.getCode(), "User not allowed!");
-//        }
-//
-//        Course course = findCourseById(courseId);
-//
-//        Teacher newTeacher = teacherRepository.findByUserId(userId).orElseThrow(
-//                () -> new NotFoundException(TEACHER_NOT_FOUND.getCode(),
-//                        TEACHER_NOT_FOUND.getMessage().formatted(userId)));
-//
-//        boolean exists = teacherCourseRepository.existsByCourseIdAndTeacher(courseId, newTeacher);
-//        if (exists) {
-//            throw new AlreadyExistsException(ALREADY_EXISTS_EXCEPTION.getCode(), "Teacher already exists in this course!");
-//        } else {
-//            teacherCourseRepository.save(Teacher.builder()
-//                    .course(course)
-//                    .teacher(newTeacher)
-//                    .teacherPrivilege(TeacherPrivileges.ASSISTANT_TEACHER)
-//                    .build());
-//        }
-//    }
 
     @Override
     @Transactional
@@ -179,7 +156,7 @@ public class CourseServiceImpl implements CourseService {
                 paid = true;
             }
         } catch (Exception ex) {
-            paid=false;
+            paid = false;
         }
 
         var teacherShortInfo = teacherService.getTeacherShortInfo(course.getTeacher());
@@ -206,10 +183,10 @@ public class CourseServiceImpl implements CourseService {
 
         boolean hasFilters = searchCriteria != null && (
                 searchCriteria.getName() != null ||
-                searchCriteria.getLevel() != null ||
-                searchCriteria.getMinPrice() != null ||
-                searchCriteria.getMaxPrice() != null ||
-                searchCriteria.getCourseCategoryType() != null
+                        searchCriteria.getLevel() != null ||
+                        searchCriteria.getMinPrice() != null ||
+                        searchCriteria.getMaxPrice() != null ||
+                        searchCriteria.getCourseCategoryType() != null
         );
 
         Page<Course> resultPage;

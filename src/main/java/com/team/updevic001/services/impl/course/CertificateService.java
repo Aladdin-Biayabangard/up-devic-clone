@@ -1,8 +1,7 @@
 package com.team.updevic001.services.impl.course;
 
-import com.team.updevic001.specification.criteria.CertificateCriteria;
-import com.team.updevic001.dao.entities.course.CertificateEntity;
 import com.team.updevic001.dao.entities.TestResult;
+import com.team.updevic001.dao.entities.course.CertificateEntity;
 import com.team.updevic001.dao.repositories.CertificateRepository;
 import com.team.updevic001.dao.repositories.StudentTaskRepository;
 import com.team.updevic001.dao.repositories.TaskRepository;
@@ -12,12 +11,15 @@ import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.model.dtos.certificate.CertificateResponse;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.certificate.CertificateType;
+import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.admin_dasboard.CertificateResponseForAdmin;
+import com.team.updevic001.services.impl.NotificationService;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.specification.CertificateSpecification;
+import com.team.updevic001.specification.criteria.CertificateCriteria;
 import com.team.updevic001.utility.AuthHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +53,8 @@ public class CertificateService {
     private final AuthHelper authHelper;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
+    private final static String CERTIFICATE_LINK = "https://up-devic-001.onrender.com/api/v1/certificates/";
 
     public CertificateResponse getCertificate(String credentialId) {
         var certificate = fetchCertificateIfExist(credentialId);
@@ -148,6 +152,11 @@ public class CertificateService {
         }
         certificate = certificateRepository.save(certificate);
         String formattedDate = certificate.getIssueDate().format(formatter);
+        notificationService.sendNotificationForCreationCertificate(
+                new UserEmailInfo(user.getFirstName(), user.getLastName(), user.getEmail()),
+                course.getTitle(),
+                score,
+                CERTIFICATE_LINK+credentialId);
         return new CertificateResponse(certificate.getCredentialId(),
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,

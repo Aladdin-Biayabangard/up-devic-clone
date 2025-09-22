@@ -1,8 +1,10 @@
 package com.team.updevic001.dao.repositories;
 
-import com.team.updevic001.dao.entities.course.Course;
 import com.team.updevic001.dao.entities.StudentCourse;
 import com.team.updevic001.dao.entities.auth.User;
+import com.team.updevic001.dao.entities.course.Course;
+import com.team.updevic001.model.dtos.notification.UserEmailInfo;
+import com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo;
 import com.team.updevic001.model.enums.CourseCategoryType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,7 +33,23 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
     @Query("DELETE FROM StudentCourse sc WHERE sc.course.id = :id")
     void deleteStudentCourseByCourseId(String id);
 
-    @Query("SELECT DISTINCT (sc.student) FROM StudentCourse sc WHERE sc.course.courseCategoryType=:categoryType")
-    List<User> findStudentsByCourseCategoryType(CourseCategoryType categoryType);
+    @Query("""
+            SELECT new com.team.updevic001.model.dtos.response.teacher.TeacherMainInfo( 
+                        t.id,  CONCAT(t.firstName,' ', t.lastName ),t.email) 
+                        FROM User t  WHERE t =:user 
+            """)
+    TeacherMainInfo getTeacherMainInfoById(User user);
+
+    @Query("""
+    SELECT DISTINCT new com.team.updevic001.model.dtos.notification.UserEmailInfo(
+        sc.student.firstName,
+        sc.student.lastName,
+        sc.student.email
+    )
+    FROM StudentCourse sc
+    WHERE sc.course.courseCategoryType = :categoryType
+""")
+    List<UserEmailInfo> findStudentsByCourseCategoryType(CourseCategoryType categoryType);
+
 }
 

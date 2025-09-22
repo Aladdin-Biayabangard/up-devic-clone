@@ -99,18 +99,18 @@ public class LessonServiceImpl implements LessonService {
     }
 
     public ResponseLessonDto getFullLessonByLessonId(String lessonId) {
-        var teacher = authHelper.getAuthenticatedUser();
+        var user = authHelper.getAuthenticatedUser();
         var lesson = findLessonById(lessonId);
 
-        boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), teacher);
-        boolean isTeacher = lessonRepository.existsLessonByTeacherAndLesson(teacher, lesson);
+        boolean exists = userCourseFeeRepository.existsUserCourseFeeByCourseAndUser(lesson.getCourse(), user);
+        boolean isTeacher = lessonRepository.existsLessonByTeacherAndLesson(user, lesson);
 
         if (!exists && !isTeacher) {
             throw new IllegalArgumentException("ACCESS_DENIED");
         }
 
         lesson.setVideoUrl(fileLoadService.getFileUrlWithEncode(lesson.getVideoKey()));
-        markLessonAsWatched(teacher, lesson);
+        markLessonAsWatched(user, lesson);
 
         return lessonMapper.toDto(lesson);
     }
