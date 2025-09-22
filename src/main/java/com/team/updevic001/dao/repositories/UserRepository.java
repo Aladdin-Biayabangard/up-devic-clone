@@ -85,4 +85,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             """)
     List<UserEmailInfo> findUsersInactiveSince(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 
+    @Modifying
+    @Transactional
+    @Query("""
+        DELETE FROM User u 
+        WHERE u.status = 'PENDING' 
+          AND u.createdAt <= :oneMonthAgo
+        """)
+    int deletePendingUsersSince(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 }

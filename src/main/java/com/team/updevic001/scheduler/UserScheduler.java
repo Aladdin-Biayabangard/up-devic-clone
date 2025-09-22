@@ -11,18 +11,24 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Async
 @Service
 @RequiredArgsConstructor
-public class UserReminder {
+public class UserScheduler {
 
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
     @Scheduled(cron = "0 0 12 * * *")
-    @Async
     public void userReminder() {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
         List<UserEmailInfo> usersInactiveSince = userRepository.findUsersInactiveSince(oneMonthAgo);
         usersInactiveSince.forEach(notificationService::sendNotificationForReminder);
+    }
+
+    @Scheduled(cron = "0 0 00 * * *")
+    public void deletePendingUsers() {
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        userRepository.deletePendingUsersSince(oneMonthAgo);
     }
 }
