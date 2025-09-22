@@ -15,6 +15,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.File;
 import java.util.Map;
+import org.springframework.core.io.ClassPathResource;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,8 @@ public class EmailServiceImpl {
 //            helper.setSubject("Your Application Info"); // Veya dynamic subject
             helper.setText(body, true);
 
-            File logo = new File("src/main/resources/static/logo.png");
+            ClassPathResource logo = new ClassPathResource("static/logo.png");
+
             helper.addInline("logo", logo);
 
             mailSender.send(message);
