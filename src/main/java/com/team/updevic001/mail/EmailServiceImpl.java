@@ -27,22 +27,6 @@ public class EmailServiceImpl {
 
 
     @Async("asyncTaskExecutor")
-    public void sendEmail(String receiver, EmailTemplate template, Map<String, String> placeholders) {
-        try {
-            String subject = parseSubject(template, placeholders);
-            String body = parseBody(template, placeholders);
-
-            MimeMessage message = prepareMessage(receiver, subject, body);
-            mailSender.send(message);
-
-            log.info("Simple email sent to {}", receiver);
-        } catch (MessagingException e) {
-            log.error("Failed to sen    d simple email: {}", e.getMessage(), e);
-        }
-    }
-
-
-    @Async("asyncTaskExecutor")
     public void sendHtmlEmail(String to, String templateName, Map<String, Object> variables) {
         try {
             Context context = new Context();
@@ -54,7 +38,7 @@ public class EmailServiceImpl {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(to);
-            helper.setSubject("Your Application Info"); // Veya dynamic subject
+//            helper.setSubject("Your Application Info"); // Veya dynamic subject
             helper.setText(body, true);
 
             File logo = new File("src/main/resources/static/logo.png");

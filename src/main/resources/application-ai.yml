@@ -1,4 +1,4 @@
 openai:
   api:
-    key: ${OPENAI_API_KEY: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}
+    key: ${OPENAI_API_KEY}
   model: gpt-4o-mini

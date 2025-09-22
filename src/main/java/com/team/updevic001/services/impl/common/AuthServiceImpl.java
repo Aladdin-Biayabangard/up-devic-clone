@@ -14,12 +14,11 @@ import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.ExpiredRefreshTokenException;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.mail.EmailServiceImpl;
-import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.security.AuthRequestDto;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
-import com.team.updevic001.model.dtos.request.security.ResetPasswordRequest;
 import com.team.updevic001.model.dtos.request.security.RefreshTokenRequest;
 import com.team.updevic001.model.dtos.request.security.RegisterRequest;
+import com.team.updevic001.model.dtos.request.security.ResetPasswordRequest;
 import com.team.updevic001.model.dtos.request.security.VerifyCodeRequest;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
@@ -156,7 +155,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         passwordResetTokenRepository.save(passwordResetToken);
-        emailServiceImpl.sendEmail(email, EmailTemplate.PASSWORD_RESET,
+        emailServiceImpl.sendHtmlEmail(
+                email,
+                "password-reset.html",
                 Map.of("userName", user.getFirstName(), "code", code));
     }
 

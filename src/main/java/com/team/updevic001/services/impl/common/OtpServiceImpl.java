@@ -5,7 +5,6 @@ import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.repositories.OtpRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.mail.EmailServiceImpl;
-import com.team.updevic001.mail.EmailTemplate;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
 import com.team.updevic001.services.interfaces.OtpService;
 import jakarta.transaction.Transactional;
@@ -57,8 +56,11 @@ public class OtpServiceImpl implements OtpService {
 
         // Yeni OTP yaradılır
         String code = generateOtp(user.getEmail());
-        Map<String, String> placeholders = Map.of("userName", user.getFirstName(), "code", code);
-        emailService.sendEmail(user.getEmail(), EmailTemplate.VERIFICATION, placeholders);
+        Map<String, Object> placeholders = Map.of("userName", user.getFirstName(), "code", code);
+        emailService.sendHtmlEmail(
+                user.getEmail(),
+                "verification.html",
+                placeholders);
     }
 
     @Override
@@ -93,7 +95,10 @@ public class OtpServiceImpl implements OtpService {
     }
 
     private void resendEmail(String email, String firstName, int code) {
-        Map<String, String> placeholders = Map.of("userName", firstName, "code", String.valueOf(code));
-        emailService.sendEmail(email, EmailTemplate.VERIFICATION, placeholders);
+        Map<String, Object> placeholders = Map.of("userName", firstName, "code", String.valueOf(code));
+        emailService.sendHtmlEmail(
+                email,
+                "verification.html",
+                placeholders);
     }
 }

@@ -1,20 +1,20 @@
 package com.team.updevic001.services.impl.teacher;
 
+import com.team.updevic001.dao.entities.TeacherApplicationsEntity;
+import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.exceptions.NotFoundException;
 import com.team.updevic001.mail.EmailServiceImpl;
+import com.team.updevic001.model.dtos.application.ApplicationSearchDto;
+import com.team.updevic001.model.dtos.application.MessageDto;
+import com.team.updevic001.model.dtos.application.TeacherApplicationRequest;
+import com.team.updevic001.model.dtos.application.TeacherApplicationResponseDto;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.enums.ApplicationStatus;
-import com.team.updevic001.model.dtos.application.ApplicationSearchDto;
-import com.team.updevic001.model.dtos.application.TeacherApplicationRequest;
-import com.team.updevic001.model.dtos.application.TeacherApplicationResponseDto;
-import com.team.updevic001.model.dtos.application.MessageDto;
 import com.team.updevic001.model.mappers.ApplicationFormMapper;
 import com.team.updevic001.services.interfaces.AdminService;
-import com.team.updevic001.specification.TeacherApplicationSpecification;
-import com.team.updevic001.dao.entities.TeacherApplicationsEntity;
-import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.services.interfaces.TeacherApplicationService;
+import com.team.updevic001.specification.TeacherApplicationSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +26,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.team.updevic001.mail.EmailTemplate.APPLICATION_APPROVED;
-import static com.team.updevic001.mail.EmailTemplate.APPLICATION_CANCELLED;
-import static com.team.updevic001.mail.EmailTemplate.APPLICATION_FORM_INFO_ENG;
 import static com.team.updevic001.exceptions.ExceptionConstants.APPLICATION_NOT_FOUND;
 
 @Service
@@ -46,8 +43,11 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         var entity = applicationFormMapper.toEntity(dto);
         entity.setStatus(ApplicationStatus.NEW);
         teacherApplicationsRepository.save(entity);
-        Map<String, String> placeholders = Map.of("userName", dto.getFullName());
-        emailServiceImpl.sendEmail(dto.getEmail(), APPLICATION_FORM_INFO_ENG, placeholders);
+        Map<String, Object> placeholders = Map.of("userName", dto.getFullName());
+        emailServiceImpl.sendHtmlEmail(
+                dto.getEmail(),
+                "application-info-eng.html",
+                placeholders);
         return applicationFormMapper.toResponse(entity);
     }
 
@@ -66,12 +66,12 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
 
         boolean hasFilters = searchDto != null && (
                 searchDto.getEmail() != null ||
-                searchDto.getFullName() != null ||
-                searchDto.getPhone() != null ||
-                searchDto.getTeachingField() != null ||
-                searchDto.getCreatedAtFrom() != null ||
-                searchDto.getCreatedAtTo() != null ||
-                searchDto.getStatus() != null
+                        searchDto.getFullName() != null ||
+                        searchDto.getPhone() != null ||
+                        searchDto.getTeachingField() != null ||
+                        searchDto.getCreatedAtFrom() != null ||
+                        searchDto.getCreatedAtTo() != null ||
+                        searchDto.getStatus() != null
         );
 
         Page<TeacherApplicationsEntity> resultPage;
@@ -119,8 +119,11 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         entity.setCompletedAt(LocalDateTime.now());
         teacherApplicationsRepository.save(entity);
         adminService.assignTeacherProfile(entity.getEmail());
-        Map<String, String> placeholders = Map.of("userName", entity.getFullName());
-        emailServiceImpl.sendEmail(entity.getEmail(), APPLICATION_APPROVED, placeholders);
+        Map<String, Object> placeholders = Map.of("userName", entity.getFullName());
+        emailServiceImpl.sendHtmlEmail(
+                entity.getEmail(),
+                "application-approved.html",
+                placeholders);
     }
 
     @Override
@@ -131,8 +134,11 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         entity.setResultMessage(message.getMessage());
         entity.setCompletedAt(LocalDateTime.now());
         teacherApplicationsRepository.save(entity);
-        Map<String, String> placeholders = Map.of("userName", entity.getFullName(), "cancellationReason", message.getMessage());
-        emailServiceImpl.sendEmail(entity.getEmail(), APPLICATION_CANCELLED, placeholders);
+        Map<String, Object> placeholders = Map.of("userName", entity.getFullName(), "cancellationReason", message.getMessage());
+        emailServiceImpl.sendHtmlEmail(
+                entity.getEmail(),
+                "application-cancelled.html",
+                placeholders);
     }
 
 
