@@ -10,6 +10,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.File;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class EmailServiceImpl {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine; // Thymeleaf engine inject et
 
 
     @Async("asyncTaskExecutor")
@@ -35,6 +38,32 @@ public class EmailServiceImpl {
             log.info("Simple email sent to {}", receiver);
         } catch (MessagingException e) {
             log.error("Failed to sen    d simple email: {}", e.getMessage(), e);
+        }
+    }
+
+
+    @Async("asyncTaskExecutor")
+    public void sendHtmlEmail(String to, String templateName, Map<String, Object> variables) {
+        try {
+            Context context = new Context();
+            context.setVariables(variables);
+
+            String body = templateEngine.process("email/" + templateName, context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject("Your Application Info"); // Veya dynamic subject
+            helper.setText(body, true);
+
+            File logo = new File("src/main/resources/static/logo.png");
+            helper.addInline("logo", logo);
+
+            mailSender.send(message);
+            log.info("HTML email sent to {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send HTML email: {}", e.getMessage(), e);
         }
     }
 
