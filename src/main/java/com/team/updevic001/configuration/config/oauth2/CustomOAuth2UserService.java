@@ -7,6 +7,7 @@ import com.team.updevic001.dao.repositories.UserProfileRepository;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AuthService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -30,6 +31,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 
     @Override
+    @Transactional
     public OAuth2User loadUser(OAuth2UserRequest req) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = delegate.loadUser(req);
 
