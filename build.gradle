@@ -64,7 +64,8 @@ dependencies {
 
     implementation 'org.json:json:20231013'
 
-
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
 
     // MapStruct

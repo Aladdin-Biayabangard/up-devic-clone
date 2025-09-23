@@ -1,5 +1,7 @@
 package com.team.updevic001.services.interfaces;
 
+import com.team.updevic001.dao.entities.auth.RefreshToken;
+import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.entities.auth.UserRole;
 import com.team.updevic001.model.dtos.request.security.*;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
@@ -27,6 +29,14 @@ public interface AuthService {
     void resetPassword(ResetPasswordRequest resetPasswordRequest);
 
     AuthResponseDto refreshAccessToken(RefreshTokenRequest request);
+
+    UserRole findOrCreateRole(Role role);
+
+    AuthResponseDto buildAuthResponse(User user);
+
+    RefreshToken createAndSaveRefreshToken(User user);
+
+    AuthResponseDto buildAuthResponse(User user, Long refreshTokenId);
 
     UserRole createOrFetchRole(Role role);
 }

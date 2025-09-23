@@ -9,3 +9,4 @@ spring:
       - email
       - file
       - ai
+      - oauth2

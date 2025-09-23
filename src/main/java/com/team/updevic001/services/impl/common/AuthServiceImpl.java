@@ -218,7 +218,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private UserRole findOrCreateRole(Role role) {
+    public UserRole findOrCreateRole(Role role) {
         return userRoleRepository.findByName(role)
                 .orElseGet(() -> userRoleRepository.save(UserRole.builder().name(role).build()));
     }
@@ -228,11 +228,11 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
     }
 
-    private AuthResponseDto buildAuthResponse(User user) {
+    public AuthResponseDto buildAuthResponse(User user) {
         return buildAuthResponse(user, createAndSaveRefreshToken(user).getId());
     }
 
-    private AuthResponseDto buildAuthResponse(User user, Long refreshTokenId) {
+    public AuthResponseDto buildAuthResponse(User user, Long refreshTokenId) {
         return AuthResponseDto.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -242,7 +242,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private RefreshToken createAndSaveRefreshToken(User user) {
+    public RefreshToken createAndSaveRefreshToken(User user) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .expiresAt(LocalDateTime.now().plusDays(REFRESH_TOKEN_EXPIRATION_DAYS))
@@ -250,7 +250,7 @@ public class AuthServiceImpl implements AuthService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    private List<String> extractRoleNames(User user) {
+    public List<String> extractRoleNames(User user) {
         return user.getRoles().stream()
                 .map(role -> role.getName().toString())
                 .toList();
