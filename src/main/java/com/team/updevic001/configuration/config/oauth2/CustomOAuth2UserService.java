@@ -46,18 +46,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .firstName(firstName)
                     .lastName(lastName)
-                    .roles(List.of(role))
+                    .roles(List.of(role)) // <- birbaşa burada əlavə et
                     .build();
-            User saved = userRepository.save(newUser);
 
-            saved.getRoles().add(role);
-            userRepository.save(saved);
+            User saved = userRepository.save(newUser);
 
             userProfileRepository.save(UserProfile.builder()
                     .user(saved)
                     .profilePhotoUrl(avatarUrl)
                     .profilePhotoKey(saved.getId() + "_profilePhoto")
                     .build());
+
             return saved;
         });
 
