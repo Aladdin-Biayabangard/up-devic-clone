@@ -1,5 +1,6 @@
 package com.team.updevic001.configuration.config.security;
 
+import com.team.updevic001.configuration.config.oauth2.CustomOAuth2SuccessHandler;
 import com.team.updevic001.configuration.config.oauth2.CustomOAuth2UserService;
 import com.team.updevic001.configuration.enums.ApiEndpoint;
 import com.team.updevic001.configuration.enums.ApiSecurityLevel;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,7 +24,6 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
 @EnableWebSecurity
 @Configuration
@@ -44,7 +43,7 @@ public class SecurityConfig {
     String FRONTEND_URL4;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) throws Exception {
 
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
@@ -112,7 +111,7 @@ public class SecurityConfig {
                 })
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(customOAuth2SuccessHandler)
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
