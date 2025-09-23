@@ -1,5 +1,6 @@
 package com.team.updevic001.configuration.config.security;
 
+import com.team.updevic001.configuration.config.oauth2.CustomOAuth2UserService;
 import com.team.updevic001.configuration.enums.ApiEndpoint;
 import com.team.updevic001.configuration.enums.ApiSecurityLevel;
 import com.team.updevic001.model.enums.Role;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
 @EnableWebSecurity
 @Configuration
@@ -40,7 +44,7 @@ public class SecurityConfig {
     String FRONTEND_URL4;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
 
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
@@ -56,7 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> {
 
-                    authorize.requestMatchers("/oauth2/**").permitAll();
+                    authorize.requestMatchers("/oauth2/**", "/login/**").permitAll();
                     // PUBLIC (permit all)
                     for (ApiEndpoint endpoint : ApiEndpoint.values()) {
                         if (endpoint.getSecurityLevel() == ApiSecurityLevel.PUBLIC) {
@@ -106,6 +110,10 @@ public class SecurityConfig {
                     // Digər bütün requestlər authenticated olsun
                     authorize.anyRequest().authenticated();
                 })
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .defaultSuccessUrl("/", true)
+                )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())
@@ -126,6 +134,7 @@ public class SecurityConfig {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
+
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
