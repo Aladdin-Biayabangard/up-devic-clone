@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> {
 
+                    authorize.requestMatchers("/oauth2/**").permitAll();
                     // PUBLIC (permit all)
                     for (ApiEndpoint endpoint : ApiEndpoint.values()) {
                         if (endpoint.getSecurityLevel() == ApiSecurityLevel.PUBLIC) {
