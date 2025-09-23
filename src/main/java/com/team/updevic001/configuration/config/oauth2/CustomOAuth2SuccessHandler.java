@@ -25,7 +25,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final AuthService authService;
 
 
@@ -34,27 +33,20 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                                         Authentication authentication) throws IOException {
         OAuth2User oauth = (OAuth2User) authentication.getPrincipal();
         User user = userRepository.findByEmail(oauth.getAttribute("email")).orElseThrow();
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-        );
 
         AuthResponseDto authResponseDto = authService.buildAuthResponse(user);
 
-        // Refresh token cookie kimi yazılır (HttpOnly → JS görə bilmir)
         Cookie refreshCookie = new Cookie("refreshToken", String.valueOf(authResponseDto.getRefreshToken()));
         refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true); // HTTPS varsa aç
-        refreshCookie.setPath("/");    // bütün path-lərdə keçərli
-        refreshCookie.setMaxAge(7 * 24 * 60 * 60); // məsələn: 7 gün
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshCookie);
 
-        // AccessToken-i isə URL ilə yönləndir
         String target = "https://up-devic-001.lovable.app/#/oauth/success?accessToken="
                         + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
 
         response.sendRedirect(target);
     }
-
-
 
 }
