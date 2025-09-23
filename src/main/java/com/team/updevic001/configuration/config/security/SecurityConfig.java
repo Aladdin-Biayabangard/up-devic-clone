@@ -1,13 +1,11 @@
 package com.team.updevic001.configuration.config.security;
 
-import com.team.updevic001.configuration.config.oauth2.CaptureRedirectParamFilter;
 import com.team.updevic001.configuration.config.oauth2.CustomOAuth2SuccessHandler;
 import com.team.updevic001.configuration.config.oauth2.CustomOAuth2UserService;
 import com.team.updevic001.configuration.enums.ApiEndpoint;
 import com.team.updevic001.configuration.enums.ApiSecurityLevel;
 import com.team.updevic001.model.enums.Role;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,12 +19,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.net.URI;
 import java.util.List;
 
 
@@ -37,7 +32,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
-    private final SecurityProperties securityProperties;
 
     @Value("${frontend.url1}")
     String FRONTEND_URL1;
@@ -138,42 +132,6 @@ public class SecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
-    }
-
-    @Bean
-    AuthenticationSuccessHandler successHandler() {
-        var fallback = new SavedRequestAwareAuthenticationSuccessHandler();
-        fallback.setDefaultTargetUrl("/"); // backend fallback if no redirect is provided
-
-        return (request, response, authentication) -> {
-            HttpSession session = request.getSession(false);
-            String target = (session != null) ? (String) session.getAttribute(CaptureRedirectParamFilter.ATTR) : null;
-            if (session != null) session.removeAttribute(CaptureRedirectParamFilter.ATTR);
-
-            if (isAllowed(target)) {
-                response.sendRedirect(target);
-            } else {
-                fallback.onAuthenticationSuccess(request, response, authentication);
-            }
-        };
-    }
-
-    private boolean isAllowed(String url) {
-        if (url == null || url.isBlank()) return false;
-        try {
-            URI u = URI.create(url);
-            String host = u.getHost();
-            String scheme = u.getScheme();
-            if (host == null || scheme == null) return false;
-
-            boolean schemeOk = scheme.equals("https") || (scheme.equals("http") && (host.equals("localhost") || host.equals("127.0.0.1")));
-            if (!schemeOk) return false;
-
-            return securityProperties.getAllowedRedirectHosts().stream().anyMatch(allowed ->
-                    host.equalsIgnoreCase(allowed) || host.toLowerCase().endsWith("." + allowed.toLowerCase()));
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
 
