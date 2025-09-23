@@ -7,7 +7,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_ID}
             scope: profile,email
-            redirect-uri: "https://up-devic-001.lovable.app/users/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://up-devic-001.onrender.com/login/oauth2/code/{registrationId}"
             client-name: Google
             authorization-grant-type: authorization_code
 
@@ -15,7 +15,7 @@ spring:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}
             scope: user:email,read:user
-            redirect-uri: "https://up-devic-001.lovable.app/users/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://up-devic-001.onrender.com/login/oauth2/code/{registrationId}"
             client-name: GitHub
             authorization-grant-type: authorization_code
 
