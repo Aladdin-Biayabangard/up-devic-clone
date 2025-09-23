@@ -19,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -59,7 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> {
 
-                    authorize.requestMatchers("/oauth2/**", "/login/**").permitAll();
+                    authorize.requestMatchers("/oauth2/*", "/login/oauth2/*").permitAll();
                     // PUBLIC (permit all)
                     for (ApiEndpoint endpoint : ApiEndpoint.values()) {
                         if (endpoint.getSecurityLevel() == ApiSecurityLevel.PUBLIC) {

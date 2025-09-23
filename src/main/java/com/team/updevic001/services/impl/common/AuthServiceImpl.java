@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.team.updevic001.exceptions.ExceptionConstants.ALREADY_EXISTS_EXCEPTION;
 import static com.team.updevic001.exceptions.ExceptionConstants.EXPIRED_REFRESH_TOKEN_EXCEPTION;
@@ -219,9 +220,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public UserRole findOrCreateRole(Role role) {
-        return userRoleRepository.findByName(role)
-                .orElseGet(() -> userRoleRepository.save(UserRole.builder().name(role).build()));
+        Optional<UserRole> existingRole = userRoleRepository.findByName(role);
+        if (existingRole.isPresent()) {
+            return existingRole.get();
+        }
+        UserRole newRole = UserRole.builder().name(role).build();
+        return userRoleRepository.save(newRole);
     }
+
 
     private void updateUserPassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));

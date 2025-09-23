@@ -45,7 +45,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         String target = "https://up-devic-001.lovable.app/#/oauth/success?accessToken="
                         + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
-
         response.sendRedirect(target);
     }
 
