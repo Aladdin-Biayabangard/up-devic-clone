@@ -24,10 +24,10 @@ import java.util.UUID;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
-    private final AuthService authService;
     private final UserProfileRepository userProfileRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
+    private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest req) throws OAuth2AuthenticationException {
@@ -38,27 +38,31 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String lastName = oAuth2User.getAttribute("family_name");
         String avatarUrl = oAuth2User.getAttribute("picture");
 
-        UserRole orCreateRole = authService.findOrCreateRole(Role.STUDENT);
+        UserRole role = authService.findOrCreateRole(Role.STUDENT);
 
-        userRepository.findByEmail(email).orElseGet(() -> {
-            User savedUser = userRepository.save(User.builder()
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
+            User newUser = User.builder()
                     .email(email)
-                    .password(passwordEncoder.encode(UUID.randomUUID().toString())) // random password
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .firstName(firstName)
                     .lastName(lastName)
-                    .roles(List.of(orCreateRole))
-                    .build());
+                    .roles(List.of(role))
+                    .build();
+            User saved = userRepository.save(newUser);
+
+            saved.getRoles().add(role);
+            userRepository.save(saved);
 
             userProfileRepository.save(UserProfile.builder()
-                    .user(savedUser)
+                    .user(saved)
                     .profilePhotoUrl(avatarUrl)
-                    .profilePhotoKey(savedUser.getId() + "_profilePhoto")
+                    .profilePhotoKey(saved.getId() + "_profilePhoto")
                     .build());
-
-            return savedUser;
+            return saved;
         });
+
+
         return oAuth2User;
     }
-
 
 }
