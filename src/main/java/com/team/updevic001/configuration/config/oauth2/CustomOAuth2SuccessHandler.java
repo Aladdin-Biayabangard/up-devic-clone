@@ -1,5 +1,6 @@
 package com.team.updevic001.configuration.config.oauth2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -41,10 +44,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         refreshCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshCookie);
 
-        String target = "https://up-devic-001.lovable.app/oauth/success?accessToken="
-                + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(authResponseDto));
 
-        response.sendRedirect(target);
     }
 
 }
