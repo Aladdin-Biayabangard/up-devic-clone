@@ -36,8 +36,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(req);
 
         String email = oAuth2User.getAttribute("email");
-        String firstName = oAuth2User.getAttribute("given_name");
-        String lastName = oAuth2User.getAttribute("family_name");
+        String firstName;
+        String lastName;
+
+        if ("github".equals(req.getClientRegistration().getRegistrationId())) {
+            String fullName = oAuth2User.getAttribute("name");
+            String[] parts = fullName != null ? fullName.split(" ", 2) : new String[0];
+            firstName = parts.length > 0 ? parts[0] : "GitHubUser";
+            lastName = parts.length > 1 ? parts[1] : "";
+        } else if ("google".equals(req.getClientRegistration().getRegistrationId())) {
+            firstName = oAuth2User.getAttribute("given_name");
+            lastName = oAuth2User.getAttribute("family_name");
+        } else {
+            firstName = "Unknown";
+            lastName = "User";
+        }
+
         String avatarUrl = oAuth2User.getAttribute("picture");
 
         UserRole role = authService.findOrCreateRole(Role.STUDENT);
