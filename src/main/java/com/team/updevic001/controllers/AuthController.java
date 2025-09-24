@@ -1,16 +1,32 @@
 package com.team.updevic001.controllers;
 
-import com.team.updevic001.model.dtos.request.security.*;
+import com.team.updevic001.model.dtos.request.security.AuthRequestDto;
+import com.team.updevic001.model.dtos.request.security.OtpRequest;
+import com.team.updevic001.model.dtos.request.security.RefreshTokenRequest;
+import com.team.updevic001.model.dtos.request.security.RegisterRequest;
+import com.team.updevic001.model.dtos.request.security.ResetPasswordRequest;
+import com.team.updevic001.model.dtos.request.security.VerifyCodeRequest;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
 import com.team.updevic001.model.dtos.response.user.ResponseUserDto;
 import com.team.updevic001.model.dtos.response.user.VerifyCodeResponse;
 import com.team.updevic001.services.interfaces.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -52,6 +68,11 @@ public class AuthController {
             @RequestBody AuthRequestDto authRequest
     ) {
         return authService.login(authRequest);
+    }
+
+    @GetMapping("/auth/oauth-success")
+    public void oauthSuccess(@RequestParam String accessToken, HttpServletResponse response) throws IOException {
+
     }
 
     @PostMapping("/forgot-password")

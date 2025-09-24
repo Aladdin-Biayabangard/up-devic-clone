@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -33,10 +34,17 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         OAuth2User oauth = (OAuth2User) authentication.getPrincipal();
-        User user = userRepository.findByEmail(oauth.getAttribute("email")).orElseThrow();
+        User user = userRepository.findByEmail(oauth.getAttribute("email"))
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         AuthResponseDto authResponseDto = authService.buildAuthResponse(user);
 
+        // 1. SecurityContext-i set et
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // 2. Refresh token cookie əlavə et
         Cookie refreshCookie = new Cookie("refreshToken", String.valueOf(authResponseDto.getRefreshToken()));
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(true);
@@ -44,11 +52,12 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         refreshCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshCookie);
 
+        // 3. Frontend-ə redirect
         String target = "https://up-devic-001.lovable.app/auth/oauth-success?accessToken="
                 + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
 
         response.sendRedirect(target);
-
     }
+
 
 }
