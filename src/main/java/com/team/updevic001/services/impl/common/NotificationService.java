@@ -9,6 +9,7 @@ import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.response.video.FileUploadResponse;
 import com.team.updevic001.model.enums.CourseCategoryType;
+import com.team.updevic001.model.enums.RecipientsGroup;
 import com.team.updevic001.services.interfaces.FileLoadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -34,14 +35,17 @@ public class NotificationService {
     private final EmailDraftRepository emailDraftRepository;
     private final FileLoadService fileLoadService;
 
-    public void saveDraft(String subject,
-                          String message,
-                          MultipartFile attachment,
-                          Set<String> recipients) {
+    public void saveEmailNotificationDraft(String subject,
+                                           String message,
+                                           Set<String> recipients,
+                                           RecipientsGroup recipientsGroup,
+                                           MultipartFile attachment) {
         var draft = new EmailDraft();
         draft.setSubject(subject);
         draft.setContent(message);
-        draft.setRecipient(recipients);
+        draft.setRecipients(recipients);
+        draft.setRecipientType(recipientsGroup);
+        draft.setTemplateName("dynamic-email.html");
 
         if (attachment != null && !attachment.isEmpty()) {
             recipients.forEach(recipient -> saveAttachment(attachment, recipient, draft));
@@ -51,10 +55,10 @@ public class NotificationService {
     }
 
     @Async("asyncTaskExecutor")
-    public void sendDraft(Long draftId) {
+    public void sendEmailNotificationDraft(Long draftId) {
         var draft = fetchEmailDraftIfExists(draftId);
 
-        for (String to : draft.getRecipient()) {
+        for (String to : draft.getRecipients()) {
             if (hasAttachment(draft)) {
                 Map<String, Object> variables = new HashMap<>();
                 variables.put("customMessage", draft.getContent());
@@ -65,8 +69,25 @@ public class NotificationService {
         emailDraftRepository.save(draft);
     }
 
-    public void createNotificationFor(String subject, String content, List<String> recipients,) {
+    public void sendEmailNotification(String subject,
+                                      String message,
+                                      Set<String> recipients,
+                                      Set<RecipientsGroup> recipientsGroups,
+                                      MultipartFile attachment) {
 
+        emailDraftRepository.save(EmailDraft.builder()
+                .subject(subject)
+                .sent(true)
+                .recipients(recipients)
+                .content(message)
+                .templateName("dynamic-email.html")
+                .isRedirect(true)
+                .build());
+        recipients.forEach(recipient -> {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("customMessage", message);
+            emailServiceImpl.sendFileEmail(subject, recipient, "dynamic-email.html", variables, null, attachment);
+        });
     }
 
     public void sendNotificationForCreationNewCourse(CourseCategoryType categoryType, String courseName, String courseLink) {
@@ -125,6 +146,34 @@ public class NotificationService {
 
     private boolean hasAttachment(EmailDraft draft) {
         return StringUtils.hasText(draft.getAttachmentPath());
+    }
+
+    private List<String> resolveRecipients(EmailDraft draft) {
+        switch (draft.getRecipientType()) {
+            case ALL_USERS:
+                return userRepository.findAll().stream().map(User::getEmail).toList();
+            case TEACHERS:
+                return groupRepository.findAllById(draft.getRecipientIds())
+                        .stream()
+                        .flatMap(g -> g.getUsers().stream())
+                        .map(User::getEmail)
+                        .distinct()
+                        .toList();
+            case INACTIVE_USERS:
+                return groupRepository.findAllById(draft.getRecipientIds())
+                        .stream()
+                        .flatMap(g -> g.getUsers().stream())
+                        .map(User::getEmail)
+                        .distinct()
+                        .toList();
+            case STUDENTS:
+                return userRepository.findAllById(draft.getRecipients())
+                        .stream()
+                        .map(User::getEmail)
+                        .toList();
+            default:
+                return List.of();
+        }
     }
 
     private EmailDraft fetchEmailDraftIfExists(Long draftId) {

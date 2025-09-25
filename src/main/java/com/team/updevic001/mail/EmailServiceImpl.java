@@ -40,7 +40,7 @@ public class EmailServiceImpl {
     }
 
     @Async("asyncTaskExecutor")
-    public void sendFileEmail(String subject, String to, String templateName, Map<String, Object> variables, String fileUrl,MultipartFile imageFile,) {
+    public void sendFileEmail(String subject, String to, String templateName, Map<String, Object> variables, String fileUrl,MultipartFile imageFile) {
         sendEmailInternal(subject, to, templateName, variables, fileUrl,imageFile);
     }
 

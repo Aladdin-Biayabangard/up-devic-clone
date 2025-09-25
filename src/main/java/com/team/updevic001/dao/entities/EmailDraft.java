@@ -1,8 +1,11 @@
 package com.team.updevic001.dao.entities;
 
+import com.team.updevic001.model.enums.RecipientsGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,9 +40,12 @@ public class EmailDraft {
 
     private String subject;
 
+    @Enumerated(EnumType.STRING)
+    private RecipientsGroup recipientType;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private Set<String> recipient;
+    private Set<String> recipients;
 
     private String attachmentPath;
 
@@ -52,6 +58,8 @@ public class EmailDraft {
 
     @Builder.Default
     private boolean sent = false;
+
+    private boolean isRedirect;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
