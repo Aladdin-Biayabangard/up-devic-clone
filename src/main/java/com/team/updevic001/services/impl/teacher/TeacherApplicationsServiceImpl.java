@@ -45,6 +45,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         teacherApplicationsRepository.save(entity);
         Map<String, Object> placeholders = Map.of("userName", dto.getFullName());
         emailServiceImpl.sendHtmlEmail(
+                "Creation application form",
                 dto.getEmail(),
                 "application-info-eng.html",
                 placeholders);
@@ -121,6 +122,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         adminService.assignTeacherProfile(entity.getEmail());
         Map<String, Object> placeholders = Map.of("userName", entity.getFullName());
         emailServiceImpl.sendHtmlEmail(
+                "Info for application",
                 entity.getEmail(),
                 "application-approved.html",
                 placeholders);
@@ -136,6 +138,7 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         teacherApplicationsRepository.save(entity);
         Map<String, Object> placeholders = Map.of("userName", entity.getFullName(), "cancellationReason", message.getMessage());
         emailServiceImpl.sendHtmlEmail(
+                "Info for application",
                 entity.getEmail(),
                 "application-cancelled.html",
                 placeholders);

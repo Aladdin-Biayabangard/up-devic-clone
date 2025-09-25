@@ -1,6 +1,5 @@
 package com.team.updevic001.configuration.config.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.model.dtos.response.AuthResponseDto;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

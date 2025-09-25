@@ -157,6 +157,7 @@ public class AuthServiceImpl implements AuthService {
 
         passwordResetTokenRepository.save(passwordResetToken);
         emailServiceImpl.sendHtmlEmail(
+                "Password reset",
                 email,
                 "password-reset.html",
                 Map.of("userName", user.getFirstName(), "code", code));

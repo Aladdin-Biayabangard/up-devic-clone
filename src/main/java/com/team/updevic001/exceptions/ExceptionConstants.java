@@ -23,10 +23,11 @@ public enum ExceptionConstants {
     TEACHER_PAYMENT_NOT_FOUND("TEACHER_PAYMENT_NOT_FOUND", "Payment of teacher not found with id: %s"),
     TEACHER_BALANCE_NOT_FOUND("TEACHER_BALANCE_NOT_FOUND", "Teacher balance not found with teacher id: %s"),
     ADMIN_TRANSACTION_NOT_FOUND("ADMIN_TRANSACTION_NOT_FOUND", "Admin transaction not found with transaction id: %s"),
+    EMAIL_DRAFT_NOT_FOUND("EMAIL_DRAFT_NOT_FOUND", "Email draft  not found with id: %s"),
     NOT_FOUND("NOT_FOUND", "%s"),
 
 
-    CERTIFICATE_EXISTS("CERTIFICATE_EXISTS","Your certificate already exists with credentialId: %s"),
+    CERTIFICATE_EXISTS("CERTIFICATE_EXISTS", "Your certificate already exists with credentialId: %s"),
 
     UNAUTHORIZED_EXCEPTION("UNAUTHORIZED_EXCEPTION", "No authenticated user found with id: %s"),
     FORBIDDEN_EXCEPTION("FORBIDDEN_EXCEPTION", "Not allowed with id: %s"),
