@@ -58,6 +58,7 @@ public class OtpServiceImpl implements OtpService {
         String code = generateOtp(user.getEmail());
         Map<String, Object> placeholders = Map.of("userName", user.getFirstName(), "code", code);
         emailService.sendHtmlEmail(
+                "Your OTP information",
                 user.getEmail(),
                 "verification.html",
                 placeholders);
@@ -97,6 +98,7 @@ public class OtpServiceImpl implements OtpService {
     private void resendEmail(String email, String firstName, int code) {
         Map<String, Object> placeholders = Map.of("userName", firstName, "code", String.valueOf(code));
         emailService.sendHtmlEmail(
+                "Resend",
                 email,
                 "verification.html",
                 placeholders);

@@ -11,6 +11,8 @@ public interface FileLoadService {
 
     FileUploadResponse uploadFile(MultipartFile multipartFile, String id, String photoOfWhat) throws IOException;
 
+    byte[] downloadFileAsBytes(String fileUrl) throws IOException;
+
     String getFileUrlWithEncode(String key);
 
     String getPublicFileUrl(String key);

@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -82,6 +83,13 @@ public class FileLoadServiceImpl implements FileLoadService {
                 .build();
 
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize()));
+    }
+
+    public byte[] downloadFileAsBytes(String fileUrl) throws IOException {
+        java.net.URL url = new java.net.URL(fileUrl);
+        try (InputStream in = url.openStream()) {
+            return in.readAllBytes();
+        }
     }
 
     public boolean isValidMediaFile(MultipartFile file) {
