@@ -27,15 +27,14 @@ public class AiGradingService {
 
     public AiGradeResult check(String question, String correctAnswer, String studentAnswer) {
         String prompt = """
-                Sual: %s
-                Müəllimin düzgün cavabı: %s
-                Tələbənin cavabı: %s
-                
-                Tapşırıq:
-                1. Tələbənin cavabını düzgün cavabla müqayisə et və feeadback zamani Sanki birbasa telebe ile danisirsan kimi cavab ver. Sizin deyerek başla.
-                2. Cavabın düzgünlüyünü müəyyən et.
-                3. 0-dan 100-ə qədər bal ver. Tam uyğun cavab = 100, qismən uyğun cavab = 1–99, uyğun olmayan cavab = 0.
-                4. JSON formatında cavab ver:
+                Question: %s
+                Teacher’s correct answer: %s
+                Student’s answer: %s
+                Task:
+                Compare the student’s answer with the correct answer and provide feedback as if you are speaking directly to the student. Start with “You said …”.
+                Determine the correctness of the answer.
+                Assign a score from 0 to 100. A fully correct answer = 100, a partially correct answer = 1–99. If the answer is above 85%, set correct to true, otherwise false. An incorrect answer = 0.
+                Respond in JSON format:
                 {
                   "correct": true/false,
                   "score": 0–100,
@@ -62,18 +61,12 @@ public class AiGradingService {
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
-            System.out.println("=== OPENAI REQUEST BODY ===");
-            System.out.println(body);
-
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("=== OPENAI RAW RESPONSE ===");
-            System.out.println("Status: " + response.statusCode());
-            System.out.println(response.body());
 
             if (response.statusCode() != 200) {
                 throw new RuntimeException("OpenAI API qeyri-200 cavab qaytardı: " + response.statusCode()
-                                           + " | Body: " + response.body());
+                        + " | Body: " + response.body());
             }
 
             JSONObject json = new JSONObject(response.body());
@@ -92,9 +85,6 @@ public class AiGradingService {
             if (content.startsWith("```")) {
                 content = content.replaceAll("(?s)```json|```", "").trim();
             }
-
-            System.out.println("=== PARSED CONTENT ===");
-            System.out.println(content);
 
             return mapper.readValue(content, AiGradeResult.class);
 

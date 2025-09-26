@@ -53,7 +53,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.addCookie(refreshCookie);
 
         // 3. Frontend-ə redirect
-        String target = "https://up-devic-001.lovable.app/auth/oauth-success?accessToken="
+        String target = "https://updevic.lovable.app/auth/oauth-success?accessToken="
                 + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
 
         response.sendRedirect(target);
