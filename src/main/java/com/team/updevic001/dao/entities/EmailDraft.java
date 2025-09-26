@@ -1,5 +1,6 @@
 package com.team.updevic001.dao.entities;
 
+import com.team.updevic001.model.enums.EmailStatus;
 import com.team.updevic001.model.enums.RecipientsGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -17,11 +18,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(of = "id")
@@ -45,7 +45,7 @@ public class EmailDraft {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private Set<String> recipients;
+    private Set<String> recipients = new HashSet<>();
 
     private String attachmentPath;
 
@@ -56,11 +56,14 @@ public class EmailDraft {
 
     private String templateName;
 
-    @Builder.Default
-    private boolean sent = false;
+    @Enumerated(EnumType.STRING)
+    private EmailStatus status;
 
     private boolean isRedirect;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    private LocalDateTime sendAt;
+
 }

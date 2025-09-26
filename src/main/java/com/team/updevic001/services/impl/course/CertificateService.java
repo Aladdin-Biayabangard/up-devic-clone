@@ -15,7 +15,7 @@ import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.page.CustomPage;
 import com.team.updevic001.model.dtos.page.CustomPageRequest;
 import com.team.updevic001.model.dtos.response.admin_dasboard.CertificateResponseForAdmin;
-import com.team.updevic001.services.impl.common.NotificationService;
+import com.team.updevic001.services.impl.notification.NotificationService;
 import com.team.updevic001.services.interfaces.CourseService;
 import com.team.updevic001.services.interfaces.UserService;
 import com.team.updevic001.specification.CertificateSpecification;

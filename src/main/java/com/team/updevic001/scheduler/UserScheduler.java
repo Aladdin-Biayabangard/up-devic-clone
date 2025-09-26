@@ -2,7 +2,7 @@ package com.team.updevic001.scheduler;
 
 import com.team.updevic001.dao.repositories.UserRepository;
 import com.team.updevic001.model.dtos.notification.UserEmailInfo;
-import com.team.updevic001.services.impl.common.NotificationService;
+import com.team.updevic001.services.impl.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;

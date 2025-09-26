@@ -18,6 +18,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
@@ -93,4 +94,14 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
           AND u.createdAt <= :oneMonthAgo
         """)
     int deletePendingUsersSince(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
+
+    @Query(nativeQuery = true, value = "SELECT DISTINCT u.email FROM users u")
+    Set<String> findAllUserEmail();
+
+    @Query("SELECT u.email FROM User u JOIN u.roles r WHERE r.name = :role")
+    Set<String> findEmailsByRole(Role role);
+
+    @Query("SELECT u.email FROM User u WHERE u.status='INACTIVE'")
+    Set<String> findEmailsInactiveUsers();
+
 }

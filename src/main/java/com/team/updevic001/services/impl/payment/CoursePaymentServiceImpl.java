@@ -13,7 +13,7 @@ import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.request.PaymentRequest;
 import com.team.updevic001.model.dtos.response.payment.StripeResponse;
-import com.team.updevic001.services.impl.common.NotificationService;
+import com.team.updevic001.services.impl.notification.NotificationService;
 import com.team.updevic001.services.impl.course.CourseServiceImpl;
 import com.team.updevic001.services.interfaces.PaymentService;
 import com.team.updevic001.services.interfaces.StudentService;

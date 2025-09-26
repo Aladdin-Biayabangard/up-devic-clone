@@ -3,7 +3,10 @@ package com.team.updevic001.configuration.enums;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
-import static com.team.updevic001.configuration.enums.ApiSecurityLevel.*;
+import static com.team.updevic001.configuration.enums.ApiSecurityLevel.ADMIN;
+import static com.team.updevic001.configuration.enums.ApiSecurityLevel.PUBLIC;
+import static com.team.updevic001.configuration.enums.ApiSecurityLevel.STUDENT;
+import static com.team.updevic001.configuration.enums.ApiSecurityLevel.TEACHER;
 
 @Getter
 public enum ApiEndpoint {
@@ -127,7 +130,13 @@ public enum ApiEndpoint {
     TEACHER_APPLICATION_REJECT("/api/v1/applications/*/reject", HttpMethod.PUT, ADMIN),
     TEACHER_APPLICATION_DELETE("/api/v1/applications/*", HttpMethod.DELETE, ADMIN),
     TEACHER_APPLICATION_SEARCH("/api/v1/applications/search", HttpMethod.GET, ADMIN),
-    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, ADMIN);
+    TEACHER_APPLICATION_EXPORT("/api/v1/applications/export", HttpMethod.GET, ADMIN),
+
+
+    //Notification and related controllers
+
+    NOTIFICATION_DRAFT("/api/email-drafts/**", null, ADMIN),
+    NOTIFICATION("/api/notifications/**", null, ADMIN);
 
     private final String pathPattern;
     private final HttpMethod httpMethod;
