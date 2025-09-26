@@ -70,7 +70,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             userProfileRepository.save(UserProfile.builder()
                     .user(saved)
                     .profilePhotoUrl(avatarUrl)
-                    .profilePhotoKey(saved.getId() + "_profilePhoto")
+                    .profilePhotoKey("public/"+saved.getId() + "profilePhoto")
                     .build());
 
             return saved;
