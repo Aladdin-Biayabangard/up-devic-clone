@@ -130,7 +130,12 @@ public class CertificateService {
 
         }
         var credentialId = generate();
-        double score = checkEligibilityForCertification(user.getId(), courseId);
+        double score;
+        if (taskRepository.countByCourseId(courseId) > 0) {
+            score = checkEligibilityForCertification(user.getId(), courseId);
+        } else {
+            score = 100;
+        }
         var certificate = CertificateEntity.builder()
                 .credentialId(credentialId)
                 .firstName(user.getFirstName())
@@ -156,7 +161,7 @@ public class CertificateService {
                 new UserEmailInfo(user.getFirstName(), user.getLastName(), user.getEmail()),
                 course.getTitle(),
                 score,
-                CERTIFICATE_LINK+credentialId);
+                CERTIFICATE_LINK + credentialId);
         return new CertificateResponse(certificate.getCredentialId(),
                 certificate.getFirstName() + " " + certificate.getLastName(),
                 formattedDate,
