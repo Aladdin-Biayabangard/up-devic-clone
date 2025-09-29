@@ -39,7 +39,7 @@ public class AiGradingService {
                 Task:
                 Compare the student’s answer with the correct answer and provide feedback as if you are speaking directly to the student. Start with “You said …”.
                 Determine the correctness of the answer.
-                Assign a score from 0 to 100. A fully correct answer = 100, a partially correct answer = 1–99. If the answer is above 85, set correct to true, otherwise false. An incorrect answer = 0.
+                Assign a score from 0 to 100. A fully correct answer = 100, a partially correct answer = 1–99. If the answer is above 85%, set correct to true, otherwise false. An incorrect answer = 0.
                 Respond in JSON format:
                 {
                   "correct": true/false,

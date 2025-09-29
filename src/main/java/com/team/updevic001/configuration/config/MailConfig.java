@@ -21,5 +21,19 @@ public class MailConfig {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", true);
         props.put("mail.smtp.starttls.enable", true);
-        return mailSender;    }
+        return mailSender;
+    }
+
+    //    @Bean
+//    public Gmail gmailService() throws Exception {
+//        NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+//        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+//
+//        Credential credential = GoogleAuthorizeUtil.getCredentials(httpTransport);
+//        // burda sənin helper class (GoogleAuthorizeUtil) olacaq ki, OAuth2 credential.json faylından oxuyacaq
+//
+//        return new Gmail.Builder(httpTransport, jsonFactory, credential)
+//                .setApplicationName("Updevic Online Course")
+//                .build();
+//    }
 }
