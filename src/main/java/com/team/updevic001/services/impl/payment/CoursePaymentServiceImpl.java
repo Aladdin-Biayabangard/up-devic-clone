@@ -39,7 +39,7 @@ public class CoursePaymentServiceImpl implements PaymentService {
     private final UserRepository userRepository;
     private final AdminTransactionService adminTransactionService;
     private final NotificationService notificationService;
-    private static final String COURSE_LINK = "https://up-devic-001.lovable.app/courses/";
+    private static final String COURSE_LINK = "https://updevic.lovable.app/courses/";
 
     @Value("${stripe.secret.key}")
     private String secretKey;

@@ -4,7 +4,9 @@ import com.team.updevic001.dao.entities.payment.AdminBalance;
 import com.team.updevic001.dao.repositories.AdminBalanceRepository;
 import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceMonthlyStats;
 import com.team.updevic001.model.dtos.response.admin_dasboard.AdminBalanceStats;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminBalanceService {

@@ -28,18 +28,25 @@ public class AuthHelper {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("No authenticated user found in the security context.");
+            log.warn("No authenticated user found in the security context."); // error yox, warn
             throw new UnauthorizedException(UNAUTHORIZED_EXCEPTION.getCode(), "No authenticated user found");
         }
+
         String authenticatedEmail = authentication.getName();
+        if ("anonymousUser".equals(authenticatedEmail)) {
+            log.debug("Anonymous user request detected, skipping user lookup.");
+            throw new UnauthorizedException(UNAUTHORIZED_EXCEPTION.getCode(), "Anonymous user not allowed");
+        }
+
         log.debug("Authenticated user email: {}", authenticatedEmail);
 
         return userRepository.findByEmailAndStatus(authenticatedEmail, Status.ACTIVE)
                 .orElseThrow(() -> {
-                    log.error("User with email {} not found or is inactive", authenticatedEmail);
+                    log.warn("User with email {} not found or is inactive", authenticatedEmail); // warn kifayətdir
                     return new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage());
                 });
     }
+
 
     public String generateToken() {
         SecureRandom secureRandom = new SecureRandom();

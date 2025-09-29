@@ -1,0 +1,16 @@
+spring:
+  mail:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: ${SES_USERNAME:AKIA4ISTQ5QAFKSNHEBR}   # Env variable ilə təhlükəsiz saxlanır
+    password: ${SES_PASSWORD:BNi2CQgrKCGk5e6qmDJTXCBWpY7NTrxJjubclhsHvMAY}   # Env variable ilə təhlükəsiz saxlanır
+    properties:
+      mail:
+        smtp:
+          debug: true
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
