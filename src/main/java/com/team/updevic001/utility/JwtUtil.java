@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Slf4j
-@Configuration
+@Component
 @PropertySource("classpath:application.yml")
 @RequiredArgsConstructor
 public class JwtUtil {
