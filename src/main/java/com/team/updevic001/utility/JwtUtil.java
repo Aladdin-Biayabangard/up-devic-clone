@@ -9,9 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;  // <-- dəyişiklik
 
 import java.security.Key;
 import java.util.Date;
@@ -21,15 +19,16 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Slf4j
-@Configuration
-@PropertySource("classpath:application.yml")
+@Component  // <-- @Configuration yerinə @Component
 @RequiredArgsConstructor
 public class JwtUtil {
 
     @Value("${application.security.jwt.key}")
     private String secret_key;
+
     @Value("${application.security.jwt.expiration}")
     private long accessTokenValidity;
+
     private static Key key;
 
     public Key initializeKey() {
