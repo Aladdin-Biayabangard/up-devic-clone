@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/email-drafts")
+@RequestMapping("/api/v1/email-drafts")
 @RequiredArgsConstructor
 public class EmailDraftController {
 
