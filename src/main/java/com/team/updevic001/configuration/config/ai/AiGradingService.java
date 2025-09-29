@@ -27,9 +27,15 @@ public class AiGradingService {
 
     public AiGradeResult check(String question, String correctAnswer, String studentAnswer) {
         String prompt = """
-                Question: %s
-                Teacher’s correct answer: %s
-                Student’s answer: %s
+                Question: 
+                """ + question + """
+                
+                Teacher’s correct answer: 
+                """ + correctAnswer + """
+                
+                Student’s answer: 
+                """ + studentAnswer + """
+                
                 Task:
                 Compare the student’s answer with the correct answer and provide feedback as if you are speaking directly to the student. Start with “You said …”.
                 Determine the correctness of the answer.
@@ -41,7 +47,8 @@ public class AiGradingService {
                   "feedback": "qısa izah",
                   "correctAnswer": "düzgün cavab"
                 }
-                """.formatted(question, correctAnswer, studentAnswer);
+                """;
+
 
         try {
             // OpenAI üçün düzgün JSON qurmaq (Jackson ilə təhlükəsiz)

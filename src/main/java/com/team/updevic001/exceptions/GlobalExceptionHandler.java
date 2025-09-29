@@ -82,6 +82,23 @@ public class GlobalExceptionHandler {
         log.error("Expired refresh token exception: ", ex);
         return new ErrorResponse(ex.getCode(), ex.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(IllegalArgumentException ex) {
+        log.error("IllegalArgumentException: ", ex);
+        return new ErrorResponse("INVALID_ARGUMENT", ex.getMessage());
+    }
+
+
+    @ExceptionHandler(PaymentStatusException.class)
+    @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
+    public ErrorResponse handle(PaymentStatusException ex) {
+        log.error("PaymentStatusException: ", ex);
+        return new ErrorResponse("PAYMENT_REQUIRED", ex.getMessage());
+    }
+
+
 //
 //    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy HH:mm");
 //

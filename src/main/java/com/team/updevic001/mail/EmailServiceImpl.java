@@ -1,13 +1,13 @@
 package com.team.updevic001.mail;
 
 import com.team.updevic001.services.interfaces.FileLoadService;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -16,12 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.springframework.core.io.ClassPathResource;
 
 @Service
 @RequiredArgsConstructor
@@ -36,17 +33,17 @@ public class EmailServiceImpl {
 
     @Async("asyncTaskExecutor")
     public void sendHtmlEmail(String subject, String to, String templateName, Map<String, Object> variables) {
-        sendEmailInternal(subject, to, templateName, variables, null,null);
+        sendEmailInternal(subject, to, templateName, variables, null, null);
     }
 
     @Async("asyncTaskExecutor")
-    public void sendFileEmail(String subject, String to, String templateName, Map<String, Object> variables, String fileUrl,MultipartFile imageFile) {
-        sendEmailInternal(subject, to, templateName, variables, fileUrl,imageFile);
+    public void sendFileEmail(String subject, String to, String templateName, Map<String, Object> variables, String fileUrl, MultipartFile imageFile) {
+        sendEmailInternal(subject, to, templateName, variables, fileUrl, imageFile);
     }
 
 
     private void sendEmailInternal(String subject, String to, String templateName,
-                                   Map<String, Object> variables, String fileUrl,MultipartFile imageFile) {
+                                   Map<String, Object> variables, String fileUrl, MultipartFile imageFile) {
         try {
             Context context = new Context();
             context.setVariables(variables);
