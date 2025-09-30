@@ -8,8 +8,7 @@ services:
       POSTGRES_DB: up_devic_003
     ports:
       - "5433:5432"
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
+
 
   pgadmin:
     image: dpage/pgadmin4
@@ -21,6 +20,22 @@ services:
       - "5050:80"
     depends_on:
       - postgres
+
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=secret
+      - N8N_HOST=n8n.${RAILWAY_STATIC_URL}   # railway domain
+      - N8N_PORT=5678
+      - WEBHOOK_TUNNEL_URL=https://n8n.${RAILWAY_STATIC_URL}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: always
 
 #  app:
 #    build: .
@@ -36,3 +51,7 @@ services:
 #
 #volumes:
 #  pgdata:
+
+
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
