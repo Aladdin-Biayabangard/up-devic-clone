@@ -31,9 +31,9 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
       - N8N_BASIC_AUTH_PASSWORD=secret
-      - N8N_HOST=n8n.${RAILWAY_STATIC_URL}   # railway domain
+      - N8N_HOST=updevic.up.railway.app
       - N8N_PORT=5678
-      - WEBHOOK_TUNNEL_URL=https://n8n.${RAILWAY_STATIC_URL}
+      - WEBHOOK_TUNNEL_URL=https://updevic.up.railway.app
     volumes:
       - n8n_data:/home/node/.n8n
     restart: always
