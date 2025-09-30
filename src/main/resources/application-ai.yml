@@ -3,3 +3,6 @@ openai:
     key: ${OPENAI_API_KEY}
   model: gpt-4o-mini
 
+n8n:
+  webhook:
+    url: ${WEBHOOK_URL}
