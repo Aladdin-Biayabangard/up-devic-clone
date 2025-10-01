@@ -9,11 +9,13 @@ import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +82,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         });
 
 
-        return oAuth2User;
+        return new DefaultOAuth2User(
+                user.getRoles().stream()
+                        .map(r -> new SimpleGrantedAuthority(r.getName().name()))
+                        .toList(),
+                oAuth2User.getAttributes(), // Google/GitHub-dan gələn atributlar saxlanır
+                "email" // əsas açar -> email
+        );
     }
 
 }
