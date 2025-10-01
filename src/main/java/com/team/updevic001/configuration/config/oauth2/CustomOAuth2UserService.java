@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.team.updevic001.model.enums.Status.ACTIVE;
+
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -62,6 +64,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .firstName(firstName)
                     .lastName(lastName)
+                    .status(ACTIVE)
                     .roles(List.of(role)) // <- birbaşa burada əlavə et
                     .build();
 
@@ -70,7 +73,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             userProfileRepository.save(UserProfile.builder()
                     .user(saved)
                     .profilePhotoUrl(avatarUrl)
-                    .profilePhotoKey("public/"+saved.getId() + "profilePhoto")
+                    .profilePhotoKey("public/" + saved.getId() + "profilePhoto")
                     .build());
 
             return saved;
