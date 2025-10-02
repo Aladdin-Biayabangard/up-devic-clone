@@ -1,10 +1,10 @@
 package com.team.updevic001.services.impl.common;
 
+import com.team.updevic001.configuration.config.mailjet.MailjetEmailService;
 import com.team.updevic001.dao.entities.auth.Otp;
 import com.team.updevic001.dao.entities.auth.User;
 import com.team.updevic001.dao.repositories.OtpRepository;
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
 import com.team.updevic001.services.interfaces.OtpService;
 import jakarta.transaction.Transactional;
@@ -28,7 +28,7 @@ import static com.team.updevic001.exceptions.ExceptionConstants.OTP_NOT_FOUND;
 public class OtpServiceImpl implements OtpService {
 
     OtpRepository otpRepository;
-    EmailServiceImpl emailService;
+    private final MailjetEmailService mailjetEmailService;
 
 
     @Override
@@ -57,11 +57,10 @@ public class OtpServiceImpl implements OtpService {
         // Yeni OTP yaradılır
         String code = generateOtp(user.getEmail());
         Map<String, Object> placeholders = Map.of("userName", user.getFirstName(), "code", code);
-        emailService.sendHtmlEmail(
-                "Your OTP information",
+        mailjetEmailService.sendEmail("Your OTP information",
                 user.getEmail(),
                 "verification.html",
-                placeholders);
+                placeholders, null, null);
     }
 
     @Override
@@ -97,10 +96,9 @@ public class OtpServiceImpl implements OtpService {
 
     private void resendEmail(String email, String firstName, int code) {
         Map<String, Object> placeholders = Map.of("userName", firstName, "code", String.valueOf(code));
-        emailService.sendHtmlEmail(
-                "Resend",
+        mailjetEmailService.sendEmail("Resend",
                 email,
                 "verification.html",
-                placeholders);
+                placeholders, null, null);
     }
 }

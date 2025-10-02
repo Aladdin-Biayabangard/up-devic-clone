@@ -1,5 +1,6 @@
 package com.team.updevic001.services.impl.notification;
 
+import com.team.updevic001.configuration.config.mailjet.MailjetEmailService;
 import com.team.updevic001.dao.entities.EmailDraft;
 import com.team.updevic001.dao.repositories.EmailDraftRepository;
 import com.team.updevic001.dao.repositories.StudentCourseRepository;
@@ -30,6 +31,7 @@ public class NotificationService {
     private final RecipientResolver recipientResolver;
     private final EmailDraftService draftService;
     private final EmailDraftService emailDraftService;
+    private final MailjetEmailService mailjetEmailService;
 
     public void sendEmailDraft(Long draftId) {
         var draft = draftService.fetcEmailDraft(draftId);
@@ -98,7 +100,11 @@ public class NotificationService {
             variables.put("userName", user.getFirstName() + " " + user.getLastName());
             variables.put("courseName", courseName);
             variables.put("courseLink", courseLink);
-            emailServiceImpl.sendHtmlEmail("Added new Course", user.getEmail(), "course-created.html", variables);
+            mailjetEmailService.sendEmail(
+                    "Added new Course",
+                    user.getEmail(),
+                    "course-created.html", variables,
+                    null, null);
         });
     }
 
@@ -111,7 +117,12 @@ public class NotificationService {
         variables.put("courseName", courseName);
         variables.put("score", score);
         variables.put("certificateLink", certificateLink);
-        emailServiceImpl.sendHtmlEmail("Creation certificate", user.getEmail(), "certificate-created.html", variables);
+        mailjetEmailService.sendEmail(
+                "Creation certificate",
+                user.getEmail(),
+                "certificate-created.html",
+                variables,
+                null, null);
     }
 
     public void sendNotificationForSuccessfullyPayment(UserEmailInfo user,
@@ -123,14 +134,24 @@ public class NotificationService {
         variables.put("courseName", courseName);
         variables.put("amountPaid", amount);
         variables.put("courseLink", courseLink);
-        emailServiceImpl.sendHtmlEmail("Payment Successfully!", user.getEmail(), "payment-success.html", variables);
+        mailjetEmailService.sendEmail(
+                "Payment Successfully!",
+                user.getEmail(),
+                "payment-success.html",
+                variables,
+                null, null);
 
     }
 
     public void sendNotificationForReminder(UserEmailInfo user) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("userName", user.getFirstName() + " " + user.getLastName());
-        emailServiceImpl.sendHtmlEmail("Reminder for login", user.getEmail(), "reminder.html", variables);
+        mailjetEmailService.sendEmail(
+                "Reminder for login",
+                user.getEmail(),
+                "reminder.html",
+                variables, null,
+                null);
     }
 
 }

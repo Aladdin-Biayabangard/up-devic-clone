@@ -1,5 +1,6 @@
 package com.team.updevic001.services.impl.common;
 
+import com.team.updevic001.configuration.config.mailjet.MailjetEmailService;
 import com.team.updevic001.dao.entities.auth.PasswordResetToken;
 import com.team.updevic001.dao.entities.auth.RefreshToken;
 import com.team.updevic001.dao.entities.auth.User;
@@ -13,7 +14,6 @@ import com.team.updevic001.dao.repositories.UserRoleRepository;
 import com.team.updevic001.exceptions.AlreadyExistsException;
 import com.team.updevic001.exceptions.ExpiredRefreshTokenException;
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.model.dtos.request.security.AuthRequestDto;
 import com.team.updevic001.model.dtos.request.security.OtpRequest;
 import com.team.updevic001.model.dtos.request.security.RefreshTokenRequest;
@@ -64,7 +64,6 @@ public class AuthServiceImpl implements AuthService {
     UserRoleRepository userRoleRepository;
     UserProfileRepository userProfileRepository;
     OtpService otpService;
-    EmailServiceImpl emailServiceImpl;
     PasswordResetTokenRepository passwordResetTokenRepository;
     RefreshTokenRepository refreshTokenRepository;
     AuthHelper authHelper;
@@ -72,6 +71,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final long REFRESH_TOKEN_EXPIRATION_DAYS = 7;
     private static final long PASSWORD_RESET_EXPIRATION_MIN = 15;
+    private final MailjetEmailService mailjetEmailService;
 
     @Transactional
     @Override
@@ -156,11 +156,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         passwordResetTokenRepository.save(passwordResetToken);
-        emailServiceImpl.sendHtmlEmail(
-                "Password reset",
+        mailjetEmailService.sendEmail("Password reset",
                 email,
                 "password-reset.html",
-                Map.of("userName", user.getFirstName(), "code", code));
+                Map.of("userName", user.getFirstName(), "code", code), null, null);
     }
 
     public VerifyCodeResponse verifyCode(VerifyCodeRequest request) {

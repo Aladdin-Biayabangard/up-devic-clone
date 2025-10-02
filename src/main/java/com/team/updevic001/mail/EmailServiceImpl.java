@@ -41,15 +41,14 @@ public class EmailServiceImpl {
     public void sendHtmlEmail(String subject, String to, String templateName, Map<String, Object> variables) {
         // həm lokal (JavaMailSender) göndər, həm də n8n-ə ötür
 //        sendEmailInternal(subject, to, templateName, variables, null, null);
-        sendEmailViaN8n(subject, to, templateName, variables, null, null);
+        sendEmailInternal(subject, to, templateName, variables, null, null);
     }
 
     @Async("asyncTaskExecutor")
     public void sendFileEmail(String subject, String to, String templateName,
                               Map<String, Object> variables, String fileUrl, MultipartFile imageFile) {
-        // həm lokal (JavaMailSender) göndər, həm də n8n-ə ötür
-//        sendEmailInternal(subject, to, templateName, variables, fileUrl, imageFile);
-        sendEmailViaN8n(subject, to, templateName, variables, fileUrl, imageFile);
+
+        sendEmailInternal(subject, to, templateName, variables, fileUrl, imageFile);
     }
 
 

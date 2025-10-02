@@ -10,3 +10,7 @@ spring:
           auth: true
           starttls:
             enable: true
+
+mailjet:
+  apikey: ${API_KEY_MAILJET}
+  secretkey: ${SECRET_KEY_MAILJET}

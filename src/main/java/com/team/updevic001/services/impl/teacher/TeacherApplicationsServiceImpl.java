@@ -1,9 +1,9 @@
 package com.team.updevic001.services.impl.teacher;
 
+import com.team.updevic001.configuration.config.mailjet.MailjetEmailService;
 import com.team.updevic001.dao.entities.TeacherApplicationsEntity;
 import com.team.updevic001.dao.repositories.TeacherApplicationsRepository;
 import com.team.updevic001.exceptions.NotFoundException;
-import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.model.dtos.application.ApplicationSearchDto;
 import com.team.updevic001.model.dtos.application.MessageDto;
 import com.team.updevic001.model.dtos.application.TeacherApplicationRequest;
@@ -34,9 +34,9 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
 
 
     private final TeacherApplicationsRepository teacherApplicationsRepository;
-    private final EmailServiceImpl emailServiceImpl;
     private final ApplicationFormMapper applicationFormMapper;
     private final AdminService adminService;
+    private final MailjetEmailService mailjetEmailService;
 
     @Override
     public TeacherApplicationResponseDto createApplication(TeacherApplicationRequest dto) {
@@ -44,11 +44,13 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         entity.setStatus(ApplicationStatus.NEW);
         teacherApplicationsRepository.save(entity);
         Map<String, Object> placeholders = Map.of("userName", dto.getFullName());
-        emailServiceImpl.sendHtmlEmail(
+        mailjetEmailService.sendEmail(
                 "Creation application form",
                 dto.getEmail(),
                 "application-info-eng.html",
-                placeholders);
+                placeholders,
+                null, null
+        );
         return applicationFormMapper.toResponse(entity);
     }
 
@@ -67,12 +69,12 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
 
         boolean hasFilters = searchDto != null && (
                 searchDto.getEmail() != null ||
-                        searchDto.getFullName() != null ||
-                        searchDto.getPhone() != null ||
-                        searchDto.getTeachingField() != null ||
-                        searchDto.getCreatedAtFrom() != null ||
-                        searchDto.getCreatedAtTo() != null ||
-                        searchDto.getStatus() != null
+                searchDto.getFullName() != null ||
+                searchDto.getPhone() != null ||
+                searchDto.getTeachingField() != null ||
+                searchDto.getCreatedAtFrom() != null ||
+                searchDto.getCreatedAtTo() != null ||
+                searchDto.getStatus() != null
         );
 
         Page<TeacherApplicationsEntity> resultPage;
@@ -121,11 +123,12 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         teacherApplicationsRepository.save(entity);
         adminService.assignTeacherProfile(entity.getEmail());
         Map<String, Object> placeholders = Map.of("userName", entity.getFullName());
-        emailServiceImpl.sendHtmlEmail(
-                "Info for application",
+        mailjetEmailService.sendEmail("Info for application",
                 entity.getEmail(),
                 "application-approved.html",
-                placeholders);
+                placeholders,
+                null,
+                null);
     }
 
     @Override
@@ -137,11 +140,12 @@ public class TeacherApplicationsServiceImpl implements TeacherApplicationService
         entity.setCompletedAt(LocalDateTime.now());
         teacherApplicationsRepository.save(entity);
         Map<String, Object> placeholders = Map.of("userName", entity.getFullName(), "cancellationReason", message.getMessage());
-        emailServiceImpl.sendHtmlEmail(
+        mailjetEmailService.sendEmail(
                 "Info for application",
                 entity.getEmail(),
                 "application-cancelled.html",
-                placeholders);
+                placeholders,
+                null,null);
     }
 
 

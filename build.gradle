@@ -69,7 +69,7 @@ dependencies {
     implementation 'com.github.ua-parser:uap-java:1.5.2'
     implementation 'nl.basjes.parse.useragent:yauaa:6.3'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
+    implementation 'com.mailjet:mailjet-client:5.2.1'
 
 }
