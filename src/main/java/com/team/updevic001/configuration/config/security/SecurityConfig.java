@@ -49,7 +49,8 @@ public class SecurityConfig {
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(FRONTEND_URL1, FRONTEND_URL2, FRONTEND_URL3, FRONTEND_URL4));
+                    config.setAllowedOrigins(List.of(FRONTEND_URL1, FRONTEND_URL2, FRONTEND_URL3, FRONTEND_URL4,"https://updevic.up.railway.app"
+));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);

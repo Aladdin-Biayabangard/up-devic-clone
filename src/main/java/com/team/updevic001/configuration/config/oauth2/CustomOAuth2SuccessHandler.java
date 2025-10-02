@@ -38,13 +38,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         AuthResponseDto authResponseDto = authService.buildAuthResponse(user);
 
-        // 1. SecurityContext-i set et
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        // 2. Refresh token cookie əlavə et
+        // 1. Refresh token cookie əlavə et (JWT ilə eyni flow)
         Cookie refreshCookie = new Cookie("refreshToken", String.valueOf(authResponseDto.getRefreshToken()));
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(true);
@@ -52,11 +46,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         refreshCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshCookie);
 
-        // 3. Frontend-ə redirect
+        // 2. Frontend-ə redirect (Access token göndərilir)
         String target = "https://updevic.lovable.app/auth/oauth-success?accessToken="
                 + URLEncoder.encode(authResponseDto.getAccessToken(), StandardCharsets.UTF_8);
 
-        response.sendRedirect(target);
+        getRedirectStrategy().sendRedirect(request, response, target);
     }
 
 

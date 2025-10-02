@@ -9,16 +9,20 @@ import com.team.updevic001.model.enums.Role;
 import com.team.updevic001.services.interfaces.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.team.updevic001.model.enums.Status.ACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +66,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                     .firstName(firstName)
                     .lastName(lastName)
+                    .status(ACTIVE)
                     .roles(List.of(role)) // <- birbaşa burada əlavə et
                     .build();
 
@@ -70,14 +75,20 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             userProfileRepository.save(UserProfile.builder()
                     .user(saved)
                     .profilePhotoUrl(avatarUrl)
-                    .profilePhotoKey("public/"+saved.getId() + "profilePhoto")
+                    .profilePhotoKey("public/" + saved.getId() + "profilePhoto")
                     .build());
 
             return saved;
         });
 
 
-        return oAuth2User;
+        return new DefaultOAuth2User(
+                user.getRoles().stream()
+                        .map(r -> new SimpleGrantedAuthority(r.getName().name()))
+                        .toList(),
+                oAuth2User.getAttributes(), // Google/GitHub-dan gələn atributlar saxlanır
+                "email" // əsas açar -> email
+        );
     }
 
 }
