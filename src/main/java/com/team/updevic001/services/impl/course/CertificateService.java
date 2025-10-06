@@ -182,7 +182,7 @@ public class CertificateService {
                 certificate.getTeacherName(),
                 certificate.getCreatedAt(),
                 certificate.getIssueDate(),
-                null,
+                certificate.getCertificateUrl(),
                 null
         );
     }

@@ -70,7 +70,7 @@ public class MailjetEmailService {
             JSONObject inlineAttachment = new JSONObject()
                     .put("ContentType", "image/png")
                     .put("Filename", "logo.png")
-                    .put("ContentID", "logo") // template-də cid:logo ilə eyni olmalıdır
+                    .put("ContentID", "logo.png") // template-də cid:logo ilə eyni olmalıdır
                     .put("Base64Content", logoBase64);
 
             message.put(Emailv31.Message.INLINEDATTACHMENTS, new JSONArray().put(inlineAttachment));
