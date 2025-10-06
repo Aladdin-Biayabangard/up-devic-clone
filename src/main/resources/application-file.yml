@@ -3,12 +3,8 @@ spring:
     type: simple
 
 logging:
-#  file:
-#    path: ./logs
-#  pattern:
-#    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   level:
-    root: info
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.data.jpa.repository: INFO
     org.hibernate.SQL: OFF
-    org.springframework.data.jpa.repository: DEBUG
-    org.springframework.web: DEBUG
