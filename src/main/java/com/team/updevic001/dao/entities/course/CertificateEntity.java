@@ -3,8 +3,10 @@ package com.team.updevic001.dao.entities.course;
 import com.team.updevic001.model.dtos.certificate.CertificateStatus;
 import com.team.updevic001.model.dtos.certificate.CertificateType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PRIVATE;
@@ -71,6 +77,10 @@ public class CertificateEntity {
 
     @Column(name = "course_id")
     String courseId;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    Set<String> tags = new HashSet<>();
 
     @Column(name = "user_id")
     Long userId;

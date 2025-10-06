@@ -67,7 +67,9 @@ public class CertificateService {
                 certificate.getTrainingName(),
                 certificate.getTeacherName(),
                 certificate.getIssuingOrganization(),
-                certificate.getType()
+                certificate.getType(),
+                certificate.getDescription(),
+                certificate.getTags()
         );
     }
 
@@ -79,11 +81,11 @@ public class CertificateService {
         Specification<CertificateEntity> filter = null;
 
         if (criteria.getEmail() != null ||
-                criteria.getTrainingName() != null ||
-                criteria.getStatus() != null ||
-                criteria.getType() != null ||
-                criteria.getDateFrom() != null ||
-                criteria.getToDate() != null) {
+            criteria.getTrainingName() != null ||
+            criteria.getStatus() != null ||
+            criteria.getType() != null ||
+            criteria.getDateFrom() != null ||
+            criteria.getToDate() != null) {
 
             filter = CertificateSpecification.filter(criteria);
         }
@@ -126,7 +128,9 @@ public class CertificateService {
                     course.getTitle(),
                     certificate.getTeacherName(),
                     certificate.getIssuingOrganization(),
-                    certificate.getType());
+                    certificate.getType(),
+                    certificate.getDescription(),
+                    certificate.getTags());
 
         }
         var credentialId = generate();
@@ -149,6 +153,8 @@ public class CertificateService {
                 .status(CertificateStatus.ACTIVE)
                 .userId(user.getId())
                 .courseId(courseId)
+                .tags(course.getTags())
+                .description(course.getDescription())
                 .build();
         if (score >= 91) {
             certificate.setType(CertificateType.HONOURS);
@@ -169,7 +175,9 @@ public class CertificateService {
                 course.getTitle(),
                 certificate.getTeacherName(),
                 certificate.getIssuingOrganization(),
-                certificate.getType()
+                certificate.getType(),
+                certificate.getDescription(),
+                certificate.getTags()
         );
     }
 

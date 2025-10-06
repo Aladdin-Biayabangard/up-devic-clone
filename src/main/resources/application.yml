@@ -7,6 +7,6 @@ spring:
       - common
       - db
       - email
-      - file
+      - log
       - ai
       - oauth2

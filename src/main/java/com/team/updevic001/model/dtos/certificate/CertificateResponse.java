@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 import static lombok.AccessLevel.PRIVATE;
 
 @Data
@@ -28,4 +30,8 @@ public class CertificateResponse {
     String issuingOrganization;
 
     CertificateType type;
+
+    String description;
+
+    Set<String> tags;
 }
