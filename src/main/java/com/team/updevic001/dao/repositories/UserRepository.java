@@ -86,6 +86,16 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             """)
     List<UserEmailInfo> findUsersInactiveSince(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 
+    @Query("""
+            SELECT DISTINCT new com.team.updevic001.model.dtos.notification.UserEmailInfo(
+                                        u.firstName,
+                                        u.lastName,
+                                        u.email) 
+                                        FROM User u
+            
+            """)
+    List<UserEmailInfo> findUsersForNotification();
+
     @Modifying
     @Transactional
     @Query("""
