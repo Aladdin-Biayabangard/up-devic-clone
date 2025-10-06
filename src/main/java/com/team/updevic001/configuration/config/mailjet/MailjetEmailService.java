@@ -43,10 +43,7 @@ public class MailjetEmailService {
             Context context = new Context();
             context.setVariables(variables);
 
-            // Template-i parse edərkən logo URL dəyişəni əlavə edin
-            byte[] logoBytes = fileLoadServiceImpl.downloadFileAsBytes(LOGO_URL);
-            String logoBase64 = Base64.getEncoder().encodeToString(logoBytes);
-            context.setVariable("logoBase64", logoBase64);
+            // HTML body (logo artıq cid ilə referans olunacaq)
             String body = templateEngine.process("email/" + templateName, context);
 
             JSONObject message = new JSONObject()
@@ -66,7 +63,19 @@ public class MailjetEmailService {
                 message.put(Emailv31.Message.VARIABLES, vars);
             }
 
-            // File URL varsa attachment əlavə et
+            // 🔹 Inline logo əlavə et (cid:logo üçün)
+            byte[] logoBytes = fileLoadServiceImpl.downloadFileAsBytes(LOGO_URL);
+            String logoBase64 = Base64.getEncoder().encodeToString(logoBytes);
+
+            JSONObject inlineAttachment = new JSONObject()
+                    .put("ContentType", "image/png")
+                    .put("Filename", "logo.png")
+                    .put("ContentID", "logo") // template-də cid:logo ilə eyni olmalıdır
+                    .put("Base64Content", logoBase64);
+
+            message.put(Emailv31.Message.INLINEDATTACHMENTS, new JSONArray().put(inlineAttachment));
+
+            // 🔹 File URL varsa attachment əlavə et
             if (fileUrl != null && !fileUrl.isEmpty()) {
                 byte[] fileBytes = fileLoadServiceImpl.downloadFileAsBytes(fileUrl);
                 String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
@@ -79,7 +88,7 @@ public class MailjetEmailService {
                 message.put(Emailv31.Message.ATTACHMENTS, new JSONArray().put(attachment));
             }
 
-            // MultipartFile varsa attachment əlavə et
+            // 🔹 MultipartFile varsa attachment əlavə et
             if (imageFile != null && !imageFile.isEmpty()) {
                 JSONObject attachment = new JSONObject()
                         .put("ContentType", Objects.requireNonNull(imageFile.getContentType()))
@@ -105,4 +114,5 @@ public class MailjetEmailService {
             System.err.println("Failed to send email via Mailjet: " + e.getMessage());
         }
     }
+
 }
