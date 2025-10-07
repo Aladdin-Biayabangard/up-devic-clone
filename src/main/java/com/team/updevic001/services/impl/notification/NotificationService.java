@@ -4,7 +4,6 @@ import com.team.updevic001.configuration.config.mailjet.MailjetEmailService;
 import com.team.updevic001.dao.entities.EmailDraft;
 import com.team.updevic001.dao.repositories.EmailDraftRepository;
 import com.team.updevic001.dao.repositories.StudentCourseRepository;
-import com.team.updevic001.mail.EmailServiceImpl;
 import com.team.updevic001.model.dtos.notification.UserEmailInfo;
 import com.team.updevic001.model.dtos.request.EmailDraftRequest;
 import com.team.updevic001.model.enums.CourseCategoryType;
@@ -23,7 +22,6 @@ import static com.team.updevic001.model.enums.EmailStatus.SEND;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final EmailServiceImpl emailServiceImpl;
     private final StudentCourseRepository studentCourseRepository;
     private final EmailDraftRepository emailDraftRepository;
 
@@ -43,7 +41,7 @@ public class NotificationService {
                 : recipientResolver.resolveRecipients(draft.getRecipientType());
 
         for (String email : recipients) {
-            emailServiceImpl.sendFileEmail(
+            mailjetEmailService.sendEmail(
                     draft.getSubject(),
                     email,
                     draft.getTemplateName(),
@@ -80,7 +78,7 @@ public class NotificationService {
                 : recipientResolver.resolveRecipients(request.getRecipientsGroup());
 
         for (String email : emails) {
-            emailServiceImpl.sendFileEmail(
+            mailjetEmailService.sendEmail(
                     draft.getSubject(),
                     email,
                     draft.getTemplateName(),
